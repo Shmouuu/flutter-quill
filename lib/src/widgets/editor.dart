@@ -408,6 +408,8 @@ class _QuillEditorState extends State<QuillEditor>
       embedBuilder: widget.embedBuilder,
       customStyleBuilder: widget.customStyleBuilder,
       numberedPointStart: widget.numberedPointStart,
+      onShortcut: widget.onShortcut,
+      onPerformAction: widget.onPerformAction,
     );
 
     return _selectionGestureDetectorBuilder.build(
