@@ -123,6 +123,7 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
     /// * Locale('de')
     /// * Locale('fr')
     /// * Locale('zh')
+    /// and more https://github.com/singerdmx/flutter-quill#translation-of-toolbar
     Locale? locale,
     Key? key,
   }) {
@@ -441,6 +442,7 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
   /// * Locale('de')
   /// * Locale('fr')
   /// * Locale('zh', 'CN')
+  /// and more https://github.com/singerdmx/flutter-quill#translation-of-toolbar
   final Locale? locale;
 
   @override

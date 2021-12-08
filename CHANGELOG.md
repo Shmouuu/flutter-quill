@@ -1,3 +1,18 @@
+## [2.1.1]
+* Add methods of clearing editor and moving cursor.
+
+## [2.1.0]
+* Add delete handler.
+
+## [2.0.23]
+* Support custom replaceText handler.
+
+## [2.0.22]
+* Fix attribute compare and fix font size parsing.
+
+## [2.0.21]
+* Handle click on embed object.
+
 ## [2.0.20]
 * Improved UX/UI of Image widget.
 
