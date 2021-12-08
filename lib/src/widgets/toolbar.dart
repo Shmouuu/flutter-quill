@@ -108,6 +108,7 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
     FilePickImpl? filePickImpl,
     WebImagePickImpl? webImagePickImpl,
     WebVideoPickImpl? webVideoPickImpl,
+    VoidCallback? numberedToggleCallback,
 
     ///The theme to use for the icons in the toolbar, uses type [QuillIconTheme]
     QuillIconTheme? iconTheme,
@@ -338,6 +339,7 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
             icon: Icons.format_list_numbered,
             iconSize: toolbarIconSize,
             iconTheme: iconTheme,
+            callback: numberedToggleCallback,
           ),
         if (showListBullets)
           ToggleStyleButton(

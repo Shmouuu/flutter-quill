@@ -14,15 +14,32 @@ extension _LogicalKeyboardKeyCaseExt on LogicalKeyboardKey {
   }
 }
 
-enum InputShortcut { CUT, COPY, PASTE, SELECT_ALL, UNDO, REDO }
+enum InputShortcut {
+  CUT,
+  COPY,
+  PASTE,
+  SELECT_ALL,
+  UNDO,
+  REDO,
+  BOLD,
+  ITALIC,
+  UNDERLINE,
+  NEW_LINE,
+  NEW_TEXT,
+}
 
 typedef CursorMoveCallback = void Function(
     LogicalKeyboardKey key, bool wordModifier, bool lineModifier, bool shift);
 typedef InputShortcutCallback = void Function(InputShortcut? shortcut);
 typedef OnDeleteCallback = void Function(bool forward);
+typedef OnNewLineCallback = void Function();
 
 class KeyboardEventHandler {
-  KeyboardEventHandler(this.onCursorMove, this.onShortcut, this.onDelete);
+  KeyboardEventHandler(
+    this.onCursorMove,
+    this.onShortcut,
+    this.onDelete,
+  );
 
   final CursorMoveCallback onCursorMove;
   final InputShortcutCallback onShortcut;
@@ -35,73 +52,55 @@ class KeyboardEventHandler {
     LogicalKeyboardKey.arrowDown,
   };
 
-  static final Set<LogicalKeyboardKey> _shortcutKeys = <LogicalKeyboardKey>{
-    LogicalKeyboardKey.keyA,
-    LogicalKeyboardKey.keyC,
-    LogicalKeyboardKey.keyV,
-    LogicalKeyboardKey.keyX,
-    LogicalKeyboardKey.keyZ.toUpperCase(),
-    LogicalKeyboardKey.keyZ,
-    LogicalKeyboardKey.delete,
-    LogicalKeyboardKey.backspace,
-  };
-
-  static final Set<LogicalKeyboardKey> _nonModifierKeys = <LogicalKeyboardKey>{
-    ..._shortcutKeys,
-    ..._moveKeys,
-  };
-
-  static final Set<LogicalKeyboardKey> _modifierKeys = <LogicalKeyboardKey>{
-    LogicalKeyboardKey.shift,
-    LogicalKeyboardKey.control,
-    LogicalKeyboardKey.alt,
-  };
-
-  static final Set<LogicalKeyboardKey> _macOsModifierKeys =
-      <LogicalKeyboardKey>{
-    LogicalKeyboardKey.shift,
-    LogicalKeyboardKey.meta,
-    LogicalKeyboardKey.alt,
-  };
-
-  static final Set<LogicalKeyboardKey> _interestingKeys = <LogicalKeyboardKey>{
-    ..._modifierKeys,
-    ..._macOsModifierKeys,
-    ..._nonModifierKeys,
-  };
-
-  static final Map<LogicalKeyboardKey, InputShortcut> _keyToShortcut = {
+  static final Map<LogicalKeyboardKey, InputShortcut> _ctrlKeyToShortcut = {
     LogicalKeyboardKey.keyX: InputShortcut.CUT,
     LogicalKeyboardKey.keyC: InputShortcut.COPY,
     LogicalKeyboardKey.keyV: InputShortcut.PASTE,
     LogicalKeyboardKey.keyA: InputShortcut.SELECT_ALL,
+    LogicalKeyboardKey.keyB: InputShortcut.BOLD,
+    LogicalKeyboardKey.keyI: InputShortcut.ITALIC,
+    LogicalKeyboardKey.keyU: InputShortcut.UNDERLINE,
+  };
+
+  static final Map<LogicalKeyboardKey, InputShortcut> _shiftKeyToShortcut = {
+    LogicalKeyboardKey.enter: InputShortcut.NEW_LINE,
+  };
+
+  static final Map<LogicalKeyboardKey, InputShortcut> _webKeyToShortcut = {
+    LogicalKeyboardKey.enter: InputShortcut.NEW_TEXT,
+    LogicalKeyboardKey.numpadEnter: InputShortcut.NEW_TEXT,
   };
 
   KeyEventResult handleRawKeyEvent(RawKeyEvent event) {
-    if (kIsWeb) {
-      // On web platform, we ignore the key because it's already processed.
-      return KeyEventResult.ignored;
-    }
-
     if (event is! RawKeyDownEvent) {
       return KeyEventResult.ignored;
     }
 
-    final keysPressed =
-        LogicalKeyboardKey.collapseSynonyms(RawKeyboard.instance.keysPressed);
     final key = event.logicalKey;
     final isMacOS = event.data is RawKeyEventDataMacOs;
-    if (!_nonModifierKeys.contains(key) ||
-        keysPressed
-                .difference(isMacOS ? _macOsModifierKeys : _modifierKeys)
-                .length >
-            1 ||
-        keysPressed.difference(_interestingKeys).isNotEmpty) {
-      return KeyEventResult.ignored;
+    final isCtrlPressed =
+        isMacOS ? event.isMetaPressed : event.isControlPressed;
+    final isShiftPressed = event.isShiftPressed;
+
+    if (isCtrlPressed && _ctrlKeyToShortcut.containsKey(key)) {
+      onShortcut(_ctrlKeyToShortcut[key]);
+      return KeyEventResult.handled;
     }
 
-    final isShortcutModifierPressed =
-        isMacOS ? event.isMetaPressed : event.isControlPressed;
+    if (isShiftPressed && _shiftKeyToShortcut.containsKey(key)) {
+      onShortcut(_shiftKeyToShortcut[key]);
+      return KeyEventResult.handled;
+    }
+
+    if (_webKeyToShortcut.containsKey(key)) {
+      onShortcut(_webKeyToShortcut[key]);
+      return KeyEventResult.handled;
+    }
+
+    if (kIsWeb) {
+      // On web platform, we ignore the key because it's already processed.
+      return KeyEventResult.ignored;
+    }
 
     if (_moveKeys.contains(key)) {
       onCursorMove(
@@ -109,13 +108,13 @@ class KeyboardEventHandler {
           isMacOS ? event.isAltPressed : event.isControlPressed,
           isMacOS ? event.isMetaPressed : event.isAltPressed,
           event.isShiftPressed);
-    } else if (isShortcutModifierPressed && (_shortcutKeys.contains(key))) {
+    } else if (isCtrlPressed && _ctrlKeyToShortcut.containsKey(key)) {
       if (key == LogicalKeyboardKey.keyZ ||
           key == LogicalKeyboardKey.keyZ.toUpperCase()) {
         onShortcut(
             event.isShiftPressed ? InputShortcut.REDO : InputShortcut.UNDO);
       } else {
-        onShortcut(_keyToShortcut[key]);
+        onShortcut(_ctrlKeyToShortcut[key]);
       }
     } else if (key == LogicalKeyboardKey.delete) {
       onDelete(true);

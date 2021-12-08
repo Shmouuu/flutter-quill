@@ -746,11 +746,11 @@ class _EditorTextSelectionGestureDetectorState
     if (widget.onDragSelectionStart != null ||
         widget.onDragSelectionUpdate != null ||
         widget.onDragSelectionEnd != null) {
-      gestures[HorizontalDragGestureRecognizer] =
-          GestureRecognizerFactoryWithHandlers<HorizontalDragGestureRecognizer>(
-        () => HorizontalDragGestureRecognizer(
+      gestures[PanGestureRecognizer] =
+          GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
+        () => PanGestureRecognizer(
             debugOwner: this,
-            supportedDevices: <PointerDeviceKind>{PointerDeviceKind.mouse}),
+            /*supportedDevices: <PointerDeviceKind>{PointerDeviceKind.mouse}*/),
         (instance) {
           instance
             ..dragStartBehavior = DragStartBehavior.down

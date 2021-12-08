@@ -77,6 +77,10 @@ class QuillController extends ChangeNotifier {
     return styles;
   }
 
+  Style getDocumentSelectionStyles() {
+    return document.collectStyle(0, document.length);
+  }
+
   void undo() {
     final tup = document.undo();
     if (tup.item1) {
@@ -196,6 +200,10 @@ class QuillController extends ChangeNotifier {
     formatText(selection.start, selection.end - selection.start, attribute);
   }
 
+  void formatAll(Attribute? attribute) {
+    formatText(0, document.length, attribute);
+  }
+
   void updateSelection(TextSelection textSelection, ChangeSource source) {
     _updateSelection(textSelection, source);
     notifyListeners();
@@ -213,7 +221,6 @@ class QuillController extends ChangeNotifier {
     if (selection != textSelection) {
       _updateSelection(textSelection, source);
     }
-
     notifyListeners();
   }
 

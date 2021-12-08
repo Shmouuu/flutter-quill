@@ -27,6 +27,7 @@ class QuillSimpleViewer extends StatefulWidget {
   const QuillSimpleViewer({
     required this.controller,
     required this.readOnly,
+    required this.numberedPointStart,
     this.customStyles,
     this.truncate = false,
     this.truncateScale,
@@ -55,6 +56,7 @@ class QuillSimpleViewer extends StatefulWidget {
   final EdgeInsetsGeometry padding;
   final EmbedBuilder? embedBuilder;
   final bool readOnly;
+  final int numberedPointStart;
 
   @override
   _QuillSimpleViewerState createState() => _QuillSimpleViewerState();
@@ -202,23 +204,25 @@ class _QuillSimpleViewerState extends State<QuillSimpleViewer>
       } else if (node is Block) {
         final attrs = node.style.attributes;
         final editableTextBlock = EditableTextBlock(
-            block: node,
-            textDirection: _textDirection,
-            scrollBottomInset: widget.scrollBottomInset,
-            verticalSpacing: _getVerticalSpacingForBlock(node, _styles),
-            textSelection: widget.controller.selection,
-            color: Colors.black,
-            styles: _styles,
-            enableInteractiveSelection: false,
-            hasFocus: false,
-            contentPadding: attrs.containsKey(Attribute.codeBlock.key)
-                ? const EdgeInsets.all(16)
-                : null,
-            embedBuilder: embedBuilder,
-            cursorCont: _cursorCont,
-            indentLevelCounts: indentLevelCounts,
-            onCheckboxTap: _handleCheckboxTap,
-            readOnly: widget.readOnly);
+          block: node,
+          textDirection: _textDirection,
+          scrollBottomInset: widget.scrollBottomInset,
+          verticalSpacing: _getVerticalSpacingForBlock(node, _styles),
+          textSelection: widget.controller.selection,
+          color: Colors.black,
+          styles: _styles,
+          enableInteractiveSelection: false,
+          hasFocus: false,
+          contentPadding: attrs.containsKey(Attribute.codeBlock.key)
+              ? const EdgeInsets.all(16)
+              : null,
+          embedBuilder: embedBuilder,
+          cursorCont: _cursorCont,
+          indentLevelCounts: indentLevelCounts,
+          onCheckboxTap: _handleCheckboxTap,
+          readOnly: widget.readOnly,
+          numberedPointStart: widget.numberedPointStart,
+        );
         result.add(editableTextBlock);
       } else {
         throw StateError('Unreachable.');

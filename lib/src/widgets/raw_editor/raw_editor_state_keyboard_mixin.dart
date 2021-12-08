@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:characters/characters.dart';
 import 'package:flutter/services.dart';
 
+import '../../../models/documents/attribute.dart';
 import '../../models/documents/document.dart';
 import '../../utils/diff_delta.dart';
 import '../editor.dart';
@@ -24,11 +25,11 @@ mixin RawEditorStateKeyboardMixin on EditorState {
   bool _wasSelectingVerticallyWithKeyboard = false;
 
   void handleCursorMovement(
-    LogicalKeyboardKey key,
-    bool wordModifier,
-    bool lineModifier,
-    bool shift,
-  ) {
+      LogicalKeyboardKey key,
+      bool wordModifier,
+      bool lineModifier,
+      bool shift,
+      ) {
     if (wordModifier && lineModifier) {
       // If both modifiers are down, nothing happens on any of the platforms.
       return;
@@ -64,29 +65,46 @@ mixin RawEditorStateKeyboardMixin on EditorState {
 
   // Handles shortcut functionality including cut, copy, paste and select all
   // using control/command + (X, C, V, A).
-  // TODO: Add support for formatting shortcuts: Cmd+B (bold), Cmd+I (italic)
   // set editing value from clipboard for web
   Future<void> handleShortcut(InputShortcut? shortcut) async {
     final selection = widget.controller.selection;
     final plainText = getTextEditingValue().text;
-    if (shortcut == InputShortcut.COPY) {
-      if (!selection.isCollapsed) {
-        await Clipboard.setData(
-            ClipboardData(text: selection.textInside(plainText)));
+    if (!widget.readOnly) {
+      if (shortcut == InputShortcut.BOLD) {
+        _toggleBold();
+        return;
       }
-      return;
-    }
-    if (shortcut == InputShortcut.UNDO) {
-      if (widget.controller.hasUndo) {
-        widget.controller.undo();
+      if (shortcut == InputShortcut.ITALIC) {
+        _toggleItalic();
+        return;
       }
-      return;
-    }
-    if (shortcut == InputShortcut.REDO) {
-      if (widget.controller.hasRedo) {
-        widget.controller.redo();
+      if (shortcut == InputShortcut.UNDERLINE) {
+        _toggleUnderline();
+        return;
       }
-      return;
+      if (shortcut == InputShortcut.NEW_LINE) {
+        _newLine(selection);
+        return;
+      }
+      if (shortcut == InputShortcut.COPY) {
+        if (!selection.isCollapsed) {
+          await Clipboard.setData(
+              ClipboardData(text: selection.textInside(plainText)));
+        }
+        return;
+      }
+      if (shortcut == InputShortcut.UNDO) {
+        if (widget.controller.hasUndo) {
+          widget.controller.undo();
+        }
+        return;
+      }
+      if (shortcut == InputShortcut.REDO) {
+        if (widget.controller.hasRedo) {
+          widget.controller.redo();
+        }
+        return;
+      }
     }
     if (shortcut == InputShortcut.CUT && !widget.readOnly) {
       if (!selection.isCollapsed) {
@@ -102,7 +120,7 @@ mixin RawEditorStateKeyboardMixin on EditorState {
 
         setTextEditingValue(TextEditingValue(
           text:
-              selection.textBefore(plainText) + selection.textAfter(plainText),
+          selection.textBefore(plainText) + selection.textAfter(plainText),
           selection: TextSelection.collapsed(offset: selection.start),
         ));
       }
@@ -130,6 +148,7 @@ mixin RawEditorStateKeyboardMixin on EditorState {
           ChangeSource.REMOTE);
       return;
     }
+    widget.onShortcut?.call(shortcut);
   }
 
   void handleDelete(bool forward) {
@@ -141,7 +160,7 @@ mixin RawEditorStateKeyboardMixin on EditorState {
     if (selection.isCollapsed) {
       if (!forward && textBefore.isNotEmpty) {
         final characterBoundary =
-            _previousCharacter(textBefore.length, textBefore, true);
+        _previousCharacter(textBefore.length, textBefore, true);
         textBefore = textBefore.substring(0, characterBoundary);
         cursorPosition = characterBoundary;
       }
@@ -180,7 +199,7 @@ mixin RawEditorStateKeyboardMixin on EditorState {
       final textSelection = getRenderEditor()!.selectWordAtPosition(
           TextPosition(
               offset:
-                  _nextCharacter(newSelection.extentOffset, plainText, false)));
+              _nextCharacter(newSelection.extentOffset, plainText, false)));
       return newSelection.copyWith(extentOffset: textSelection.extentOffset);
     } else if (lineModifier) {
       if (leftKey) {
@@ -201,7 +220,7 @@ mixin RawEditorStateKeyboardMixin on EditorState {
 
     if (rightKey && newSelection.extentOffset < plainText.length) {
       final nextExtent =
-          _nextCharacter(newSelection.extentOffset, plainText, true);
+      _nextCharacter(newSelection.extentOffset, plainText, true);
       final distance = nextExtent - newSelection.extentOffset;
       newSelection = newSelection.copyWith(extentOffset: nextExtent);
       if (shift) {
@@ -212,7 +231,7 @@ mixin RawEditorStateKeyboardMixin on EditorState {
 
     if (leftKey && newSelection.extentOffset > 0) {
       final previousExtent =
-          _previousCharacter(newSelection.extentOffset, plainText, true);
+      _previousCharacter(newSelection.extentOffset, plainText, true);
       final distance = newSelection.extentOffset - previousExtent;
       newSelection = newSelection.copyWith(extentOffset: previousExtent);
       if (shift) {
@@ -316,12 +335,12 @@ mixin RawEditorStateKeyboardMixin on EditorState {
             child.getOffsetForCaret(localPosition).dx,
             sibling
                 .getOffsetForCaret(TextPosition(
-                    offset: upKey ? sibling.getContainer().length - 1 : 0))
+                offset: upKey ? sibling.getContainer().length - 1 : 0))
                 .dy);
         final siblingPosition = sibling.getPositionForOffset(finalOffset);
         position = TextPosition(
             offset:
-                sibling.getContainer().documentOffset + siblingPosition.offset);
+            sibling.getContainer().documentOffset + siblingPosition.offset);
       }
     } else {
       position = TextPosition(
@@ -363,5 +382,49 @@ mixin RawEditorStateKeyboardMixin on EditorState {
       }
     }
     return TextSelection.fromPosition(TextPosition(offset: newOffset));
+  }
+
+  void _toggleBold() {
+    final Attribute attribute = BoldAttribute();
+    final isToggled = _getIsToggled(
+        attribute, widget.controller.getSelectionStyle().attributes);
+    widget.controller.formatSelection(
+        isToggled ? Attribute.clone(attribute, null) : attribute);
+  }
+
+  void _toggleItalic() {
+    final Attribute attribute = ItalicAttribute();
+    final isToggled = _getIsToggled(
+        attribute, widget.controller.getSelectionStyle().attributes);
+    widget.controller.formatSelection(
+        isToggled ? Attribute.clone(attribute, null) : attribute);
+  }
+
+  void _toggleUnderline() {
+    final Attribute attribute = UnderlineAttribute();
+    final isToggled = _getIsToggled(
+        attribute, widget.controller.getSelectionStyle().attributes);
+    widget.controller.formatSelection(
+        isToggled ? Attribute.clone(attribute, null) : attribute);
+  }
+
+  void _newLine(TextSelection selection) {
+    widget.controller.replaceText(
+      selection.start,
+      selection.end - selection.start,
+      '\n',
+      TextSelection.collapsed(offset: selection.start + 1),
+    );
+  }
+
+  bool _getIsToggled(Attribute attr, Map<String, Attribute> attrs) {
+    if (attr.key == Attribute.list.key) {
+      final attribute = attrs[attr.key];
+      if (attribute == null) {
+        return false;
+      }
+      return attribute.value == attr.value;
+    }
+    return attrs.containsKey(attr.key);
   }
 }

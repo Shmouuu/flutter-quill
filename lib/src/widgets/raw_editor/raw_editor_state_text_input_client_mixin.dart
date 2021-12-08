@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -52,7 +53,6 @@ mixin RawEditorStateTextInputClientMixin on EditorState
         TextInputConfiguration(
           inputType: TextInputType.multiline,
           readOnly: widget.readOnly,
-          inputAction: TextInputAction.newline,
           enableSuggestions: !widget.readOnly,
           keyboardAppearance: widget.keyboardAppearance,
           textCapitalization: widget.textCapitalization,
@@ -60,7 +60,7 @@ mixin RawEditorStateTextInputClientMixin on EditorState
       );
 
       _textInputConnection!.setEditingState(_lastKnownRemoteTextEditingValue!);
-      // _sentRemoteValues.add(_lastKnownRemoteTextEditingValue);
+      // _sentRemoteValues.add(_lastKnownRemoteTextEditingValue!);
     }
 
     _textInputConnection!.show();

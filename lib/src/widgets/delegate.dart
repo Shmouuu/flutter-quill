@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import '../../flutter_quill.dart';
 
+import '../../flutter_quill.dart';
 import '../models/documents/nodes/leaf.dart';
 import 'editor.dart';
 import 'text_selection.dart';
@@ -22,9 +22,10 @@ abstract class EditorTextSelectionGestureDetectorBuilderDelegate {
 }
 
 class EditorTextSelectionGestureDetectorBuilder {
-  EditorTextSelectionGestureDetectorBuilder(this.delegate);
+  EditorTextSelectionGestureDetectorBuilder(this.delegate, this.listener);
 
   final EditorTextSelectionGestureDetectorBuilderDelegate delegate;
+  final EditorGestureListener? listener;
   bool shouldShowSelectionToolbar = true;
 
   EditorState? getEditor() {
@@ -117,6 +118,7 @@ class EditorTextSelectionGestureDetectorBuilder {
       null,
       SelectionChangedCause.drag,
     );
+    listener?.onDragSelectionStart(details);
   }
 
   void onDragSelectionUpdate(
@@ -126,9 +128,12 @@ class EditorTextSelectionGestureDetectorBuilder {
       updateDetails.globalPosition,
       SelectionChangedCause.drag,
     );
+    listener?.onDragSelectionUpdate(updateDetails);
   }
 
-  void onDragSelectionEnd(DragEndDetails details) {}
+  void onDragSelectionEnd(DragEndDetails details) {
+    listener?.onDragSelectionEnd(details);
+  }
 
   Widget build(HitTestBehavior behavior, Widget child) {
     return EditorTextSelectionGestureDetector(
@@ -149,4 +154,12 @@ class EditorTextSelectionGestureDetectorBuilder {
       child: child,
     );
   }
+}
+
+class EditorGestureListener {
+  void onDragSelectionStart(DragStartDetails details) {}
+
+  void onDragSelectionUpdate(DragUpdateDetails updateDetails) {}
+
+  void onDragSelectionEnd(DragEndDetails details) {}
 }

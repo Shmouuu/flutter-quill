@@ -27,6 +27,7 @@ class ToggleStyleButton extends StatefulWidget {
     this.fillColor,
     this.childBuilder = defaultToggleStyleButtonBuilder,
     this.iconTheme,
+    this.callback,
     Key? key,
   }) : super(key: key);
 
@@ -40,6 +41,7 @@ class ToggleStyleButton extends StatefulWidget {
   final QuillController controller;
 
   final ToggleStyleButtonBuilder childBuilder;
+  final VoidCallback? callback;
 
   ///Specify an icon theme for the icons in the toolbar
   final QuillIconTheme? iconTheme;
@@ -109,6 +111,7 @@ class _ToggleStyleButtonState extends State<ToggleStyleButton> {
     widget.controller.formatSelection(_isToggled!
         ? Attribute.clone(widget.attribute, null)
         : widget.attribute);
+    widget.callback?.call();
   }
 }
 

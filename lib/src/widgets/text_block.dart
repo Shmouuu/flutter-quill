@@ -64,6 +64,7 @@ class EditableTextBlock extends StatelessWidget {
       required this.indentLevelCounts,
       required this.onCheckboxTap,
       required this.readOnly,
+      required this.numberedPointStart,
       this.customStyleBuilder,
       Key? key});
 
@@ -83,6 +84,7 @@ class EditableTextBlock extends StatelessWidget {
   final Map<int, int> indentLevelCounts;
   final Function(int, bool) onCheckboxTap;
   final bool readOnly;
+  final int? numberedPointStart;
 
   @override
   Widget build(BuildContext context) {
@@ -116,29 +118,30 @@ class EditableTextBlock extends StatelessWidget {
     final defaultStyles = QuillStyles.getStyles(context, false);
     final count = block.children.length;
     final children = <Widget>[];
-    var index = 0;
+    var index = numberedPointStart ?? 0;
     for (final line in Iterable.castFrom<dynamic, Line>(block.children)) {
       index++;
       final editableTextLine = EditableTextLine(
-          line,
-          _buildLeading(context, line, index, indentLevelCounts, count),
-          TextLine(
-            line: line,
-            textDirection: textDirection,
-            embedBuilder: embedBuilder,
-            customStyleBuilder: customStyleBuilder,
-            styles: styles!,
-            readOnly: readOnly,
-          ),
-          _getIndentWidth(),
-          _getSpacingForLine(line, index, count, defaultStyles),
-          textDirection,
-          textSelection,
-          color,
-          enableInteractiveSelection,
-          hasFocus,
-          MediaQuery.of(context).devicePixelRatio,
-          cursorCont);
+        line,
+        _buildLeading(context, line, index, indentLevelCounts, count),
+        TextLine(
+          line: line,
+          textDirection: textDirection,
+          embedBuilder: embedBuilder,
+          customStyleBuilder: customStyleBuilder,
+          styles: styles!,
+          readOnly: readOnly,
+        ),
+        _getIndentWidth(),
+        _getSpacingForLine(line, index, count, defaultStyles),
+        textDirection,
+        textSelection,
+        color,
+        enableInteractiveSelection,
+        hasFocus,
+        MediaQuery.of(context).devicePixelRatio,
+        cursorCont,
+      );
       children.add(editableTextLine);
     }
     return children.toList(growable: false);

@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../widgets/keyboard_listener.dart';
 import '../models/documents/attribute.dart';
 import '../models/documents/document.dart';
 import '../models/documents/nodes/container.dart' as container_node;
@@ -225,35 +226,40 @@ Widget _defaultEmbedBuilder(
 }
 
 class QuillEditor extends StatefulWidget {
-  const QuillEditor(
-      {required this.controller,
-      required this.focusNode,
-      required this.scrollController,
-      required this.scrollable,
-      required this.padding,
-      required this.autoFocus,
-      required this.readOnly,
-      required this.expands,
-      this.showCursor,
-      this.paintCursorAboveText,
-      this.placeholder,
-      this.enableInteractiveSelection = true,
-      this.scrollBottomInset = 0,
-      this.minHeight,
-      this.maxHeight,
-      this.customStyles,
-      this.textCapitalization = TextCapitalization.sentences,
-      this.keyboardAppearance = Brightness.light,
-      this.scrollPhysics,
-      this.onLaunchUrl,
-      this.onTapDown,
-      this.onTapUp,
-      this.onSingleLongTapStart,
-      this.onSingleLongTapMoveUpdate,
-      this.onSingleLongTapEnd,
-      this.embedBuilder = _defaultEmbedBuilder,
-      this.customStyleBuilder,
-      Key? key});
+  const QuillEditor({
+    required this.controller,
+    required this.focusNode,
+    required this.scrollController,
+    required this.scrollable,
+    required this.padding,
+    required this.autoFocus,
+    required this.readOnly,
+    required this.expands,
+    this.numberedPointStart,
+    this.editorGestureListener,
+    this.showCursor,
+    this.paintCursorAboveText,
+    this.placeholder,
+    this.enableInteractiveSelection = true,
+    this.scrollBottomInset = 0,
+    this.minHeight,
+    this.maxHeight,
+    this.customStyles,
+    this.textCapitalization = TextCapitalization.sentences,
+    this.keyboardAppearance = Brightness.light,
+    this.scrollPhysics,
+    this.onLaunchUrl,
+    this.onTapDown,
+    this.onTapUp,
+    this.onSingleLongTapStart,
+    this.onSingleLongTapMoveUpdate,
+    this.onSingleLongTapEnd,
+    this.embedBuilder = _defaultEmbedBuilder,
+    this.customStyleBuilder,
+    this.onPerformAction,
+    this.onShortcut,
+    Key? key,
+  });
 
   factory QuillEditor.basic({
     required QuillController controller,
@@ -270,6 +276,7 @@ class QuillEditor extends StatefulWidget {
       expands: false,
       padding: EdgeInsets.zero,
       keyboardAppearance: keyboardAppearance ?? Brightness.light,
+      numberedPointStart: 0,
     );
   }
 
@@ -293,6 +300,9 @@ class QuillEditor extends StatefulWidget {
   final Brightness keyboardAppearance;
   final ScrollPhysics? scrollPhysics;
   final ValueChanged<String>? onLaunchUrl;
+  final EditorGestureListener? editorGestureListener;
+  final int? numberedPointStart;
+
   // Returns whether gesture is handled
   final bool Function(
       TapDownDetails details, TextPosition Function(Offset offset))? onTapDown;
@@ -309,6 +319,7 @@ class QuillEditor extends StatefulWidget {
   // Returns whether gesture is handled
   final bool Function(LongPressMoveUpdateDetails details,
       TextPosition Function(Offset offset))? onSingleLongTapMoveUpdate;
+
   // Returns whether gesture is handled
   final bool Function(
           LongPressEndDetails details, TextPosition Function(Offset offset))?
@@ -316,6 +327,8 @@ class QuillEditor extends StatefulWidget {
 
   final EmbedBuilder embedBuilder;
   final CustomStyleBuilder? customStyleBuilder;
+  final ValueChanged<TextInputAction>? onPerformAction;
+  final InputShortcutCallback? onShortcut;
 
   @override
   _QuillEditorState createState() => _QuillEditorState();
@@ -331,7 +344,8 @@ class _QuillEditorState extends State<QuillEditor>
   void initState() {
     super.initState();
     _selectionGestureDetectorBuilder =
-        _QuillEditorSelectionGestureDetectorBuilder(this);
+        _QuillEditorSelectionGestureDetectorBuilder(
+            this, widget.editorGestureListener);
   }
 
   @override
@@ -421,6 +435,9 @@ class _QuillEditorState extends State<QuillEditor>
         widget.scrollPhysics,
         widget.embedBuilder,
         widget.customStyleBuilder,
+        widget.onPerformAction,
+        widget.onShortcut,
+        widget.numberedPointStart,
       ),
     );
   }
@@ -447,7 +464,9 @@ class _QuillEditorState extends State<QuillEditor>
 
 class _QuillEditorSelectionGestureDetectorBuilder
     extends EditorTextSelectionGestureDetectorBuilder {
-  _QuillEditorSelectionGestureDetectorBuilder(this._state) : super(_state);
+  _QuillEditorSelectionGestureDetectorBuilder(
+      this._state, EditorGestureListener? listener)
+      : super(_state, listener);
 
   final _QuillEditorState _state;
 
@@ -525,7 +544,7 @@ class _QuillEditorSelectionGestureDetectorBuilder
       var launchUrl = getEditor()!.widget.onLaunchUrl;
       launchUrl ??= _launchUrl;
       String? link = segment.style.attributes[Attribute.link.key]!.value;
-      if (getEditor()!.widget.readOnly && link != null) {
+      if (/*getEditor()!.widget.readOnly &&*/ link != null) {
         link = link.trim();
         if (!linkPrefixes
             .any((linkPrefix) => link!.toLowerCase().startsWith(linkPrefix))) {

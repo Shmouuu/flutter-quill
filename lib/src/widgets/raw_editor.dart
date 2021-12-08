@@ -60,6 +60,9 @@ class RawEditor extends StatefulWidget {
     this.scrollPhysics,
     this.embedBuilder,
     this.customStyleBuilder,
+    this.onPerformAction,
+    this.onShortcut,
+    this.numberedPointStart,
   )   : assert(maxHeight == null || maxHeight > 0, 'maxHeight cannot be null'),
         assert(minHeight == null || minHeight >= 0, 'minHeight cannot be null'),
         assert(maxHeight == null || minHeight == null || maxHeight >= minHeight,
@@ -93,6 +96,10 @@ class RawEditor extends StatefulWidget {
   final ScrollPhysics? scrollPhysics;
   final EmbedBuilder embedBuilder;
   final CustomStyleBuilder? customStyleBuilder;
+  final ValueChanged<TextInputAction>? onPerformAction;
+  final InputShortcutCallback? onShortcut;
+  final int? numberedPointStart;
+
   @override
   State<StatefulWidget> createState() => RawEditorState();
 }
@@ -127,6 +134,7 @@ class RawEditorState extends EditorState
   // Focus
   bool _didAutoFocus = false;
   FocusAttachment? _focusAttachment;
+
   bool get _hasFocus => widget.focusNode.hasFocus;
 
   DefaultStyles? _styles;
@@ -137,6 +145,12 @@ class RawEditorState extends EditorState
   final LayerLink _endHandleLayerLink = LayerLink();
 
   TextDirection get _textDirection => Directionality.of(context);
+
+  @override
+  void performAction(TextInputAction action) {
+    widget.onPerformAction?.call(action);
+    super.performAction(action);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -250,24 +264,26 @@ class RawEditorState extends EditorState
       } else if (node is Block) {
         final attrs = node.style.attributes;
         final editableTextBlock = EditableTextBlock(
-            block: node,
-            textDirection: _textDirection,
-            scrollBottomInset: widget.scrollBottomInset,
-            verticalSpacing: _getVerticalSpacingForBlock(node, _styles),
-            textSelection: widget.controller.selection,
-            color: widget.selectionColor,
-            styles: _styles,
-            enableInteractiveSelection: widget.enableInteractiveSelection,
-            hasFocus: _hasFocus,
-            contentPadding: attrs.containsKey(Attribute.codeBlock.key)
-                ? const EdgeInsets.all(16)
-                : null,
-            embedBuilder: widget.embedBuilder,
-            cursorCont: _cursorCont,
-            indentLevelCounts: indentLevelCounts,
-            onCheckboxTap: _handleCheckboxTap,
-            readOnly: widget.readOnly,
-            customStyleBuilder: widget.customStyleBuilder);
+          block: node,
+          textDirection: _textDirection,
+          scrollBottomInset: widget.scrollBottomInset,
+          verticalSpacing: _getVerticalSpacingForBlock(node, _styles),
+          textSelection: widget.controller.selection,
+          color: widget.selectionColor,
+          styles: _styles,
+          enableInteractiveSelection: widget.enableInteractiveSelection,
+          hasFocus: _hasFocus,
+          contentPadding: attrs.containsKey(Attribute.codeBlock.key)
+              ? const EdgeInsets.all(16)
+              : null,
+          embedBuilder: widget.embedBuilder,
+          cursorCont: _cursorCont,
+          indentLevelCounts: indentLevelCounts,
+          onCheckboxTap: _handleCheckboxTap,
+          readOnly: widget.readOnly,
+          customStyleBuilder: widget.customStyleBuilder,
+          numberedPointStart: widget.numberedPointStart,
+        );
         result.add(editableTextBlock);
       } else {
         throw StateError('Unreachable.');

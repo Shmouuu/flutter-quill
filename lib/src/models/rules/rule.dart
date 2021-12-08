@@ -73,4 +73,9 @@ class Rules {
     }
     throw 'Apply rules failed';
   }
+
+  @override
+  String toString() {
+    return 'Rules{_customRules: $_customRules, _rules: $_rules}';
+  }
 }
