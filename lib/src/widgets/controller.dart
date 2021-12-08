@@ -89,7 +89,7 @@ class QuillController extends ChangeNotifier {
     return styles;
   }
 
-  Style getDocumentSelectionStyles() {
+  Style getAllStyles() {
     return document.collectStyle(0, document.length);
   }
 
