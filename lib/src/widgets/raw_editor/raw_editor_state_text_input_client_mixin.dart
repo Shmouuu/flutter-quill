@@ -143,6 +143,11 @@ mixin RawEditorStateTextInputClientMixin on EditorState
       /// This is fragile but it's probably the only available option.
       _sentRemoteValues.remove(value);
       return;
+    } else {
+      // TODO I had to add this to fix an issue when deleting chars after using
+      // TODO MarkdownHeadersRule. type '# xxx' then the bug appears if you try
+      // TODO to delete the last x.
+      _sentRemoteValues.clear();
     }
 
     if (_lastKnownRemoteTextEditingValue == value) {
