@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:tuple/tuple.dart';
@@ -563,6 +562,16 @@ class RenderEditableTextBlock extends RenderEditableContainerBox
       offset: position.offset - getContainer().documentOffset,
       affinity: position.affinity,
     );
+  }
+
+  @override
+  Rect getCaretPrototype(TextPosition position) {
+    final child = childAtPosition(position);
+    final localPosition = TextPosition(
+      offset: position.offset - child.getContainer().offset,
+      affinity: position.affinity,
+    );
+    return child.getCaretPrototype(localPosition);
   }
 }
 
