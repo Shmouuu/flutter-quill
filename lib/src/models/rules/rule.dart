@@ -31,7 +31,7 @@ class Rules {
   List<Rule> _customRules = [];
 
   final List<Rule> _rules;
-  static final Rules _instance = Rules([
+  static Rules _newInstance() => Rules([
     const FormatLinkAtCaretPositionRule(),
     const ResolveLineFormatRule(),
     const ResolveInlineFormatRule(),
@@ -48,7 +48,7 @@ class Rules {
     const CatchAllDeleteRule(),
   ]);
 
-  static Rules getInstance() => _instance;
+  static Rules getInstance() => _newInstance();
 
   void setCustomRules(List<Rule> customRules) {
     _customRules = customRules;
