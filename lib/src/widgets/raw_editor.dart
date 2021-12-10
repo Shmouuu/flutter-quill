@@ -21,10 +21,8 @@ import 'cursor.dart';
 import 'default_styles.dart';
 import 'delegate.dart';
 import 'editor.dart';
-import 'keyboard_listener.dart';
 import 'proxy.dart';
 import 'quill_single_child_scroll_view.dart';
-import 'raw_editor/raw_editor_state_keyboard_mixin.dart';
 import 'raw_editor/raw_editor_state_selection_delegate_mixin.dart';
 import 'raw_editor/raw_editor_state_text_input_client_mixin.dart';
 import 'text_block.dart';
@@ -66,7 +64,6 @@ class RawEditor extends StatefulWidget {
     this.embedBuilder = defaultEmbedBuilder,
     this.customStyleBuilder,
     this.onPerformAction,
-    this.onShortcut,
     this.numberedPointStart,
   })  : assert(maxHeight == null || maxHeight > 0, 'maxHeight cannot be null'),
         assert(minHeight == null || minHeight >= 0, 'minHeight cannot be null'),
@@ -101,7 +98,6 @@ class RawEditor extends StatefulWidget {
   final EmbedBuilder embedBuilder;
   final CustomStyleBuilder? customStyleBuilder;
   final ValueChanged<TextInputAction>? onPerformAction;
-  final InputShortcutCallback? onShortcut;
   final int? numberedPointStart;
 
   @override
@@ -113,13 +109,11 @@ class RawEditorState extends EditorState
         AutomaticKeepAliveClientMixin<RawEditor>,
         WidgetsBindingObserver,
         TickerProviderStateMixin<RawEditor>,
-        RawEditorStateKeyboardMixin,
+        TextEditingActionTarget,
         RawEditorStateTextInputClientMixin,
         RawEditorStateSelectionDelegateMixin {
   final GlobalKey _editorKey = GlobalKey();
 
-  // Keyboard
-  late KeyboardEventHandler _keyboardListener;
   KeyboardVisibilityController? _keyboardVisibilityController;
   StreamSubscription<bool>? _keyboardVisibilitySubscription;
   bool _keyboardVisible = false;
@@ -386,13 +380,6 @@ class RawEditorState extends EditorState
     _floatingCursorResetController = AnimationController(vsync: this);
     _floatingCursorResetController.addListener(onFloatingCursorResetTick);
 
-    // Keyboard
-    _keyboardListener = KeyboardEventHandler(
-      handleCursorMovement,
-      handleShortcut,
-      handleDelete,
-    );
-
     if (defaultTargetPlatform == TargetPlatform.windows ||
         defaultTargetPlatform == TargetPlatform.macOS ||
         defaultTargetPlatform == TargetPlatform.linux ||
@@ -410,8 +397,7 @@ class RawEditorState extends EditorState
       });
     }
 
-    _focusAttachment = widget.focusNode.attach(context,
-        onKey: (node, event) => _keyboardListener.handleRawKeyEvent(event));
+    _focusAttachment = widget.focusNode.attach(context);
     widget.focusNode.addListener(_handleFocusChanged);
   }
 
@@ -456,8 +442,7 @@ class RawEditorState extends EditorState
     if (widget.focusNode != oldWidget.focusNode) {
       oldWidget.focusNode.removeListener(_handleFocusChanged);
       _focusAttachment?.detach();
-      _focusAttachment = widget.focusNode.attach(context,
-          onKey: (node, event) => _keyboardListener.handleRawKeyEvent(event));
+      _focusAttachment = widget.focusNode.attach(context);
       widget.focusNode.addListener(_handleFocusChanged);
       updateKeepAlive();
     }
@@ -651,11 +636,6 @@ class RawEditorState extends EditorState
   }
 
   @override
-  TextEditingValue getTextEditingValue() {
-    return widget.controller.plainTextEditingValue;
-  }
-
-  @override
   void requestKeyboard() {
     if (_hasFocus) {
       openConnectionIfNeeded();
@@ -668,65 +648,16 @@ class RawEditorState extends EditorState
   @override
   void setTextEditingValue(
       TextEditingValue value, SelectionChangedCause cause) {
-    if (value.text == textEditingValue.text) {
-      widget.controller.updateSelection(value.selection, ChangeSource.LOCAL);
-    } else {
-      _setEditingValue(value);
+    if (value == textEditingValue) {
+      return;
     }
+    textEditingValue = value;
+    userUpdateTextEditingValue(value, cause);
   }
 
-  // set editing value from clipboard for mobile
-  Future<void> _setEditingValue(TextEditingValue value) async {
-    if (await _isItCut(value)) {
-      widget.controller.replaceText(
-        textEditingValue.selection.start,
-        textEditingValue.text.length - value.text.length,
-        '',
-        value.selection,
-      );
-    } else {
-      final value = textEditingValue;
-      final data = await Clipboard.getData(Clipboard.kTextPlain);
-      if (data != null) {
-        final length =
-            textEditingValue.selection.end - textEditingValue.selection.start;
-        var str = data.text!;
-        final codes = data.text!.codeUnits;
-        // For clip from editor, it may contain image, a.k.a 65532.
-        // For clip from browser, image is directly ignore.
-        // Here we skip image when pasting.
-        if (codes.contains(65532)) {
-          final sb = StringBuffer();
-          for (var i = 0; i < str.length; i++) {
-            if (str.codeUnitAt(i) == 65532) {
-              continue;
-            }
-            sb.write(str[i]);
-          }
-          str = sb.toString();
-        }
-        widget.controller.replaceText(
-          value.selection.start,
-          length,
-          str,
-          value.selection,
-        );
-        // move cursor to the end of pasted text selection
-        widget.controller.updateSelection(
-            TextSelection.collapsed(
-                offset: value.selection.start + data.text!.length),
-            ChangeSource.LOCAL);
-      }
-    }
-  }
-
-  Future<bool> _isItCut(TextEditingValue value) async {
-    final data = await Clipboard.getData(Clipboard.kTextPlain);
-    if (data == null) {
-      return false;
-    }
-    return textEditingValue.text.length - value.text.length ==
-        data.text!.length;
+  @override
+  void debugAssertLayoutUpToDate() {
+    getRenderEditor()!.debugAssertLayoutUpToDate();
   }
 
   @override
@@ -748,10 +679,78 @@ class RawEditorState extends EditorState
   }
 
   @override
+  void copySelection(SelectionChangedCause cause) {
+    // Copied straight from EditableTextState
+    super.copySelection(cause);
+    if (cause == SelectionChangedCause.toolbar) {
+      bringIntoView(textEditingValue.selection.extent);
+      hideToolbar(false);
+
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.iOS:
+          break;
+        case TargetPlatform.macOS:
+        case TargetPlatform.android:
+        case TargetPlatform.fuchsia:
+        case TargetPlatform.linux:
+        case TargetPlatform.windows:
+          // Collapse the selection and hide the toolbar and handles.
+          userUpdateTextEditingValue(
+            TextEditingValue(
+              text: textEditingValue.text,
+              selection: TextSelection.collapsed(
+                  offset: textEditingValue.selection.end),
+            ),
+            SelectionChangedCause.toolbar,
+          );
+          break;
+      }
+    }
+  }
+
+  @override
+  void cutSelection(SelectionChangedCause cause) {
+    // Copied straight from EditableTextState
+    super.cutSelection(cause);
+    if (cause == SelectionChangedCause.toolbar) {
+      bringIntoView(textEditingValue.selection.extent);
+      hideToolbar();
+    }
+  }
+
+  @override
+  Future<void> pasteText(SelectionChangedCause cause) async {
+    // Copied straight from EditableTextState
+    super.pasteText(cause); // ignore: unawaited_futures
+    if (cause == SelectionChangedCause.toolbar) {
+      bringIntoView(textEditingValue.selection.extent);
+      hideToolbar();
+    }
+  }
+
+  @override
+  void selectAll(SelectionChangedCause cause) {
+    // Copied straight from EditableTextState
+    super.selectAll(cause);
+    if (cause == SelectionChangedCause.toolbar) {
+      bringIntoView(textEditingValue.selection.extent);
+    }
+  }
+
+  @override
   bool get wantKeepAlive => widget.focusNode.hasFocus;
 
   @override
+  bool get obscureText => false;
+
+  @override
+  bool get selectionEnabled => widget.enableInteractiveSelection;
+
+  @override
   bool get readOnly => widget.readOnly;
+
+  @override
+  TextLayoutMetrics get textLayoutMetrics => getRenderEditor()!;
 
   @override
   AnimationController get floatingCursorResetController =>
