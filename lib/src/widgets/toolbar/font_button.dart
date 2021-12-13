@@ -104,6 +104,5 @@ class _FontButtonState extends State<FontButton> {
 
   void _onChanged(String? value) {
     widget.controller.formatSelection(FontAttribute(value));
-    Navigator.of(context).pop();
   }
 }

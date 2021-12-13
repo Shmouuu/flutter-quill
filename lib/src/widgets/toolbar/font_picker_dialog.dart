@@ -28,7 +28,7 @@ class YoutubeDialogState extends State<FontPickerDialog> {
             constraints: const BoxConstraints(maxWidth: 500, minWidth: 300),
             child: FontPicker(
               fontFamily: widget.fontFamily,
-              onChanged: widget.onChanged,
+              onChanged: _onChanged,
             ),
           ),
         ],
@@ -44,5 +44,10 @@ class YoutubeDialogState extends State<FontPickerDialog> {
 
   void _cancel() {
     Navigator.pop(context);
+  }
+
+  void _onChanged(String? value) {
+    Navigator.pop(context);
+    widget.onChanged(value);
   }
 }
