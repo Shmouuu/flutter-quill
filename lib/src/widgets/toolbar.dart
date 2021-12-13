@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/src/widgets/toolbar/font_button.dart';
 import 'package:i18n_extension/i18n_widget.dart';
 
 import '../models/documents/attribute.dart';
@@ -74,6 +75,7 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
     double toolbarSectionSpacing = 4,
     WrapAlignment toolbarIconAlignment = WrapAlignment.center,
     bool showDividers = true,
+    bool showFonts = true,
     bool showBoldButton = true,
     bool showItalicButton = true,
     bool showSmallButton = false,
@@ -173,6 +175,13 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
             iconSize: toolbarIconSize,
             controller: controller,
             undo: false,
+            iconTheme: iconTheme,
+          ),
+        if (showFonts)
+          FontButton(
+            icon: Icons.text_fields_outlined,
+            iconSize: toolbarIconSize,
+            controller: controller,
             iconTheme: iconTheme,
           ),
         if (showBoldButton)

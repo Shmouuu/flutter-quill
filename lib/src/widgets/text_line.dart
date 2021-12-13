@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tuple/tuple.dart';
 
 import '../models/documents/attribute.dart';
@@ -214,7 +215,10 @@ class TextLine extends StatelessWidget {
 
     final font = textNode.style.attributes[Attribute.font.key];
     if (font != null && font.value != null) {
-      res = res.merge(TextStyle(fontFamily: font.value));
+      final textStyle = GoogleFonts.asMap()[font.value]?.call();
+      if (textStyle != null) {
+        res = res.merge(textStyle);
+      }
     }
 
     final size = textNode.style.attributes[Attribute.size.key];
