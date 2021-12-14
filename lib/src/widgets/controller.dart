@@ -12,6 +12,10 @@ import '../utils/diff_delta.dart';
 
 typedef ReplaceTextCallback = bool Function(int index, int len, Object? data);
 typedef DeleteCallback = void Function(int cursorPosition, bool forward);
+typedef FormatCallback = void Function(
+  TextSelection selection,
+  Attribute? attribute,
+);
 
 class QuillController extends ChangeNotifier {
   QuillController({
@@ -20,6 +24,7 @@ class QuillController extends ChangeNotifier {
     bool keepStyleOnNewLine = false,
     this.onReplaceText,
     this.onDelete,
+    this.onFormat,
   })  : _selection = selection,
         _keepStyleOnNewLine = keepStyleOnNewLine;
 
@@ -47,6 +52,7 @@ class QuillController extends ChangeNotifier {
 
   /// Custom delete handler
   DeleteCallback? onDelete;
+  FormatCallback? onFormat;
 
   /// Store any styles attribute that got toggled by the tap of a button
   /// and that has not been applied yet.
@@ -223,6 +229,7 @@ class QuillController extends ChangeNotifier {
     if (selection != adjustedSelection) {
       _updateSelection(adjustedSelection, ChangeSource.LOCAL);
     }
+    onFormat?.call(adjustedSelection, attribute);
     notifyListeners();
   }
 
