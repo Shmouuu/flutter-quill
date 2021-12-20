@@ -160,6 +160,7 @@ class _QuillSimpleViewerState extends State<QuillSimpleViewer>
             scrollBottomInset: widget.scrollBottomInset,
             padding: widget.padding,
             cursorController: _cursorCont,
+            floatingCursorDisabled: true,
             children: _buildChildren(_doc, context)),
       ),
     );
@@ -320,6 +321,7 @@ class _SimpleViewer extends MultiChildRenderObjectWidget {
     required this.onSelectionChanged,
     required this.scrollBottomInset,
     required this.cursorController,
+    required this.floatingCursorDisabled,
     this.offset,
     this.padding = EdgeInsets.zero,
     Key? key,
@@ -334,24 +336,23 @@ class _SimpleViewer extends MultiChildRenderObjectWidget {
   final double scrollBottomInset;
   final EdgeInsetsGeometry padding;
   final CursorCont cursorController;
+  final bool floatingCursorDisabled;
 
   @override
   RenderEditor createRenderObject(BuildContext context) {
     return RenderEditor(
-        offset,
-        null,
-        textDirection,
-        scrollBottomInset,
-        padding,
-        document,
-        const TextSelection(baseOffset: 0, extentOffset: 0),
-        false,
-        // hasFocus,
-        onSelectionChanged,
-        startHandleLayerLink,
-        endHandleLayerLink,
-        const EdgeInsets.fromLTRB(4, 4, 4, 5),
-        cursorController);
+        offset: offset,
+        document: document,
+        textDirection: textDirection,
+        hasFocus: false,
+        selection: const TextSelection(baseOffset: 0, extentOffset: 0),
+        startHandleLayerLink: startHandleLayerLink,
+        endHandleLayerLink: endHandleLayerLink,
+        onSelectionChanged: onSelectionChanged,
+        cursorController: cursorController,
+        padding: padding,
+        scrollBottomInset: scrollBottomInset,
+        floatingCursorDisabled: floatingCursorDisabled);
   }
 
   @override

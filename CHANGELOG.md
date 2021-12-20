@@ -1,3 +1,27 @@
+## [2.5.1]
+* Bug fix for Desktop `Shift` + `Click` support.
+
+## [2.5.0]
+* Update checkbox list.
+
+## [2.4.1]
+* Desktop selection improvements.
+
+## [2.4.0]
+* Improve inline code style.
+
+## [2.3.3]
+* Improves selection rects to have consistent height regardless of individual segment text styles.
+
+## [2.3.2]
+* Allow disabling floating cursor.
+
+## [2.3.1]
+* Preserve last newline character on delete.
+
+## [2.3.0]
+* Massive changes to support flutter 2.8.
+
 ## [2.2.2]
 * iOS - floating cursor.
 

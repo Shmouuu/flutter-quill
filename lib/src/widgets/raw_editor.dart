@@ -30,42 +30,43 @@ import 'text_line.dart';
 import 'text_selection.dart';
 
 class RawEditor extends StatefulWidget {
-  const RawEditor({
-    required this.controller,
-    required this.focusNode,
-    required this.scrollController,
-    required this.scrollBottomInset,
-    required this.cursorStyle,
-    required this.selectionColor,
-    required this.selectionCtrls,
-    Key? key,
-    this.scrollable = true,
-    this.padding = EdgeInsets.zero,
-    this.readOnly = false,
-    this.placeholder,
-    this.onLaunchUrl,
-    this.toolbarOptions = const ToolbarOptions(
-      copy: true,
-      cut: true,
-      paste: true,
-      selectAll: true,
-    ),
-    this.showSelectionHandles = false,
-    bool? showCursor,
-    this.textCapitalization = TextCapitalization.none,
-    this.maxHeight,
-    this.minHeight,
-    this.customStyles,
-    this.expands = false,
-    this.autoFocus = false,
-    this.keyboardAppearance = Brightness.light,
-    this.enableInteractiveSelection = true,
-    this.scrollPhysics,
-    this.embedBuilder = defaultEmbedBuilder,
-    this.customStyleBuilder,
-    this.onPerformAction,
-    this.numberedPointStart,
-  })  : assert(maxHeight == null || maxHeight > 0, 'maxHeight cannot be null'),
+  const RawEditor(
+      {required this.controller,
+      required this.focusNode,
+      required this.scrollController,
+      required this.scrollBottomInset,
+      required this.cursorStyle,
+      required this.selectionColor,
+      required this.selectionCtrls,
+      Key? key,
+      this.scrollable = true,
+      this.padding = EdgeInsets.zero,
+      this.readOnly = false,
+      this.placeholder,
+      this.onLaunchUrl,
+      this.toolbarOptions = const ToolbarOptions(
+        copy: true,
+        cut: true,
+        paste: true,
+        selectAll: true,
+      ),
+      this.showSelectionHandles = false,
+      bool? showCursor,
+      this.textCapitalization = TextCapitalization.none,
+      this.maxHeight,
+      this.minHeight,
+      this.customStyles,
+      this.expands = false,
+      this.autoFocus = false,
+      this.keyboardAppearance = Brightness.light,
+      this.enableInteractiveSelection = true,
+      this.scrollPhysics,
+      this.embedBuilder = defaultEmbedBuilder,
+      this.customStyleBuilder,
+      this.onPerformAction,
+      this.numberedPointStart,
+      this.floatingCursorDisabled = false})
+      : assert(maxHeight == null || maxHeight > 0, 'maxHeight cannot be null'),
         assert(minHeight == null || minHeight >= 0, 'minHeight cannot be null'),
         assert(maxHeight == null || minHeight == null || maxHeight >= minHeight,
             'maxHeight cannot be null'),
@@ -99,6 +100,7 @@ class RawEditor extends StatefulWidget {
   final CustomStyleBuilder? customStyleBuilder;
   final ValueChanged<TextInputAction>? onPerformAction;
   final int? numberedPointStart;
+  final bool floatingCursorDisabled;
 
   @override
   State<StatefulWidget> createState() => RawEditorState();
@@ -179,6 +181,7 @@ class RawEditorState extends EditorState
           onSelectionChanged: _handleSelectionChanged,
           scrollBottomInset: widget.scrollBottomInset,
           padding: widget.padding,
+          floatingCursorDisabled: widget.floatingCursorDisabled,
           children: _buildChildren(_doc, context),
         ),
       ),
@@ -208,6 +211,7 @@ class RawEditorState extends EditorState
               scrollBottomInset: widget.scrollBottomInset,
               padding: widget.padding,
               cursorController: _cursorCont,
+              floatingCursorDisabled: widget.floatingCursorDisabled,
               children: _buildChildren(_doc, context),
             ),
           ),
@@ -235,12 +239,25 @@ class RawEditorState extends EditorState
 
   void _handleSelectionChanged(
       TextSelection selection, SelectionChangedCause cause) {
+    final oldSelection = widget.controller.selection;
     widget.controller.updateSelection(selection, ChangeSource.LOCAL);
 
     _selectionOverlay?.handlesVisible = _shouldShowSelectionHandles();
 
     if (!_keyboardVisible) {
+      // This will show the keyboard for all selection changes on the
+      // editor, not just changes triggered by user gestures.
       requestKeyboard();
+    }
+
+    if (cause == SelectionChangedCause.drag) {
+      // When user updates the selection while dragging make sure to
+      // bring the updated position (base or extent) into view.
+      if (oldSelection.baseOffset != selection.baseOffset) {
+        bringIntoView(selection.base);
+      } else if (oldSelection.extentOffset != selection.extentOffset) {
+        bringIntoView(selection.extent);
+      }
     }
   }
 
@@ -248,11 +265,8 @@ class RawEditorState extends EditorState
   /// by changing its attribute according to [value].
   void _handleCheckboxTap(int offset, bool value) {
     if (!widget.readOnly) {
-      if (value) {
-        widget.controller.formatText(offset, 0, Attribute.checked);
-      } else {
-        widget.controller.formatText(offset, 0, Attribute.unchecked);
-      }
+      widget.controller.formatText(
+          offset, 0, value ? Attribute.checked : Attribute.unchecked);
     }
   }
 
@@ -539,7 +553,7 @@ class RawEditorState extends EditorState
 
   void _updateOrDisposeSelectionOverlayIfNeeded() {
     if (_selectionOverlay != null) {
-      if (_hasFocus) {
+      if (_hasFocus && !textEditingValue.selection.isCollapsed) {
         _selectionOverlay!.update(textEditingValue);
       } else {
         _selectionOverlay!.dispose();
@@ -772,6 +786,7 @@ class _Editor extends MultiChildRenderObjectWidget {
     required this.onSelectionChanged,
     required this.scrollBottomInset,
     required this.cursorController,
+    required this.floatingCursorDisabled,
     this.padding = EdgeInsets.zero,
     this.offset,
   }) : super(key: key, children: children);
@@ -787,23 +802,23 @@ class _Editor extends MultiChildRenderObjectWidget {
   final double scrollBottomInset;
   final EdgeInsetsGeometry padding;
   final CursorCont cursorController;
+  final bool floatingCursorDisabled;
 
   @override
   RenderEditor createRenderObject(BuildContext context) {
     return RenderEditor(
-        offset,
-        null,
-        textDirection,
-        scrollBottomInset,
-        padding,
-        document,
-        selection,
-        hasFocus,
-        onSelectionChanged,
-        startHandleLayerLink,
-        endHandleLayerLink,
-        const EdgeInsets.fromLTRB(4, 4, 4, 5),
-        cursorController);
+        offset: offset,
+        document: document,
+        textDirection: textDirection,
+        hasFocus: hasFocus,
+        selection: selection,
+        startHandleLayerLink: startHandleLayerLink,
+        endHandleLayerLink: endHandleLayerLink,
+        onSelectionChanged: onSelectionChanged,
+        cursorController: cursorController,
+        padding: padding,
+        scrollBottomInset: scrollBottomInset,
+        floatingCursorDisabled: floatingCursorDisabled);
   }
 
   @override
