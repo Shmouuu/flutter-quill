@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/src/widgets/toolbar/font_button.dart';
 import 'package:i18n_extension/i18n_widget.dart';
 
 import '../models/documents/attribute.dart';
@@ -13,6 +12,7 @@ import 'toolbar/arrow_indicated_button_list.dart';
 import 'toolbar/camera_button.dart';
 import 'toolbar/clear_format_button.dart';
 import 'toolbar/color_button.dart';
+import 'toolbar/font_button.dart';
 import 'toolbar/history_button.dart';
 import 'toolbar/image_button.dart';
 import 'toolbar/indent_button.dart';

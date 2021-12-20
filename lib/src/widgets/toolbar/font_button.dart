@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/src/widgets/toolbar/font_picker_dialog.dart';
 
 import '../../models/documents/attribute.dart';
 import '../../models/documents/style.dart';
 import '../../models/themes/quill_icon_theme.dart';
 import '../controller.dart';
 import '../toolbar.dart';
+import 'font_picker_dialog.dart';
 
 /// Controls color styles.
 ///
