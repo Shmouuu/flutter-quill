@@ -30,39 +30,15 @@ class _CheckboxPointState extends State<CheckboxPoint> {
         onChanged: widget.onChanged,
       );
     }
-    final theme = Theme.of(context);
-    final fillColor = widget.value
-        ? (widget.enabled
-            ? theme.colorScheme.primary
-            : theme.colorScheme.onSurface.withOpacity(0.5))
-        : theme.colorScheme.surface;
-    final borderColor = widget.value
-        ? (widget.enabled
-            ? theme.colorScheme.primary
-            : theme.colorScheme.onSurface.withOpacity(0))
-        : (widget.enabled
-            ? theme.colorScheme.onSurface.withOpacity(0.5)
-            : theme.colorScheme.onSurface.withOpacity(0.3));
     return Center(
       child: SizedBox(
         width: widget.size,
         height: widget.size,
-        child: Material(
-          color: fillColor,
-          shape: RoundedRectangleBorder(
-            side: BorderSide(
-              color: borderColor,
-            ),
-            borderRadius: BorderRadius.circular(2),
-          ),
-          child: InkWell(
-            onTap:
-                widget.enabled ? () => widget.onChanged(!widget.value) : null,
-            child: widget.value
-                ? Icon(Icons.check,
-                    size: widget.size, color: theme.colorScheme.onPrimary)
-                : null,
-          ),
+        child: Checkbox(
+          onChanged: widget.enabled
+              ? (value) => widget.onChanged(!widget.value)
+              : null,
+          value: widget.value,
         ),
       ),
     );
