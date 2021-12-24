@@ -9,9 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:string_validator/string_validator.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../models/documents/attribute.dart';
 import '../models/documents/document.dart';
 import '../models/documents/nodes/container.dart' as container_node;
 import '../models/documents/nodes/embed.dart';
@@ -25,6 +23,7 @@ import 'default_styles.dart';
 import 'delegate.dart';
 import 'float_cursor.dart';
 import 'image.dart';
+import 'link.dart';
 import 'raw_editor.dart';
 import 'text_selection.dart';
 import 'video_app.dart';
@@ -246,6 +245,7 @@ class QuillEditor extends StatefulWidget {
       this.onSingleLongTapMoveUpdate,
       this.onSingleLongTapEnd,
       this.embedBuilder = defaultEmbedBuilder,
+      this.linkActionPickerDelegate = defaultLinkActionPickerDelegate,
       this.customStyleBuilder,
       this.onPerformAction,
       this.numberedPointStart,
@@ -320,6 +320,21 @@ class QuillEditor extends StatefulWidget {
   final EmbedBuilder embedBuilder;
   final CustomStyleBuilder? customStyleBuilder;
   final ValueChanged<TextInputAction>? onPerformAction;
+
+  /// Delegate function responsible for showing menu with link actions on
+  /// mobile platforms (iOS, Android).
+  ///
+  /// The menu is triggered in editing mode ([readOnly] is set to `false`)
+  /// when the user long-presses a link-styled text segment.
+  ///
+  /// FlutterQuill provides default implementation which can be overridden by
+  /// this field to customize the user experience.
+  ///
+  /// By default on iOS the menu is displayed with [showCupertinoModalPopup]
+  /// which constructs an instance of [CupertinoActionSheet]. For Android,
+  /// the menu is displayed with [showModalBottomSheet] and a list of
+  /// Material [ListTile]s.
+  final LinkActionPickerDelegate linkActionPickerDelegate;
 
   final bool floatingCursorDisabled;
 
@@ -425,6 +440,7 @@ class _QuillEditorState extends State<QuillEditor>
       enableInteractiveSelection: widget.enableInteractiveSelection,
       scrollPhysics: widget.scrollPhysics,
       embedBuilder: widget.embedBuilder,
+      linkActionPickerDelegate: widget.linkActionPickerDelegate,
       customStyleBuilder: widget.customStyleBuilder,
       numberedPointStart: widget.numberedPointStart,
       onPerformAction: widget.onPerformAction,
@@ -534,20 +550,6 @@ class _QuillEditorSelectionGestureDetectorBuilder
       return false;
     }
     final segment = segmentResult.node as leaf.Leaf;
-    if (segment.style.containsKey(Attribute.link.key)) {
-      var launchUrl = getEditor()!.widget.onLaunchUrl;
-      launchUrl ??= _launchUrl;
-      String? link = segment.style.attributes[Attribute.link.key]!.value;
-      if (/*getEditor()!.widget.readOnly &&*/ link != null) {
-        link = link.trim();
-        if (!linkPrefixes
-            .any((linkPrefix) => link!.toLowerCase().startsWith(linkPrefix))) {
-          link = 'https://$link';
-        }
-        launchUrl(link);
-      }
-      return false;
-    }
     if (getEditor()!.widget.readOnly && segment.value is BlockEmbed) {
       final blockEmbed = segment.value as BlockEmbed;
       if (blockEmbed.type == 'image') {
@@ -569,10 +571,6 @@ class _QuillEditorSelectionGestureDetectorBuilder
     }
 
     return false;
-  }
-
-  Future<void> _launchUrl(String url) async {
-    await launch(url);
   }
 
   @override

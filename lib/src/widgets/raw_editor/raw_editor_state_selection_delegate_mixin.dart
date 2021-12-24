@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import '../../../utils/diff_delta.dart';
 
+import '../../../utils/diff_delta.dart';
 import '../editor.dart';
 
 mixin RawEditorStateSelectionDelegateMixin on EditorState
@@ -19,8 +19,28 @@ mixin RawEditorStateSelectionDelegateMixin on EditorState
     final oldText = widget.controller.document.toPlainText();
     final newText = value.text;
     final diff = getDiff(oldText, newText, cursorPosition);
+    final insertedText = _adjustInsertedText(diff.inserted);
+
     widget.controller.replaceText(
-        diff.start, diff.deleted.length, diff.inserted, value.selection);
+        diff.start, diff.deleted.length, insertedText, value.selection);
+  }
+
+  String _adjustInsertedText(String text) {
+    // For clip from editor, it may contain image, a.k.a 65532.
+    // For clip from browser, image is directly ignore.
+    // Here we skip image when pasting.
+    if (!text.codeUnits.contains(65532)) {
+      return text;
+    }
+
+    final sb = StringBuffer();
+    for (var i = 0; i < text.length; i++) {
+      if (text.codeUnitAt(i) == 65532) {
+        continue;
+      }
+      sb.write(text[i]);
+    }
+    return sb.toString();
   }
 
   @override
