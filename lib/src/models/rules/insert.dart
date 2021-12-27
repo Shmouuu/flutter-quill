@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:tuple/tuple.dart';
 
 import '../documents/attribute.dart';
@@ -294,33 +296,83 @@ class AutoFormatLinksRule extends InsertRule {
   @override
   Delta? applyRule(Delta document, int index,
       {int? len, Object? data, Attribute? attribute}) {
-    if (data is! String || data != ' ') {
+    if (data is! String) {
       return null;
     }
 
-    final itr = DeltaIterator(document);
-    final prev = itr.skip(index);
-    if (prev == null || prev.data is! String) {
-      return null;
+    final afterDelta = document.compose(Delta()
+      ..retain(index)
+      ..insert(data));
+
+    var start = index;
+    Operation? op;
+    for (var cursor = index; cursor >= 0; cursor -= op.length!) {
+      op = DeltaIterator(afterDelta).skip(cursor);
+      if (op == null) {
+        start = 0;
+        break;
+      }
+      final lineBreak = (op.data is String ? op.data as String? : '')!
+          .lastIndexOf(RegExp('[\\s\n]'));
+      if (lineBreak >= 0) {
+        start = cursor - (op.length ?? 0) + lineBreak + 1;
+        break;
+      }
+    }
+
+    final itr = DeltaIterator(afterDelta)..skip(index);
+    int? end;
+    final inputLinkEnd = data.indexOf(RegExp('[\\s\n]'));
+    if (inputLinkEnd >= 0) {
+      end = index + inputLinkEnd;
+    }
+
+    if (end == null) {
+      for (var skipped = 0; itr.hasNext; skipped += op.length!) {
+        op = itr.next();
+        final lineBreak = (op.data is String ? op.data as String? : '')!
+            .indexOf(RegExp('[\\s\n]'));
+        if (lineBreak >= 0) {
+          end = index + skipped + lineBreak;
+          break;
+        }
+      }
+    }
+
+    final iterator = DeltaIterator(afterDelta)..skip(start);
+    var candidate = '';
+    final candidateLength = end! - start;
+    for (var skipped = 0;
+        iterator.hasNext && skipped <= candidateLength;
+        skipped += op.length!) {
+      op = iterator.next();
+      final line = op.data is String ? op.data as String? ?? '' : '';
+      final remaining = min(candidateLength, skipped + line.length) - skipped;
+      if (remaining >= line.length) {
+        candidate += line;
+      } else {
+        candidate += line.substring(0, remaining);
+      }
     }
 
     try {
-      final cand = (prev.data as String).split('\n').last.split(' ').last;
-      final link = Uri.parse(cand);
+      final link = Uri.parse(candidate);
       if (!['https', 'http'].contains(link.scheme)) {
         return null;
       }
-      final attributes = prev.attributes ?? <String, dynamic>{};
-
-      if (attributes.containsKey(Attribute.link.key)) {
-        return null;
-      }
-
-      attributes.addAll(LinkAttribute(link.toString()).toJson());
+      final attributes = (DeltaIterator(document).skip(index)?.attributes ??
+          <String, dynamic>{})
+        ..addAll(LinkAttribute(link.toString()).toJson());
       return Delta()
-        ..retain(index + (len ?? 0) - cand.length)
-        ..retain(cand.length, attributes)
-        ..insert(data, prev.attributes);
+        ..retain(start)
+        ..retain(index - start, attributes)
+        ..insert(
+            data.substring(0, inputLinkEnd >= 0 ? inputLinkEnd : data.length),
+            attributes)
+        ..insert(
+            inputLinkEnd < 0 ? '' : data.substring(inputLinkEnd, data.length))
+        ..retain(max(0, document.length - (index + data.length)),
+            inputLinkEnd < 0 ? attributes : null);
     } on FormatException {
       return null;
     }
