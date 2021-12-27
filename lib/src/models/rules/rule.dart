@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 import '../documents/attribute.dart';
 import '../documents/document.dart';
 import '../quill_delta.dart';
@@ -33,28 +35,38 @@ class Rules {
   List<Rule> _customRules = [];
 
   final List<Rule> _rules;
+
   static Rules _newInstance() => Rules([
-    const FormatLinkAtCaretPositionRule(),
-    const ResolveLineFormatRule(),
-    const ResolveInlineFormatRule(),
-    const InsertEmbedsRule(),
-    const AutoExitBlockRule(),
-    const PreserveBlockStyleOnInsertRule(),
-    const PreserveLineStyleOnSplitRule(),
-    const ResetLineFormatOnNewLineRule(),
-    const AutoFormatLinksRule(),
-    const PreserveInlineStylesRule(),
-    const CatchAllInsertRule(),
-    const EnsureEmbedLineRule(),
-    const PreserveLineStyleOnMergeRule(),
-    const CatchAllDeleteRule(),
-    const EnsureLastLineBreakDeleteRule()
-  ]);
+        const FormatLinkAtCaretPositionRule(),
+        const ResolveLineFormatRule(),
+        const ResolveInlineFormatRule(),
+        const InsertEmbedsRule(),
+        const AutoExitBlockRule(),
+        const PreserveBlockStyleOnInsertRule(),
+        const PreserveLineStyleOnSplitRule(),
+        const ResetLineFormatOnNewLineRule(),
+        AutoFormatLinksRule(),
+        const PreserveInlineStylesRule(),
+        const CatchAllInsertRule(),
+        const EnsureEmbedLineRule(),
+        const PreserveLineStyleOnMergeRule(),
+        const CatchAllDeleteRule(),
+        const EnsureLastLineBreakDeleteRule()
+      ]);
 
   static Rules getInstance() => _newInstance();
 
   void setCustomRules(List<Rule> customRules) {
     _customRules = customRules;
+  }
+
+  void onLinkInserted(ValueChanged<Uri> onLinkInserted) {
+    for (final rule in _rules) {
+      if (rule is AutoFormatLinksRule) {
+        rule.onLinkInserted = onLinkInserted;
+        break;
+      }
+    }
   }
 
   Delta apply(RuleType ruleType, Document document, int index,

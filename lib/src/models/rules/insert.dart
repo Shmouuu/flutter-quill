@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:tuple/tuple.dart';
 
 import '../documents/attribute.dart';
@@ -86,7 +87,7 @@ class PreserveBlockStyleOnInsertRule extends InsertRule {
     // Look for the next newline.
     final nextNewLine = _getNextNewLine(itr);
     final lineStyle =
-        Style.fromJson(nextNewLine.item1?.attributes ?? <String, dynamic>{});
+    Style.fromJson(nextNewLine.item1?.attributes ?? <String, dynamic>{});
 
     final blockStyle = lineStyle.getBlocksExceptHeader();
     // Are we currently in a block? If not then ignore.
@@ -196,7 +197,7 @@ class AutoExitBlockRule extends InsertRule {
     // therefore we can exit this block.
     final attributes = cur.attributes ?? <String, dynamic>{};
     final k =
-        attributes.keys.firstWhere(Attribute.blockKeysExceptHeader.contains);
+    attributes.keys.firstWhere(Attribute.blockKeysExceptHeader.contains);
     attributes[k] = null;
     // retain(1) should be '\n', set it with no attribute
     return Delta()
@@ -291,15 +292,23 @@ class InsertEmbedsRule extends InsertRule {
 /// Applies link format to text segment (which looks like a link) when user
 /// inserts space character after it.
 class AutoFormatLinksRule extends InsertRule {
-  const AutoFormatLinksRule();
+  AutoFormatLinksRule();
 
   static final RegExp _linkBreak = RegExp('[\\s\n]');
+  ValueChanged<Uri>? onLinkInserted;
 
   @override
   Delta? applyRule(Delta document, int index,
       {int? len, Object? data, Attribute? attribute}) {
     if (data is! String) {
       return null;
+    }
+
+    if (document.length == 1 && document.first.value == '\n') {
+      final link = parseLink(data);
+      if (link != null) {
+        onLinkInserted?.call(link);
+      }
     }
 
     final afterDelta = document.compose(Delta()
@@ -336,7 +345,7 @@ class AutoFormatLinksRule extends InsertRule {
       for (var skipped = 0; itr.hasNext; skipped += op.length!) {
         op = itr.next();
         final lineBreak =
-            (op.data is String ? op.data as String? : '')!.indexOf(_linkBreak);
+        (op.data is String ? op.data as String? : '')!.indexOf(_linkBreak);
         if (lineBreak >= 0) {
           end = index + skipped + lineBreak;
           break;
@@ -349,8 +358,8 @@ class AutoFormatLinksRule extends InsertRule {
     var candidate = '';
     final candidateLength = end! - start;
     for (var skipped = 0;
-        iterator.hasNext && skipped <= candidateLength;
-        skipped += op.length!) {
+    iterator.hasNext && skipped <= candidateLength;
+    skipped += op.length!) {
       op = iterator.next();
       final line = op.data is String ? op.data as String? ?? '' : '';
       final remaining = min(candidateLength, skipped + line.length) - skipped;
@@ -363,8 +372,8 @@ class AutoFormatLinksRule extends InsertRule {
 
     try {
       // Parse the link and format if needed
-      final link = Uri.parse(candidate);
-      if (!['https', 'http'].contains(link.scheme)) {
+      final link = parseLink(candidate);
+      if (link == null) {
         return null;
       }
       final attributes = (DeltaIterator(document).skip(index)?.attributes ??
@@ -383,6 +392,11 @@ class AutoFormatLinksRule extends InsertRule {
     } on FormatException {
       return null;
     }
+  }
+
+  Uri? parseLink(String candidate) {
+    final link = Uri.parse(candidate);
+    return ['https', 'http'].contains(link.scheme) ? link : null;
   }
 }
 
@@ -450,7 +464,7 @@ Tuple2<Operation?, int?> _getNextNewLine(DeltaIterator iterator) {
   for (var skipped = 0; iterator.hasNext; skipped += op.length!) {
     op = iterator.next();
     final lineBreak =
-        (op.data is String ? op.data as String? : '')!.indexOf('\n');
+    (op.data is String ? op.data as String? : '')!.indexOf('\n');
     if (lineBreak >= 0) {
       return Tuple2(op, skipped);
     }
