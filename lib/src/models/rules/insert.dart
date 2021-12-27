@@ -293,6 +293,8 @@ class InsertEmbedsRule extends InsertRule {
 class AutoFormatLinksRule extends InsertRule {
   const AutoFormatLinksRule();
 
+  static final RegExp _linkBreak = RegExp('[\\s\n]');
+
   @override
   Delta? applyRule(Delta document, int index,
       {int? len, Object? data, Attribute? attribute}) {
@@ -304,6 +306,7 @@ class AutoFormatLinksRule extends InsertRule {
       ..retain(index)
       ..insert(data));
 
+    // Find the start of the candidate
     var start = index;
     Operation? op;
     for (var cursor = index; cursor >= 0; cursor -= op.length!) {
@@ -313,25 +316,27 @@ class AutoFormatLinksRule extends InsertRule {
         break;
       }
       final lineBreak = (op.data is String ? op.data as String? : '')!
-          .lastIndexOf(RegExp('[\\s\n]'));
+          .lastIndexOf(_linkBreak);
       if (lineBreak >= 0) {
         start = cursor - (op.length ?? 0) + lineBreak + 1;
         break;
       }
     }
 
+    // Check if the current insert is breaking the candidate
     final itr = DeltaIterator(afterDelta)..skip(index);
     int? end;
-    final inputLinkEnd = data.indexOf(RegExp('[\\s\n]'));
+    final inputLinkEnd = data.indexOf(_linkBreak);
     if (inputLinkEnd >= 0) {
       end = index + inputLinkEnd;
     }
 
+    // Find the end of the candidate
     if (end == null) {
       for (var skipped = 0; itr.hasNext; skipped += op.length!) {
         op = itr.next();
-        final lineBreak = (op.data is String ? op.data as String? : '')!
-            .indexOf(RegExp('[\\s\n]'));
+        final lineBreak =
+            (op.data is String ? op.data as String? : '')!.indexOf(_linkBreak);
         if (lineBreak >= 0) {
           end = index + skipped + lineBreak;
           break;
@@ -339,6 +344,7 @@ class AutoFormatLinksRule extends InsertRule {
       }
     }
 
+    // Resolve the candidate using start and end position
     final iterator = DeltaIterator(afterDelta)..skip(start);
     var candidate = '';
     final candidateLength = end! - start;
@@ -356,6 +362,7 @@ class AutoFormatLinksRule extends InsertRule {
     }
 
     try {
+      // Parse the link and format if needed
       final link = Uri.parse(candidate);
       if (!['https', 'http'].contains(link.scheme)) {
         return null;
