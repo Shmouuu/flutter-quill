@@ -4,7 +4,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
@@ -434,7 +433,7 @@ class RawEditorState extends EditorState
           _keyboardVisibilityController?.onChange.listen((visible) {
         _keyboardVisible = visible;
         if (visible) {
-          _onChangeTextEditingValue();
+          _onChangeTextEditingValue(!_hasFocus);
         }
       });
     }
@@ -526,7 +525,7 @@ class RawEditorState extends EditorState
   }
 
   void _updateSelectionOverlayForScroll() {
-    _selectionOverlay?.markNeedsBuild();
+    _selectionOverlay?.updateForScroll();
   }
 
   void _didChangeTextEditingValue([bool ignoreFocus = false]) {
@@ -560,11 +559,19 @@ class RawEditorState extends EditorState
     _cursorCont.startOrStopCursorTimerIfNeeded(
         _hasFocus, widget.controller.selection);
     if (hasConnection) {
+      // To keep the cursor from blinking while typing, we want to restart the
+      // cursor timer every time a new character is typed.
       _cursorCont
         ..stopCursorTimer(resetCharTicks: false)
         ..startCursorTimer();
     }
 
+    // Refresh selection overlay after the build step had a chance to
+    // update and register all children of RenderEditor. Otherwise this will
+    // fail in situations where a new line of text is entered, which adds
+    // a new RenderEditableBox child. If we try to update selection overlay
+    // immediately it'll not be able to find the new child since it hasn't been
+    // built yet.
     SchedulerBinding.instance!.addPostFrameCallback((_) {
       if (!mounted) {
         return;
@@ -592,19 +599,16 @@ class RawEditorState extends EditorState
       _selectionOverlay = null;
 
       _selectionOverlay = EditorTextSelectionOverlay(
-        textEditingValue,
-        false,
-        context,
-        widget,
-        _toolbarLayerLink,
-        _startHandleLayerLink,
-        _endHandleLayerLink,
-        getRenderEditor(),
-        widget.selectionCtrls,
-        this,
-        DragStartBehavior.start,
-        null,
-        _clipboardStatus,
+        value: textEditingValue,
+        context: context,
+        debugRequiredFor: widget,
+        toolbarLayerLink: _toolbarLayerLink,
+        startHandleLayerLink: _startHandleLayerLink,
+        endHandleLayerLink: _endHandleLayerLink,
+        renderObject: getRenderEditor(),
+        selectionCtrls: widget.selectionCtrls,
+        selectionDelegate: this,
+        clipboardStatus: _clipboardStatus,
       );
       _selectionOverlay!.handlesVisible = _shouldShowSelectionHandles();
       _selectionOverlay!.showHandles();
@@ -707,6 +711,10 @@ class RawEditorState extends EditorState
     getRenderEditor()!.debugAssertLayoutUpToDate();
   }
 
+  /// Shows the selection toolbar at the location of the current cursor.
+  ///
+  /// Returns `false` if a toolbar couldn't be shown, such as when the toolbar
+  /// is already shown, or when no text selection currently exists.
   @override
   bool showToolbar() {
     // Web is using native dom elements to enable clipboard functionality of the
