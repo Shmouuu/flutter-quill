@@ -26,12 +26,13 @@ typedef LinkActionPickerDelegate = Future<LinkMenuAction> Function(
     BuildContext context, String link);
 
 Future<LinkMenuAction> defaultLinkActionPickerDelegate(
-    BuildContext context, String link) async {
+    BuildContext context, String link,
+    {bool showDelete = true}) async {
   switch (defaultTargetPlatform) {
     case TargetPlatform.iOS:
-      return _showCupertinoLinkMenu(context, link);
+      return _showCupertinoLinkMenu(context, link, showDelete);
     case TargetPlatform.android:
-      return _showMaterialMenu(context, link);
+      return _showMaterialMenu(context, link, showDelete);
     default:
       assert(
           false,
@@ -42,7 +43,7 @@ Future<LinkMenuAction> defaultLinkActionPickerDelegate(
 }
 
 Future<LinkMenuAction> _showCupertinoLinkMenu(
-    BuildContext context, String link) async {
+    BuildContext context, String link, bool showDelete) async {
   final result = await showCupertinoModalPopup<LinkMenuAction>(
     context: context,
     builder: (ctx) {
@@ -59,11 +60,12 @@ Future<LinkMenuAction> _showCupertinoLinkMenu(
             icon: Icons.copy_sharp,
             onPressed: () => Navigator.of(context).pop(LinkMenuAction.copy),
           ),
-          _CupertinoAction(
-            title: 'Remove',
-            icon: Icons.link_off_sharp,
-            onPressed: () => Navigator.of(context).pop(LinkMenuAction.remove),
-          ),
+          if (showDelete)
+            _CupertinoAction(
+              title: 'Remove',
+              icon: Icons.link_off_sharp,
+              onPressed: () => Navigator.of(context).pop(LinkMenuAction.remove),
+            ),
         ],
       );
     },
@@ -112,13 +114,17 @@ class _CupertinoAction extends StatelessWidget {
 }
 
 Future<LinkMenuAction> _showMaterialMenu(
-    BuildContext context, String link) async {
+    BuildContext context, String link, bool showDelete) async {
   final result = await showModalBottomSheet<LinkMenuAction>(
     context: context,
     builder: (ctx) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(link),
+          ),
           _MaterialAction(
             title: 'Open',
             icon: Icons.language_sharp,
@@ -129,11 +135,12 @@ Future<LinkMenuAction> _showMaterialMenu(
             icon: Icons.copy_sharp,
             onPressed: () => Navigator.of(context).pop(LinkMenuAction.copy),
           ),
-          _MaterialAction(
-            title: 'Remove',
-            icon: Icons.link_off_sharp,
-            onPressed: () => Navigator.of(context).pop(LinkMenuAction.remove),
-          ),
+          if (showDelete)
+            _MaterialAction(
+              title: 'Remove',
+              icon: Icons.link_off_sharp,
+              onPressed: () => Navigator.of(context).pop(LinkMenuAction.remove),
+            ),
         ],
       );
     },
