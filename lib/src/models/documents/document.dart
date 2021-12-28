@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
 import 'package:tuple/tuple.dart';
 
 import '../quill_delta.dart';
@@ -43,10 +42,6 @@ class Document {
 
   void setCustomRules(List<Rule> customRules) {
     _rules.setCustomRules(customRules);
-  }
-
-  void enableAutoFormatLink(ValueChanged<Uri> onLinkInserted) {
-    _rules.onLinkInserted(onLinkInserted);
   }
 
   final StreamController<Tuple3<Delta, Delta, ChangeSource>> _observer =

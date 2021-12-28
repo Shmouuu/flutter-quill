@@ -1,5 +1,3 @@
-import 'package:flutter/widgets.dart';
-
 import '../documents/attribute.dart';
 import '../documents/document.dart';
 import '../quill_delta.dart';
@@ -45,7 +43,6 @@ class Rules {
         const PreserveBlockStyleOnInsertRule(),
         const PreserveLineStyleOnSplitRule(),
         const ResetLineFormatOnNewLineRule(),
-        AutoFormatLinksRule(),
         const PreserveInlineStylesRule(),
         const CatchAllInsertRule(),
         const EnsureEmbedLineRule(),
@@ -58,15 +55,6 @@ class Rules {
 
   void setCustomRules(List<Rule> customRules) {
     _customRules = customRules;
-  }
-
-  void onLinkInserted(ValueChanged<Uri> onLinkInserted) {
-    for (final rule in _rules) {
-      if (rule is AutoFormatLinksRule) {
-        rule.onLinkInserted = onLinkInserted;
-        break;
-      }
-    }
   }
 
   Delta apply(RuleType ruleType, Document document, int index,

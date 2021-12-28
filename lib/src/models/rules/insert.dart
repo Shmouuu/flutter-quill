@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
 import 'package:tuple/tuple.dart';
 
 import '../documents/attribute.dart';
@@ -87,7 +84,7 @@ class PreserveBlockStyleOnInsertRule extends InsertRule {
     // Look for the next newline.
     final nextNewLine = _getNextNewLine(itr);
     final lineStyle =
-    Style.fromJson(nextNewLine.item1?.attributes ?? <String, dynamic>{});
+        Style.fromJson(nextNewLine.item1?.attributes ?? <String, dynamic>{});
 
     final blockStyle = lineStyle.getBlocksExceptHeader();
     // Are we currently in a block? If not then ignore.
@@ -197,7 +194,7 @@ class AutoExitBlockRule extends InsertRule {
     // therefore we can exit this block.
     final attributes = cur.attributes ?? <String, dynamic>{};
     final k =
-    attributes.keys.firstWhere(Attribute.blockKeysExceptHeader.contains);
+        attributes.keys.firstWhere(Attribute.blockKeysExceptHeader.contains);
     attributes[k] = null;
     // retain(1) should be '\n', set it with no attribute
     return Delta()
@@ -289,117 +286,6 @@ class InsertEmbedsRule extends InsertRule {
   }
 }
 
-/// Applies link format to text segment (which looks like a link) when user
-/// inserts space character after it.
-class AutoFormatLinksRule extends InsertRule {
-  AutoFormatLinksRule();
-
-  static final RegExp _linkBreak = RegExp('[\\s\n]');
-  ValueChanged<Uri>? onLinkInserted;
-
-  @override
-  Delta? applyRule(Delta document, int index,
-      {int? len, Object? data, Attribute? attribute}) {
-    if (data is! String) {
-      return null;
-    }
-
-    if (document.length == 1 && document.first.value == '\n') {
-      final link = parseLink(data);
-      if (link != null) {
-        onLinkInserted?.call(link);
-      }
-    }
-
-    final afterDelta = document.compose(Delta()
-      ..retain(index)
-      ..insert(data));
-
-    // Find the start of the candidate
-    var start = index;
-    Operation? op;
-    for (var cursor = index; cursor >= 0; cursor -= op.length!) {
-      op = DeltaIterator(afterDelta).skip(cursor);
-      if (op == null) {
-        start = 0;
-        break;
-      }
-      final lineBreak = (op.data is String ? op.data as String? : '')!
-          .lastIndexOf(_linkBreak);
-      if (lineBreak >= 0) {
-        start = cursor - (op.length ?? 0) + lineBreak + 1;
-        break;
-      }
-    }
-
-    // Check if the current insert is breaking the candidate
-    final itr = DeltaIterator(afterDelta)..skip(index);
-    int? end;
-    final inputLinkEnd = data.indexOf(_linkBreak);
-    if (inputLinkEnd >= 0) {
-      end = index + inputLinkEnd;
-    }
-
-    // Find the end of the candidate
-    if (end == null) {
-      for (var skipped = 0; itr.hasNext; skipped += op.length!) {
-        op = itr.next();
-        final lineBreak =
-        (op.data is String ? op.data as String? : '')!.indexOf(_linkBreak);
-        if (lineBreak >= 0) {
-          end = index + skipped + lineBreak;
-          break;
-        }
-      }
-    }
-
-    // Resolve the candidate using start and end position
-    final iterator = DeltaIterator(afterDelta)..skip(start);
-    var candidate = '';
-    final candidateLength = end! - start;
-    for (var skipped = 0;
-    iterator.hasNext && skipped <= candidateLength;
-    skipped += op.length!) {
-      op = iterator.next();
-      final line = op.data is String ? op.data as String? ?? '' : '';
-      final remaining = min(candidateLength, skipped + line.length) - skipped;
-      if (remaining >= line.length) {
-        candidate += line;
-      } else {
-        candidate += line.substring(0, remaining);
-      }
-    }
-
-    try {
-      // Parse the link and format if needed
-      final link = parseLink(candidate);
-      if (link == null) {
-        return null;
-      }
-      final attributes = (DeltaIterator(document).skip(index)?.attributes ??
-          <String, dynamic>{})
-        ..addAll(LinkAttribute(link.toString()).toJson());
-      return Delta()
-        ..retain(start)
-        ..retain(index - start, attributes)
-        ..insert(
-            data.substring(0, inputLinkEnd >= 0 ? inputLinkEnd : data.length),
-            attributes)
-        ..insert(
-            inputLinkEnd < 0 ? '' : data.substring(inputLinkEnd, data.length))
-        ..retain(max(0, document.length - (index + data.length)),
-            inputLinkEnd < 0 ? attributes : null);
-    } on FormatException {
-      return null;
-    }
-  }
-
-  Uri? parseLink(String candidate) {
-    final link = Uri.parse(candidate);
-    return ['https', 'http'].contains(link.scheme) ? link : null;
-  }
-}
-
 /// Preserves inline styles when user inserts text inside formatted segment.
 class PreserveInlineStylesRule extends InsertRule {
   const PreserveInlineStylesRule();
@@ -464,7 +350,7 @@ Tuple2<Operation?, int?> _getNextNewLine(DeltaIterator iterator) {
   for (var skipped = 0; iterator.hasNext; skipped += op.length!) {
     op = iterator.next();
     final lineBreak =
-    (op.data is String ? op.data as String? : '')!.indexOf('\n');
+        (op.data is String ? op.data as String? : '')!.indexOf('\n');
     if (lineBreak >= 0) {
       return Tuple2(op, skipped);
     }
