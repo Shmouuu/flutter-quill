@@ -46,6 +46,7 @@ class RawEditor extends StatefulWidget {
       this.readOnly = false,
       this.placeholder,
       this.onLaunchUrl,
+      this.onDgPageTapped,
       this.toolbarOptions = const ToolbarOptions(
         copy: true,
         cut: true,
@@ -95,6 +96,7 @@ class RawEditor extends StatefulWidget {
   /// Callback which is triggered when the user wants to open a URL from
   /// a link in the document.
   final ValueChanged<String>? onLaunchUrl;
+  final ValueChanged<String>? onDgPageTapped;
 
   /// Configuration of toolbar options.
   ///
@@ -344,6 +346,7 @@ class RawEditorState extends EditorState
       controller: widget.controller,
       linkActionPicker: _linkActionPicker,
       onLaunchUrl: widget.onLaunchUrl,
+      onDgPageTapped: widget.onDgPageTapped,
     );
     final editableTextLine = EditableTextLine(
         node,

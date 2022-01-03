@@ -65,6 +65,7 @@ class EditableTextBlock extends StatelessWidget {
       required this.readOnly,
       required this.numberedPointStart,
       this.onLaunchUrl,
+      this.onDgPageTapped,
       this.customStyleBuilder,
       Key? key});
 
@@ -82,6 +83,7 @@ class EditableTextBlock extends StatelessWidget {
   final EmbedBuilder embedBuilder;
   final LinkActionPicker linkActionPicker;
   final ValueChanged<String>? onLaunchUrl;
+  final ValueChanged<String>? onDgPageTapped;
   final CustomStyleBuilder? customStyleBuilder;
   final CursorCont cursorCont;
   final Map<int, int> indentLevelCounts;
@@ -137,6 +139,7 @@ class EditableTextBlock extends StatelessWidget {
             controller: controller,
             linkActionPicker: linkActionPicker,
             onLaunchUrl: onLaunchUrl,
+            onDgPageTapped: onDgPageTapped,
           ),
           _getIndentWidth(),
           _getSpacingForLine(line, index, count, defaultStyles),

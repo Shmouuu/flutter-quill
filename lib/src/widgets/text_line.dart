@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -33,6 +32,7 @@ class TextLine extends StatefulWidget {
     required this.readOnly,
     required this.controller,
     required this.onLaunchUrl,
+    required this.onDgPageTapped,
     required this.linkActionPicker,
     this.textDirection,
     this.customStyleBuilder,
@@ -47,6 +47,7 @@ class TextLine extends StatefulWidget {
   final QuillController controller;
   final CustomStyleBuilder? customStyleBuilder;
   final ValueChanged<String>? onLaunchUrl;
+  final ValueChanged<String>? onDgPageTapped;
   final LinkActionPicker linkActionPicker;
 
   @override
@@ -277,8 +278,10 @@ class _TextLineState extends State<TextLine> {
       DefaultStyles defaultStyles, Node node, Style lineStyle) {
     final textNode = node as leaf.Text;
     final nodeStyle = textNode.style;
-    final isLink = nodeStyle.containsKey(Attribute.link.key) &&
-        nodeStyle.attributes[Attribute.link.key]!.value != null;
+    final isLink = (nodeStyle.containsKey(Attribute.link.key) &&
+            nodeStyle.attributes[Attribute.link.key]!.value != null) ||
+        (nodeStyle.containsKey(Attribute.page.key) &&
+            nodeStyle.attributes[Attribute.page.key]!.value != null);
 
     return TextSpan(
       text: textNode.value,
@@ -321,6 +324,10 @@ class _TextLineState extends State<TextLine> {
 
     if (nodeStyle.containsKey(Attribute.inlineCode.key)) {
       res = _merge(res, defaultStyles.inlineCode!.styleFor(lineStyle));
+    }
+
+    if (nodeStyle.containsKey(Attribute.page.key)) {
+      res = _merge(res, defaultStyles.page!.styleFor(lineStyle));
     }
 
     final font = textNode.style.attributes[Attribute.font.key];
@@ -389,8 +396,8 @@ class _TextLineState extends State<TextLine> {
       _linkRecognizers[segment] = TapGestureRecognizer()
         ..onTap = () => _tapNodeLink(segment);
     } else {
-      _linkRecognizers[segment] = LongPressGestureRecognizer()
-        ..onLongPress = () => _longPressLink(segment);
+      _linkRecognizers[segment] = DoubleTapGestureRecognizer()
+        ..onDoubleTap = () => _tapNodeLink(segment);
     }
     return _linkRecognizers[segment]!;
   }
@@ -400,9 +407,19 @@ class _TextLineState extends State<TextLine> {
   }
 
   void _tapNodeLink(Node node) {
-    final link = node.style.attributes[Attribute.link.key]!.value;
+    if (node.style.attributes.containsKey(Attribute.link.key)) {
+      _tapLink(node.style.attributes[Attribute.link.key]!.value);
+    } else if (node.style.attributes.containsKey(Attribute.page.key)) {
+      _tapDgPage(node.style.attributes[Attribute.page.key]!.value);
+    }
+  }
 
-    _tapLink(link);
+  void _tapDgPage(String? pageId) {
+    if (pageId == null) {
+      return;
+    }
+
+    widget.onDgPageTapped?.call(pageId);
   }
 
   void _tapLink(String? link) {
@@ -421,7 +438,11 @@ class _TextLineState extends State<TextLine> {
     launchUrl(link);
   }
 
+/*
   Future<void> _longPressLink(Node node) async {
+    if (!node.style.attributes.containsKey(Attribute.link.key)) {
+      return;
+    }
     final link = node.style.attributes[Attribute.link.key]!.value!;
     final action = await widget.linkActionPicker(node);
     switch (action) {
@@ -441,6 +462,8 @@ class _TextLineState extends State<TextLine> {
         break;
     }
   }
+*/
+/*
 
   TextRange _getLinkRange(Node node) {
     var start = node.documentOffset;
@@ -468,6 +491,7 @@ class _TextLineState extends State<TextLine> {
     }
     return TextRange(start: start, end: start + length);
   }
+*/
 
   TextStyle _merge(TextStyle a, TextStyle b) {
     final decorations = <TextDecoration?>[];

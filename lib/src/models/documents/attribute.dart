@@ -40,6 +40,7 @@ class Attribute<T> {
     Attribute.style.key: Attribute.style,
     Attribute.token.key: Attribute.token,
     Attribute.script.key: Attribute.script,
+    Attribute.page.key: Attribute.page,
   });
 
   static final BoldAttribute bold = BoldAttribute();
@@ -87,6 +88,8 @@ class Attribute<T> {
   static final TokenAttribute token = TokenAttribute('');
 
   static final ScriptAttribute script = ScriptAttribute('');
+
+  static final PageAttribute page = PageAttribute('');
 
   static final Set<String> inlineKeys = {
     Attribute.bold.key,
@@ -321,4 +324,9 @@ class TokenAttribute extends Attribute<String> {
 // `script` is supposed to be inline attribute but it is not supported yet
 class ScriptAttribute extends Attribute<String> {
   ScriptAttribute(String val) : super('script', AttributeScope.IGNORE, val);
+}
+
+class PageAttribute extends Attribute<String> {
+  PageAttribute(String pageId)
+      : super('dg_page', AttributeScope.INLINE, pageId);
 }

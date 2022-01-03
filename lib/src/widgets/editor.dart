@@ -239,6 +239,7 @@ class QuillEditor extends StatefulWidget {
       this.keyboardAppearance = Brightness.light,
       this.scrollPhysics,
       this.onLaunchUrl,
+      this.onDgPageTapped,
       this.onTapDown,
       this.onTapUp,
       this.onSingleLongTapStart,
@@ -292,6 +293,7 @@ class QuillEditor extends StatefulWidget {
   final Brightness keyboardAppearance;
   final ScrollPhysics? scrollPhysics;
   final ValueChanged<String>? onLaunchUrl;
+  final ValueChanged<String>? onDgPageTapped;
   final EditorGestureListener? editorGestureListener;
   final int? numberedPointStart;
 
@@ -410,6 +412,7 @@ class _QuillEditorState extends State<QuillEditor>
       readOnly: widget.readOnly,
       placeholder: widget.placeholder,
       onLaunchUrl: widget.onLaunchUrl,
+      onDgPageTapped: widget.onDgPageTapped,
       toolbarOptions: ToolbarOptions(
         copy: widget.enableInteractiveSelection,
         cut: widget.enableInteractiveSelection,

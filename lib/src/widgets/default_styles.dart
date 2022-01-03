@@ -145,6 +145,7 @@ class DefaultStyles {
     this.strikeThrough,
     this.inlineCode,
     this.link,
+    this.page,
     this.color,
     this.placeHolder,
     this.lists,
@@ -174,6 +175,7 @@ class DefaultStyles {
   final TextStyle? sizeLarge; // 'large'
   final TextStyle? sizeHuge; // 'huge'
   final TextStyle? link;
+  final InlineCodeStyle? page;
   final Color? color;
   final DefaultTextBlockStyle? placeHolder;
   final DefaultListBlockStyle? lists;
@@ -268,6 +270,16 @@ class DefaultStyles {
         link: TextStyle(
           color: themeData.colorScheme.secondary,
           decoration: TextDecoration.underline,
+        ),
+        page:  InlineCodeStyle(
+          radius: const Radius.circular(3),
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.black87,
+            backgroundColor: Colors.red.shade500.withOpacity(0.4),
+            fontWeight: FontWeight.w600,
+            decoration: TextDecoration.underline,
+          ),
         ),
         placeHolder: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(

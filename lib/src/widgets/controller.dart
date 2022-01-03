@@ -233,6 +233,18 @@ class QuillController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearSelectionFormat() {
+    final attrs = <Attribute>{};
+    for (final style in getAllSelectionStyles()) {
+      for (final attr in style.attributes.values) {
+        attrs.add(attr);
+      }
+    }
+    for (final attr in attrs) {
+      formatSelection(Attribute.clone(attr, null));
+    }
+  }
+
   void formatSelection(Attribute? attribute) {
     formatText(selection.start, selection.end - selection.start, attribute);
   }
