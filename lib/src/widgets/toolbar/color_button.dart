@@ -18,6 +18,7 @@ class ColorButton extends StatefulWidget {
     required this.icon,
     required this.controller,
     required this.background,
+    required this.showTitle,
     this.iconSize = kDefaultIconSize,
     this.iconTheme,
     Key? key,
@@ -26,6 +27,7 @@ class ColorButton extends StatefulWidget {
   final IconData icon;
   final double iconSize;
   final bool background;
+  final bool showTitle;
   final QuillController controller;
   final QuillIconTheme? iconTheme;
 
@@ -143,7 +145,7 @@ class _ColorButtonState extends State<ColorButton> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Select Color'.i18n),
+        title: widget.showTitle ? Text('Select Color'.i18n) : null,
         backgroundColor: Theme.of(context).canvasColor,
         content: SingleChildScrollView(
           child: MaterialPicker(
