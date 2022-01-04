@@ -273,10 +273,9 @@ class DefaultStyles {
         ),
         page:  InlineCodeStyle(
           radius: const Radius.circular(3),
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 15,
             color: Colors.black87,
-            backgroundColor: Colors.red.shade500.withOpacity(0.4),
             fontWeight: FontWeight.w600,
             decoration: TextDecoration.underline,
           ),
