@@ -426,6 +426,7 @@ class RawEditorState extends EditorState
             indentLevelCounts: indentLevelCounts,
             onCheckboxTap: _handleCheckboxTap,
             readOnly: widget.readOnly,
+            onDgPageTapped: widget.onDgPageTapped,
             numberedPointStart: widget.numberedPointStart,
             customStyleBuilder: widget.customStyleBuilder);
         result.add(editableTextBlock);
