@@ -221,7 +221,7 @@ class DefaultStyles {
               fontSize: 34,
               color: defaultTextStyle.style.color!.withOpacity(0.70),
               height: 1.15,
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w600,
             ),
             const Tuple2(16, 0),
             const Tuple2(0, 0),
@@ -271,7 +271,7 @@ class DefaultStyles {
           color: themeData.colorScheme.secondary,
           decoration: TextDecoration.underline,
         ),
-        page:  InlineCodeStyle(
+        page: InlineCodeStyle(
           radius: const Radius.circular(3),
           style: const TextStyle(
             fontSize: 15,
