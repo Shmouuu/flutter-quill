@@ -30,6 +30,7 @@ class TextLine extends StatefulWidget {
     required this.embedBuilder,
     required this.styles,
     required this.readOnly,
+    required this.hasFocus,
     required this.controller,
     required this.onLaunchUrl,
     required this.onDgPageTapped,
@@ -44,6 +45,7 @@ class TextLine extends StatefulWidget {
   final EmbedBuilder embedBuilder;
   final DefaultStyles styles;
   final bool readOnly;
+  final bool hasFocus;
   final QuillController controller;
   final CustomStyleBuilder? customStyleBuilder;
   final ValueChanged<String>? onLaunchUrl;
@@ -80,6 +82,7 @@ class _TextLineState extends State<TextLine> {
       }.contains(defaultTargetPlatform);
 
   bool get canLaunchLinks {
+    if (widget.hasFocus) return false;
     // In readOnly mode users can launch links
     // by simply tapping (clicking) on them
     if (widget.readOnly) return true;
@@ -392,10 +395,10 @@ class _TextLineState extends State<TextLine> {
       return _linkRecognizers[segment]!;
     }
 
-    // if (isDesktop || widget.readOnly) {
-    _linkRecognizers[segment] = TapGestureRecognizer()
-      ..onTap = () => _tapNodeLink(segment);
-    // } else {
+    // if (/*isDesktop ||*/ widget.hasFocus) {
+      _linkRecognizers[segment] = TapGestureRecognizer()
+        ..onTap = () => _tapNodeLink(segment);
+    // } // else {
     //   _linkRecognizers[segment] = LongPressGestureRecognizer()
     //     ..onLongPress = () => _longPressLink(segment);
     // }

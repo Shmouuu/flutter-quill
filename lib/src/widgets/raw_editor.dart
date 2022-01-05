@@ -446,6 +446,7 @@ class RawEditorState extends EditorState
       customStyleBuilder: widget.customStyleBuilder,
       styles: _styles!,
       readOnly: widget.readOnly,
+      hasFocus: _hasFocus,
       controller: widget.controller,
       linkActionPicker: _linkActionPicker,
       onLaunchUrl: widget.onLaunchUrl,

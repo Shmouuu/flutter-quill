@@ -136,6 +136,7 @@ class EditableTextBlock extends StatelessWidget {
             customStyleBuilder: customStyleBuilder,
             styles: styles!,
             readOnly: readOnly,
+            hasFocus: hasFocus,
             controller: controller,
             linkActionPicker: linkActionPicker,
             onLaunchUrl: onLaunchUrl,
