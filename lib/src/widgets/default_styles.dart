@@ -282,11 +282,12 @@ class DefaultStyles {
         ),
         placeHolder: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
-              fontSize: 20,
-              height: 1.5,
+              fontSize: 34,
               color: Colors.grey.withOpacity(0.6),
+              height: 1.15,
+              fontWeight: FontWeight.w400,
             ),
-            const Tuple2(0, 0),
+            const Tuple2(16, 0),
             const Tuple2(0, 0),
             null),
         lists: DefaultListBlockStyle(

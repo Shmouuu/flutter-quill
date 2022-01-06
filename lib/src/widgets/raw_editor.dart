@@ -485,6 +485,10 @@ class RawEditorState extends EditorState
       }
     }
 
+    if (attrs.containsKey(Attribute.placeholder.key)) {
+      return defaultStyles!.placeHolder!.verticalSpacing;
+    }
+
     return defaultStyles!.paragraph!.verticalSpacing;
   }
 
