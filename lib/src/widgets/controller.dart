@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:tuple/tuple.dart';
@@ -318,5 +319,30 @@ class QuillController extends ChangeNotifier {
     _selection = selection.copyWith(
         baseOffset: math.min(selection.baseOffset, end),
         extentOffset: math.min(selection.extentOffset, end));
+  }
+
+  String? getCommandWord(String command) {
+    final _linkBreak = RegExp('[\\s\n]');
+    final input = plainTextEditingValue.text;
+    final before = input.substring(0, max(selection.baseOffset, 0));
+    final start = before.lastIndexOf(command);
+    if (start == -1) {
+      return null;
+    }
+    if (start > 0) {
+      if (input.substring(start - 1, start).trim().isNotEmpty) {
+        return null;
+      }
+    }
+    final after = input.substring(start);
+    var len = after.indexOf(_linkBreak);
+    if (len == -1) {
+      len = after.length;
+    }
+    final query = input.substring(start, start + len);
+    if (!query.startsWith(command)) {
+      return null;
+    }
+    return query.replaceAll(command, '');
   }
 }
