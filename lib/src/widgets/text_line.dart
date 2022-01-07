@@ -59,8 +59,6 @@ class TextLine extends StatefulWidget {
 class _TextLineState extends State<TextLine> {
   bool _metaOrControlPressed = false;
 
-  UniqueKey _richTextKey = UniqueKey();
-
   final _linkRecognizers = <Node, GestureRecognizer>{};
 
   QuillPressedKeys? _pressedKeys;
@@ -70,7 +68,6 @@ class _TextLineState extends State<TextLine> {
     if (_metaOrControlPressed != newValue) {
       setState(() {
         _metaOrControlPressed = newValue;
-        _richTextKey = UniqueKey();
       });
     }
   }
@@ -82,17 +79,17 @@ class _TextLineState extends State<TextLine> {
       }.contains(defaultTargetPlatform);
 
   bool get canLaunchLinks {
-    if (widget.hasFocus) return false;
     // In readOnly mode users can launch links
     // by simply tapping (clicking) on them
     if (widget.readOnly) return true;
 
+    if (widget.hasFocus && !isDesktop) return false;
     // In editing mode it depends on the platform:
 
     // Desktop platforms (macos, linux, windows):
     // only allow Meta(Control)+Click combinations
     if (isDesktop) {
-      return _metaOrControlPressed;
+      return _metaOrControlPressed || !widget.hasFocus;
     }
     // Mobile platforms (ios, android): always allow but we install a
     // long-press handler instead of a tap one. LongPress is followed by a
@@ -117,7 +114,6 @@ class _TextLineState extends State<TextLine> {
   void didUpdateWidget(covariant TextLine oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.readOnly != widget.readOnly) {
-      _richTextKey = UniqueKey();
       _linkRecognizers
         ..forEach((key, value) {
           value.dispose();
@@ -147,7 +143,7 @@ class _TextLineState extends State<TextLine> {
     final strutStyle = StrutStyle.fromTextStyle(textSpan.style!);
     final textAlign = _getTextAlign();
     final child = RichText(
-      key: _richTextKey,
+      key: UniqueKey(),
       text: textSpan,
       textAlign: textAlign,
       textDirection: widget.textDirection,
@@ -285,13 +281,13 @@ class _TextLineState extends State<TextLine> {
             nodeStyle.attributes[Attribute.link.key]!.value != null) ||
         (nodeStyle.containsKey(Attribute.page.key) &&
             nodeStyle.attributes[Attribute.page.key]!.value != null);
-
+    final clickable = isLink && canLaunchLinks;
     return TextSpan(
       text: textNode.value,
       style: _getInlineTextStyle(
           textNode, defaultStyles, nodeStyle, lineStyle, isLink),
-      recognizer: isLink && canLaunchLinks ? _getRecognizer(node) : null,
-      mouseCursor: isLink && canLaunchLinks ? SystemMouseCursors.click : null,
+      recognizer: clickable ? _getRecognizer(node) : null,
+      mouseCursor: clickable ? SystemMouseCursors.click : null,
     );
   }
 
@@ -396,8 +392,8 @@ class _TextLineState extends State<TextLine> {
     }
 
     // if (/*isDesktop ||*/ widget.hasFocus) {
-      _linkRecognizers[segment] = TapGestureRecognizer()
-        ..onTap = () => _tapNodeLink(segment);
+    _linkRecognizers[segment] = TapGestureRecognizer()
+      ..onTap = () => _tapNodeLink(segment);
     // } // else {
     //   _linkRecognizers[segment] = LongPressGestureRecognizer()
     //     ..onLongPress = () => _longPressLink(segment);
