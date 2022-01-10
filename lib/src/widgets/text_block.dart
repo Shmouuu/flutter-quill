@@ -67,6 +67,7 @@ class EditableTextBlock extends StatelessWidget {
       this.onLaunchUrl,
       this.onDgPageTapped,
       this.customStyleBuilder,
+      this.defaultFontFamily,
       Key? key});
 
   final Block block;
@@ -90,6 +91,7 @@ class EditableTextBlock extends StatelessWidget {
   final Function(int, bool) onCheckboxTap;
   final bool readOnly;
   final int? numberedPointStart;
+  final String? defaultFontFamily;
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +143,7 @@ class EditableTextBlock extends StatelessWidget {
             linkActionPicker: linkActionPicker,
             onLaunchUrl: onLaunchUrl,
             onDgPageTapped: onDgPageTapped,
+            defaultFontFamily: defaultFontFamily,
           ),
           _getIndentWidth(),
           _getSpacingForLine(line, index, count, defaultStyles),

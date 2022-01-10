@@ -36,6 +36,7 @@ class TextLine extends StatefulWidget {
     required this.onDgPageTapped,
     required this.linkActionPicker,
     this.textDirection,
+    this.defaultFontFamily,
     this.customStyleBuilder,
     Key? key,
   }) : super(key: key);
@@ -46,6 +47,7 @@ class TextLine extends StatefulWidget {
   final DefaultStyles styles;
   final bool readOnly;
   final bool hasFocus;
+  final String? defaultFontFamily;
   final QuillController controller;
   final CustomStyleBuilder? customStyleBuilder;
   final ValueChanged<String>? onLaunchUrl;
@@ -329,9 +331,10 @@ class _TextLineState extends State<TextLine> {
       res = _merge(res, defaultStyles.page!.styleFor(lineStyle));
     }
 
-    final font = textNode.style.attributes[Attribute.font.key];
-    if (font != null && font.value != null) {
-      final textStyle = GoogleFonts.asMap()[font.value]?.call();
+    final font = textNode.style.attributes[Attribute.font.key]?.value ??
+        widget.defaultFontFamily;
+    if (font != null) {
+      final textStyle = GoogleFonts.asMap()[font]?.call();
       if (textStyle != null) {
         res = res.merge(textStyle);
       }

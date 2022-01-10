@@ -27,7 +27,7 @@ dependencies:
   youtube_player_flutter: ^8.0.0
   diff_match_patch: ^0.4.1
   i18n_extension: ^4.1.3
-  google_fonts: ^2.1.0
+  google_fonts: ^2.2.0
   dropdown_search: ^2.0.1
 
 dev_dependencies:

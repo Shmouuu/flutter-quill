@@ -227,6 +227,7 @@ class QuillEditor extends StatefulWidget {
       required this.readOnly,
       required this.expands,
       this.showCursor,
+      this.defaultFontFamily,
       this.paintCursorAboveText,
       this.placeholder,
       this.enableInteractiveSelection = true,
@@ -322,6 +323,7 @@ class QuillEditor extends StatefulWidget {
   /// Defaults to `false`. Must not be `null`.
   final bool readOnly;
   final String? placeholder;
+  final String? defaultFontFamily;
 
   /// Whether to enable user interface affordances for changing the
   /// text selection.
@@ -552,6 +554,7 @@ class _QuillEditorState extends State<QuillEditor>
       numberedPointStart: widget.numberedPointStart,
       onPerformAction: widget.onPerformAction,
       floatingCursorDisabled: widget.floatingCursorDisabled,
+      defaultFontFamily: widget.defaultFontFamily,
     );
 
     return _selectionGestureDetectorBuilder.build(

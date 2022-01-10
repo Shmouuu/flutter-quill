@@ -70,6 +70,7 @@ class RawEditor extends StatefulWidget {
       this.customStyleBuilder,
       this.onPerformAction,
       this.numberedPointStart,
+      this.defaultFontFamily,
       this.floatingCursorDisabled = false})
       : assert(maxHeight == null || maxHeight > 0, 'maxHeight cannot be null'),
         assert(minHeight == null || minHeight >= 0, 'minHeight cannot be null'),
@@ -99,6 +100,7 @@ class RawEditor extends StatefulWidget {
   final bool readOnly;
 
   final String? placeholder;
+  final String? defaultFontFamily;
 
   /// Callback which is triggered when the user wants to open a URL from
   /// a link in the document.
@@ -428,6 +430,7 @@ class RawEditorState extends EditorState
             readOnly: widget.readOnly,
             onDgPageTapped: widget.onDgPageTapped,
             numberedPointStart: widget.numberedPointStart,
+            defaultFontFamily: widget.defaultFontFamily,
             customStyleBuilder: widget.customStyleBuilder);
         result.add(editableTextBlock);
       } else {
@@ -451,6 +454,7 @@ class RawEditorState extends EditorState
       linkActionPicker: _linkActionPicker,
       onLaunchUrl: widget.onLaunchUrl,
       onDgPageTapped: widget.onDgPageTapped,
+      defaultFontFamily: widget.defaultFontFamily,
     );
     final editableTextLine = EditableTextLine(
         node,
