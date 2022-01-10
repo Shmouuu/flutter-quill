@@ -343,6 +343,9 @@ class QuillController extends ChangeNotifier {
     if (!query.startsWith(command)) {
       return null;
     }
+    if (start + len < selection.baseOffset) {
+      return null;
+    }
     return query.replaceAll(command, '');
   }
 }
