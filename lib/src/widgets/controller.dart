@@ -107,6 +107,21 @@ class QuillController extends ChangeNotifier {
     }
   }
 
+  void newLine({bool keepFormat = true}) {
+    final style = getSelectionStyle();
+    replaceText(
+      selection.start,
+      selection.end - selection.start,
+      '\n',
+      TextSelection.collapsed(offset: selection.start + 1),
+    );
+    if (keepFormat) {
+      style.attributes.forEach((key, attr) {
+        formatSelection(attr);
+      });
+    }
+  }
+
   void _handleHistoryChange(int? len) {
     if (len! != 0) {
       // if (this.selection.extentOffset >= document.length) {
