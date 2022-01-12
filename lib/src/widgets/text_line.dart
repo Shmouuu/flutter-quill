@@ -223,10 +223,6 @@ class _TextLineState extends State<TextLine> {
   TextStyle _getLineStyle(DefaultStyles defaultStyles) {
     var textStyle = const TextStyle();
 
-    if (widget.line.style.containsKey(Attribute.placeholder.key)) {
-      return defaultStyles.placeHolder!.style;
-    }
-
     final header = widget.line.style.attributes[Attribute.header.key];
     final m = <Attribute, TextStyle>{
       Attribute.h1: defaultStyles.h1!.style,
@@ -235,6 +231,11 @@ class _TextLineState extends State<TextLine> {
     };
 
     textStyle = textStyle.merge(m[header] ?? defaultStyles.paragraph!.style);
+
+    if (widget.line.style.containsKey(Attribute.placeholder.key)) {
+      return defaultStyles.placeHolder!.style
+          .copyWith(fontSize: textStyle.fontSize);
+    }
 
     // Only retrieve exclusive block format for the line style purpose
     Attribute? block;

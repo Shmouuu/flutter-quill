@@ -286,8 +286,14 @@ class RawEditorState extends EditorState
 
     var _doc = widget.controller.document;
     if (_doc.isEmpty() && widget.placeholder != null) {
+      final attrs = _doc.toDelta().first.attributes;
       _doc = Document.fromJson(jsonDecode(
           '[{"attributes":{"placeholder":true},"insert":"${widget.placeholder}\\n"}]'));
+      attrs?.forEach((key, value) {
+        if (Attribute.blockKeys.contains(key)) {
+          _doc.format(0, 1, Attribute(key, AttributeScope.BLOCK, value));
+        }
+      });
     }
 
     Widget child = CompositedTransformTarget(
