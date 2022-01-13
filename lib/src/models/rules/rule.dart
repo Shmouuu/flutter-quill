@@ -35,20 +35,22 @@ class Rules {
   final List<Rule> _rules;
 
   static Rules _newInstance() => Rules([
-        const FormatLinkAtCaretPositionRule(),
-        const ResolveLineFormatRule(),
-        const ResolveInlineFormatRule(),
-        const InsertEmbedsRule(),
-        const AutoExitBlockRule(),
-        const PreserveBlockStyleOnInsertRule(),
-        const PreserveLineStyleOnSplitRule(),
-        const ResetLineFormatOnNewLineRule(),
-        const PreserveInlineStylesRule(),
-        const CatchAllInsertRule(),
-        const EnsureEmbedLineRule(),
-        const PreserveLineStyleOnMergeRule(),
-        const CatchAllDeleteRule(),
-        const EnsureLastLineBreakDeleteRule()
+    const FormatLinkAtCaretPositionRule(),
+    const ResolveLineFormatRule(),
+    const ResolveInlineFormatRule(),
+    const InsertEmbedsRule(),
+    const AutoExitBlockRule(),
+    const PreserveBlockStyleOnInsertRule(),
+    const PreserveLineStyleOnSplitRule(),
+    const ResetLineFormatOnNewLineRule(),
+    const AutoFormatLinksRule(),
+    const AutoFormatMultipleLinksRule(),
+    const PreserveInlineStylesRule(),
+    const CatchAllInsertRule(),
+    const EnsureEmbedLineRule(),
+    const PreserveLineStyleOnMergeRule(),
+    const CatchAllDeleteRule(),
+    const EnsureLastLineBreakDeleteRule()
       ]);
 
   static Rules getInstance() => _newInstance();

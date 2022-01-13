@@ -1,3 +1,12 @@
+# [3.2.0]
+* Support multiple links insertion on the go.
+
+# [3.1.1]
+* Add selection completed callback.
+
+# [3.1.0]
+* Fixed image ontap functionality.
+
 # [3.0.4]
 * Add maxContentWidth constraint to editor.
 

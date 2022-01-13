@@ -246,7 +246,7 @@ class RawEditorState extends EditorState
 
   // Selection overlay
   @override
-  EditorTextSelectionOverlay? getSelectionOverlay() => _selectionOverlay;
+  EditorTextSelectionOverlay? get selectionOverlay => _selectionOverlay;
   EditorTextSelectionOverlay? _selectionOverlay;
 
   @override
@@ -309,6 +309,7 @@ class RawEditorState extends EditorState
           startHandleLayerLink: _startHandleLayerLink,
           endHandleLayerLink: _endHandleLayerLink,
           onSelectionChanged: _handleSelectionChanged,
+          onSelectionCompleted: _handleSelectionCompleted,
           scrollBottomInset: widget.scrollBottomInset,
           padding: widget.padding,
           maxContentWidth: widget.maxContentWidth,
@@ -319,6 +320,12 @@ class RawEditorState extends EditorState
     );
 
     if (widget.scrollable) {
+      /// Since [SingleChildScrollView] does not implement
+      /// `computeDistanceToActualBaseline` it prevents the editor from
+      /// providing its baseline metrics. To address this issue we wrap
+      /// the scroll view with [BaselineProxy] which mimics the editor's
+      /// baseline.
+      // This implies that the first line has no styles applied to it.
       final baselinePadding =
           EdgeInsets.only(top: _styles!.paragraph!.verticalSpacing.item1);
       child = BaselineProxy(
@@ -339,6 +346,7 @@ class RawEditorState extends EditorState
               startHandleLayerLink: _startHandleLayerLink,
               endHandleLayerLink: _endHandleLayerLink,
               onSelectionChanged: _handleSelectionChanged,
+              onSelectionCompleted: _handleSelectionCompleted,
               scrollBottomInset: widget.scrollBottomInset,
               padding: widget.padding,
               maxContentWidth: widget.maxContentWidth,
@@ -393,6 +401,10 @@ class RawEditorState extends EditorState
         bringIntoView(selection.extent);
       }
     }
+  }
+
+  void _handleSelectionCompleted() {
+    widget.controller.onSelectionCompleted?.call();
   }
 
   /// Updates the checkbox positioned at [offset] in document
@@ -725,7 +737,7 @@ class RawEditorState extends EditorState
         toolbarLayerLink: _toolbarLayerLink,
         startHandleLayerLink: _startHandleLayerLink,
         endHandleLayerLink: _endHandleLayerLink,
-        renderObject: getRenderEditor(),
+        renderObject: renderEditor,
         selectionCtrls: widget.selectionCtrls,
         selectionDelegate: this,
         clipboardStatus: _clipboardStatus,
@@ -774,8 +786,7 @@ class RawEditorState extends EditorState
       if (widget.scrollable || _scrollController.hasClients) {
         _showCaretOnScreenScheduled = false;
 
-        final renderEditor = getRenderEditor();
-        if (renderEditor == null) {
+        if (!mounted) {
           return;
         }
 
@@ -801,10 +812,12 @@ class RawEditorState extends EditorState
     });
   }
 
+  /// The renderer for this widget's editor descendant.
+  ///
+  /// This property is typically used to notify the renderer of input gestures.
   @override
-  RenderEditor? getRenderEditor() {
-    return _editorKey.currentContext?.findRenderObject() as RenderEditor?;
-  }
+  RenderEditor get renderEditor =>
+      _editorKey.currentContext?.findRenderObject() as RenderEditor;
 
   @override
   void requestKeyboard() {
@@ -824,11 +837,14 @@ class RawEditorState extends EditorState
     }
     textEditingValue = value;
     userUpdateTextEditingValue(value, cause);
+
+    // keyboard and text input force a selection completion
+    _handleSelectionCompleted();
   }
 
   @override
   void debugAssertLayoutUpToDate() {
-    getRenderEditor()!.debugAssertLayoutUpToDate();
+    renderEditor.debugAssertLayoutUpToDate();
   }
 
   /// Shows the selection toolbar at the location of the current cursor.
@@ -925,7 +941,7 @@ class RawEditorState extends EditorState
   bool get readOnly => widget.readOnly;
 
   @override
-  TextLayoutMetrics get textLayoutMetrics => getRenderEditor()!;
+  TextLayoutMetrics get textLayoutMetrics => renderEditor;
 
   @override
   AnimationController get floatingCursorResetController =>
@@ -945,6 +961,7 @@ class _Editor extends MultiChildRenderObjectWidget {
     required this.startHandleLayerLink,
     required this.endHandleLayerLink,
     required this.onSelectionChanged,
+    required this.onSelectionCompleted,
     required this.scrollBottomInset,
     required this.cursorController,
     required this.floatingCursorDisabled,
@@ -961,6 +978,7 @@ class _Editor extends MultiChildRenderObjectWidget {
   final LayerLink startHandleLayerLink;
   final LayerLink endHandleLayerLink;
   final TextSelectionChangedHandler onSelectionChanged;
+  final TextSelectionCompletedHandler onSelectionCompleted;
   final double scrollBottomInset;
   final EdgeInsetsGeometry padding;
   final double? maxContentWidth;
@@ -978,6 +996,7 @@ class _Editor extends MultiChildRenderObjectWidget {
         startHandleLayerLink: startHandleLayerLink,
         endHandleLayerLink: endHandleLayerLink,
         onSelectionChanged: onSelectionChanged,
+        onSelectionCompleted: onSelectionCompleted,
         cursorController: cursorController,
         padding: padding,
         maxContentWidth: maxContentWidth,
