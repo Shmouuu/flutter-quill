@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../utils/dg_focus_node.dart';
+import '../../../utils/dg_focus_node.dart';
 
 import '../../models/themes/quill_dialog_theme.dart';
 import '../../translations/toolbar.i18n.dart';
