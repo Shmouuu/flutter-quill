@@ -27,7 +27,7 @@ class LinkDialogState extends State<LinkDialog> {
             labelStyle: widget.dialogTheme?.labelTextStyle,
             floatingLabelStyle: widget.dialogTheme?.labelTextStyle),
         autofocus: true,
-        focusNode: DgFocusNode(),
+        focusNode: DgFocusNode(debugLabel: 'Quill-LinkDialog'),
         onChanged: _linkChanged,
       ),
       actions: [
