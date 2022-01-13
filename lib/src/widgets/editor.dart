@@ -22,7 +22,6 @@ import 'embeds/image.dart';
 import 'embeds/video_app.dart';
 import 'embeds/youtube_video_app.dart';
 import 'float_cursor.dart';
-import 'link.dart';
 import 'raw_editor.dart';
 import 'text_selection.dart';
 

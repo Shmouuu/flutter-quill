@@ -20,7 +20,6 @@ import 'box.dart';
 import 'cursor.dart';
 import 'delegate.dart';
 import 'keyboard_listener.dart';
-import 'link.dart';
 import 'proxy.dart';
 import 'text_selection.dart';
 

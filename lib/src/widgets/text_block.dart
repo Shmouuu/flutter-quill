@@ -8,7 +8,6 @@ import '../models/documents/nodes/line.dart';
 import 'box.dart';
 import 'cursor.dart';
 import 'delegate.dart';
-import 'link.dart';
 import 'text_line.dart';
 import 'text_selection.dart';
 
