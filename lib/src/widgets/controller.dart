@@ -14,9 +14,9 @@ import '../utils/diff_delta.dart';
 typedef ReplaceTextCallback = bool Function(int index, int len, Object? data);
 typedef DeleteCallback = void Function(int cursorPosition, bool forward);
 typedef FormatCallback = void Function(
-  TextSelection selection,
-  Attribute? attribute,
-);
+    TextSelection selection,
+    Attribute? attribute,
+    );
 
 class QuillController extends ChangeNotifier {
   QuillController({
@@ -79,9 +79,9 @@ class QuillController extends ChangeNotifier {
   Stream<Tuple3<Delta, Delta, ChangeSource>> get changes => document.changes;
 
   TextEditingValue get plainTextEditingValue => TextEditingValue(
-        text: document.toPlainText(),
-        selection: selection,
-      );
+    text: document.toPlainText(),
+    selection: selection,
+  );
 
   /// Only attributes applied to all characters within this range are
   /// included in the result.
@@ -179,7 +179,7 @@ class QuillController extends ChangeNotifier {
           delta.last.data == '\n') {
         // if all attributes are inline, shouldRetainDelta should be false
         final anyAttributeNotInline =
-            toggledStyle.values.any((attr) => !attr.isInline);
+        toggledStyle.values.any((attr) => !attr.isInline);
         if (!anyAttributeNotInline) {
           shouldRetainDelta = false;
         }
@@ -296,7 +296,7 @@ class QuillController extends ChangeNotifier {
     textSelection = selection.copyWith(
         baseOffset: delta.transformPosition(selection.baseOffset, force: false),
         extentOffset:
-            delta.transformPosition(selection.extentOffset, force: false));
+        delta.transformPosition(selection.extentOffset, force: false));
     if (selection != textSelection) {
       _updateSelection(textSelection, source);
     }
@@ -365,5 +365,14 @@ class QuillController extends ChangeNotifier {
       return null;
     }
     return query.replaceAll(command, '');
+  }
+
+  void unCollapse() {
+    if (selection.isCollapsed == false) {
+      updateSelection(
+        TextSelection.collapsed(offset: selection.baseOffset),
+        ChangeSource.LOCAL,
+      );
+    }
   }
 }
