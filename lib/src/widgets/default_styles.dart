@@ -282,7 +282,7 @@ class DefaultStyles {
         ),
         placeHolder: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
-              color: Colors.grey.withOpacity(0.6),
+              color: const Color(0xFFC4C4C4),
               height: 1.15,
               fontWeight: FontWeight.w400,
             ),
