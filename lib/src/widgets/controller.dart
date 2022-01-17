@@ -19,6 +19,7 @@ typedef FormatCallback = void Function(
     );
 
 class QuillController extends ChangeNotifier {
+
   QuillController({
     required this.document,
     required TextSelection selection,
@@ -70,6 +71,8 @@ class QuillController extends ChangeNotifier {
   /// A safety mechanism to ensure that listeners don't crash when adding,
   /// removing or listeners to this instance.
   bool _isDisposed = false;
+
+  VoidCallback? onIosBackspace;
 
   // item1: Document state before [change].
   //
