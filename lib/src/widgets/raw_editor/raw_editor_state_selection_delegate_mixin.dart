@@ -58,9 +58,9 @@ mixin RawEditorStateSelectionDelegateMixin on EditorState
   // the main axis.
   //
   // If this is a multiline EditableText (which means the Editable can only
-  // scroll vertically), the given rect's height will first be extended to match
-  // `renderEditable.preferredLineHeight`, before the target scroll offset is
-  // calculated.
+  // scroll vertically), the hideToolbargiven rect's height will first be
+  // extended to match `renderEditable.preferredLineHeight`, before the target
+  // scroll offset is calculated.
   RevealedOffset _getOffsetToRevealCaret(Rect rect, TextPosition position) {
     if (!scrollController.position.allowImplicitScrolling) {
       return RevealedOffset(offset: scrollController.offset, rect: rect);

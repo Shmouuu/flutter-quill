@@ -860,12 +860,14 @@ class RawEditorState extends EditorState
     if (kIsWeb) {
       return false;
     }
-    if (_selectionOverlay == null || _selectionOverlay!.toolbar != null) {
-      return false;
-    }
 
-    _selectionOverlay!.update(textEditingValue);
-    _selectionOverlay!.showToolbar();
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
+      if (_selectionOverlay == null || _selectionOverlay!.toolbar != null) {
+        _updateOrDisposeSelectionOverlayIfNeeded();
+      }
+      _selectionOverlay!.update(textEditingValue);
+      _selectionOverlay!.showToolbar();
+    });
     return true;
   }
 
