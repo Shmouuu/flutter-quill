@@ -270,6 +270,7 @@ class QuillEditor extends StatefulWidget {
       this.customStyleBuilder,
       this.onPerformAction,
       this.numberedPointStart,
+      this.onPaste,
       this.editorGestureListener,
       this.floatingCursorDisabled = false,
       Key? key});
@@ -420,6 +421,7 @@ class QuillEditor extends StatefulWidget {
   final ValueChanged<String>? onDgPageTapped;
   final EditorGestureListener? editorGestureListener;
   final int? numberedPointStart;
+  final OnPaste? onPaste;
 
   // Returns whether gesture is handled
   final bool Function(
@@ -536,6 +538,7 @@ class _QuillEditorState extends State<QuillEditor>
       readOnly: widget.readOnly,
       placeholder: widget.placeholder,
       onLaunchUrl: widget.onLaunchUrl,
+      onPaste: widget.onPaste,
       onDgPageTapped: widget.onDgPageTapped,
       toolbarOptions: ToolbarOptions(
         copy: widget.enableInteractiveSelection,

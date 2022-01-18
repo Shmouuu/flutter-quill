@@ -70,6 +70,7 @@ class RawEditor extends StatefulWidget {
       this.customStyleBuilder,
       this.onPerformAction,
       this.numberedPointStart,
+      this.onPaste,
       this.defaultFontFamily,
       this.floatingCursorDisabled = false})
       : assert(maxHeight == null || maxHeight > 0, 'maxHeight cannot be null'),
@@ -224,6 +225,7 @@ class RawEditor extends StatefulWidget {
   final CustomStyleBuilder? customStyleBuilder;
   final ValueChanged<TextInputAction>? onPerformAction;
   final int? numberedPointStart;
+  final OnPaste? onPaste;
   final bool floatingCursorDisabled;
 
   @override
@@ -865,6 +867,9 @@ class RawEditorState extends EditorState
       if (_selectionOverlay == null || _selectionOverlay!.toolbar != null) {
         _updateOrDisposeSelectionOverlayIfNeeded();
       }
+      if (_selectionOverlay == null || _selectionOverlay!.toolbar != null) {
+        return;
+      }
       _selectionOverlay!.update(textEditingValue);
       _selectionOverlay!.showToolbar();
     });
@@ -913,6 +918,13 @@ class RawEditorState extends EditorState
 
   @override
   Future<void> pasteText(SelectionChangedCause cause) async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (data == null) {
+      return;
+    }
+    if (widget.onPaste?.call(data) == true) {
+      return;
+    }
     // Copied straight from EditableTextState
     super.pasteText(cause); // ignore: unawaited_futures
     if (cause == SelectionChangedCause.toolbar) {
@@ -1024,3 +1036,5 @@ class _Editor extends MultiChildRenderObjectWidget {
       ..maxContentWidth = maxContentWidth;
   }
 }
+
+typedef OnPaste = bool Function(ClipboardData data);
