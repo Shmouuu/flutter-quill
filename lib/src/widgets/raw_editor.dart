@@ -922,7 +922,7 @@ class RawEditorState extends EditorState
     if (data == null) {
       return;
     }
-    if (widget.onPaste?.call(data) == true) {
+    if (widget.onPaste?.call(data.text) == true) {
       return;
     }
     // Copied straight from EditableTextState
@@ -1037,4 +1037,4 @@ class _Editor extends MultiChildRenderObjectWidget {
   }
 }
 
-typedef OnPaste = bool Function(ClipboardData data);
+typedef OnPaste = bool Function(dynamic data);

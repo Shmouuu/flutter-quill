@@ -147,6 +147,10 @@ mixin RawEditorStateTextInputClientMixin on EditorState
     final text = value.text;
     final cursorPosition = value.selection.extentOffset;
     final diff = getDiff(oldText, text, cursorPosition);
+    if (widget.onPaste?.call(diff.inserted) == true) {
+      updateRemoteValueIfNeeded();
+      return;
+    }
     if (diff.deleted.isEmpty && diff.inserted.isEmpty) {
       widget.controller.updateSelection(value.selection, ChangeSource.LOCAL);
     } else {
