@@ -72,8 +72,6 @@ class QuillController extends ChangeNotifier {
   /// removing or listeners to this instance.
   bool _isDisposed = false;
 
-  VoidCallback? onIosBackspace;
-
   // item1: Document state before [change].
   //
   // item2: Change delta applied to the document.
