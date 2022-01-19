@@ -147,7 +147,9 @@ class EditableTextBlock extends StatelessWidget {
           _getIndentWidth(),
           _getSpacingForLine(line, index, count, defaultStyles),
           textDirection,
-          textSelection,
+          controller.document.isEmpty()
+              ? const TextSelection.collapsed(offset: 0)
+              : controller.selection,
           color,
           enableInteractiveSelection,
           hasFocus,

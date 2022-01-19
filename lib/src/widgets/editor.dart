@@ -1336,7 +1336,8 @@ class RenderEditor extends RenderEditableContainerBox
     final childLocalRect = targetChild.getLocalRectForCaret(localPosition);
 
     final boxParentData = targetChild.parentData as BoxParentData;
-    return childLocalRect.shift(Offset(8, boxParentData.offset.dy));
+    // Hardcoded 6 as estimate of the width of a character
+    return childLocalRect.shift(Offset(6, boxParentData.offset.dy));
   }
 
   // Start floating cursor

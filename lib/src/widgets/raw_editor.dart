@@ -287,9 +287,11 @@ class RawEditorState extends EditorState
     _focusAttachment!.reparent();
     super.build(context);
 
+    var _selection = widget.controller.selection;
     var _doc = widget.controller.document;
     if (_doc.isEmpty() && widget.placeholder != null) {
-      final attrs = _doc.toDelta().first.attributes;
+      final attrs = _doc.toDelta().last.attributes;
+      _selection = const TextSelection.collapsed(offset: 0);
       _doc = Document.fromJson(jsonDecode(
           '[{"attributes":{"placeholder":true},"insert":"${widget.placeholder}\\n"}]'));
       attrs?.forEach((key, value) {
@@ -305,7 +307,7 @@ class RawEditorState extends EditorState
         child: _Editor(
           key: _editorKey,
           document: _doc,
-          selection: widget.controller.selection,
+          selection: _selection,
           hasFocus: _hasFocus,
           cursorController: _cursorCont,
           textDirection: _textDirection,
@@ -484,7 +486,9 @@ class RawEditorState extends EditorState
         0,
         _getVerticalSpacingForLine(node, _styles),
         _textDirection,
-        widget.controller.selection,
+        widget.controller.document.isEmpty()
+            ? const TextSelection.collapsed(offset: 0)
+            : widget.controller.selection,
         widget.selectionColor,
         widget.enableInteractiveSelection,
         _hasFocus,
