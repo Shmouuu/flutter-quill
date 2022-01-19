@@ -137,13 +137,18 @@ class CursorCont extends ChangeNotifier {
   ValueNotifier<TextPosition?> get floatingCursorTextPosition =>
       _floatingCursorTextPosition;
 
-  void setFloatingCursorTextPosition(TextPosition? position) =>
-      _floatingCursorTextPosition.value = position;
+  void setFloatingCursorTextPosition(TextPosition? position) {
+    _floatingCursorTextPosition.value = position;
+    // Force update because of floating cursor end animation bug
+    notifyListeners();
+  }
 
   bool get isFloatingCursorActive => floatingCursorTextPosition.value != null;
 
   CursorStyle _style;
+
   CursorStyle get style => _style;
+
   set style(CursorStyle value) {
     if (_style == value) return;
     _style = value;
