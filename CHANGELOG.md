@@ -1,3 +1,15 @@
+# [3.4.0]
+* Option to save image in read-only mode.
+
+# [3.3.1]
+* Pass any specified key in QuillEditor constructor to super.
+
+# [3.3.0]
+* Fixed Style toggle issue.
+
+# [3.2.1]
+* Added new translations.
+
 # [3.2.0]
 * Support multiple links insertion on the go.
 

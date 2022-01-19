@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:io' as io;
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
@@ -8,19 +6,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:string_validator/string_validator.dart';
 
 import '../../flutter_quill.dart';
 import '../models/documents/nodes/container.dart' as container_node;
-import '../models/documents/nodes/leaf.dart' as leaf;
 import '../models/documents/nodes/line.dart';
-import '../utils/string_helper.dart';
 import 'box.dart';
 import 'cursor.dart';
 import 'delegate.dart';
-import 'embeds/image.dart';
-import 'embeds/video_app.dart';
-import 'embeds/youtube_video_app.dart';
+import 'embeds/default_embed_builder.dart';
 import 'float_cursor.dart';
 import 'raw_editor.dart';
 import 'text_selection.dart';
@@ -153,88 +146,6 @@ abstract class RenderAbstractEditor implements TextLayoutMetrics {
   void selectPosition({required SelectionChangedCause cause});
 }
 
-String _standardizeImageUrl(String url) {
-  if (url.contains('base64')) {
-    return url.split(',')[1];
-  }
-  return url;
-}
-
-bool _isMobile() => io.Platform.isAndroid || io.Platform.isIOS;
-
-Widget defaultEmbedBuilder(
-    BuildContext context, leaf.Embed node, bool readOnly) {
-  assert(!kIsWeb, 'Please provide EmbedBuilder for Web');
-  switch (node.value.type) {
-    case 'image':
-      final imageUrl = _standardizeImageUrl(node.value.data);
-      var image;
-      final style = node.style.attributes['style'];
-      if (_isMobile() && style != null) {
-        final _attrs = parseKeyValuePairs(style.value.toString(),
-            {'mobileWidth', 'mobileHeight', 'mobileMargin', 'mobileAlignment'});
-        if (_attrs.isNotEmpty) {
-          assert(
-              _attrs['mobileWidth'] != null && _attrs['mobileHeight'] != null,
-              'mobileWidth and mobileHeight must be specified');
-          final w = double.parse(_attrs['mobileWidth']!);
-          final h = double.parse(_attrs['mobileHeight']!);
-          final m = _attrs['mobileMargin'] == null
-              ? 0.0
-              : double.parse(_attrs['mobileMargin']!);
-          final a = getAlignment(_attrs['mobileAlignment']);
-          image = Padding(
-              padding: EdgeInsets.all(m),
-              child: imageUrl.startsWith('http')
-                  ? Image.network(imageUrl, width: w, height: h, alignment: a)
-                  : isBase64(imageUrl)
-                      ? Image.memory(base64.decode(imageUrl),
-                          width: w, height: h, alignment: a)
-                      : Image.file(io.File(imageUrl),
-                          width: w, height: h, alignment: a));
-        }
-      }
-      image ??= imageUrl.startsWith('http')
-          ? Image.network(imageUrl)
-          : isBase64(imageUrl)
-              ? Image.memory(base64.decode(imageUrl))
-              : Image.file(io.File(imageUrl));
-
-      if (!readOnly) {
-        return image;
-      }
-
-      return GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ImageTapWrapper(
-                          imageProvider: imageUrl.startsWith('http')
-                              ? NetworkImage(imageUrl)
-                              : isBase64(imageUrl)
-                                  ? Image.memory(base64.decode(imageUrl))
-                                      as ImageProvider<Object>?
-                                  : FileImage(io.File(imageUrl)),
-                        )));
-          },
-          child: image);
-    case 'video':
-      final videoUrl = node.value.data;
-      if (videoUrl.contains('youtube.com') || videoUrl.contains('youtu.be')) {
-        return YoutubeVideoApp(
-            videoUrl: videoUrl, context: context, readOnly: readOnly);
-      }
-      return VideoApp(videoUrl: videoUrl, context: context, readOnly: readOnly);
-    default:
-      throw UnimplementedError(
-        'Embeddable type "${node.value.type}" is not supported by default '
-        'embed builder of QuillEditor. You must pass your own builder function '
-        'to embedBuilder property of QuillEditor or QuillField widgets.',
-      );
-  }
-}
-
 class QuillEditor extends StatefulWidget {
   const QuillEditor(
       {required this.controller,
@@ -273,7 +184,8 @@ class QuillEditor extends StatefulWidget {
       this.onPaste,
       this.editorGestureListener,
       this.floatingCursorDisabled = false,
-      Key? key});
+      Key? key})
+      : super(key: key);
 
   factory QuillEditor.basic({
     required QuillController controller,
