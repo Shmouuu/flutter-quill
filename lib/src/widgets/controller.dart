@@ -25,6 +25,7 @@ class QuillController extends ChangeNotifier {
     required TextSelection selection,
     bool keepStyleOnNewLine = false,
     this.onReplaceText,
+    this.isSingleLine = false,
     this.onDelete,
     this.onFormat,
     this.onSelectionCompleted,
@@ -44,6 +45,7 @@ class QuillController extends ChangeNotifier {
   /// Tells whether to keep or reset the [toggledStyle]
   /// when user adds a new line.
   final bool _keepStyleOnNewLine;
+  final bool isSingleLine;
 
   /// Currently selected text within the [document].
   TextSelection get selection => _selection;
