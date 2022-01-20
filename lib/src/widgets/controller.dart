@@ -348,7 +348,7 @@ class QuillController extends ChangeNotifier {
     if (start == -1) {
       return null;
     }
-    if (start > 0) {
+    if (start > 1) { // because there is a zero w char at position 0
       if (input.substring(start - 1, start).trim().isNotEmpty) {
         return null;
       }

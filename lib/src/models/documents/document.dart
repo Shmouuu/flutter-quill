@@ -45,7 +45,7 @@ class Document {
   }
 
   final StreamController<Tuple3<Delta, Delta, ChangeSource>> _observer =
-  StreamController.broadcast();
+      StreamController.broadcast();
 
   final History _history = History();
 
@@ -87,7 +87,7 @@ class Document {
     final Node? node = root.children.elementAt(index);
     if (node is Block) {
       final attrs = node.style.values.where((element) =>
-      element.key == Attribute.ol.key &&
+          element.key == Attribute.ol.key &&
           element.value == Attribute.ol.value);
       if (attrs.isNotEmpty) {
         return node.childCount;
@@ -176,7 +176,7 @@ class Document {
     final originalDelta = toDelta();
     for (final op in delta.toList()) {
       final style =
-      op.attributes != null ? Style.fromJson(op.attributes) : null;
+          op.attributes != null ? Style.fromJson(op.attributes) : null;
 
       if (op.isInsert) {
         _root.insert(offset, _normalize(op.data), style);
@@ -268,7 +268,13 @@ class Document {
     _history.clear();
   }
 
-  String toPlainText() => _root.children.map((e) => e.toPlainText()).join();
+  String toPlainText({removeZeroW = false}) {
+    final plainText = _root.children.map((e) => e.toPlainText()).join();
+    if (removeZeroW) {
+      return plainText.replaceAll('\u200b', '');
+    }
+    return plainText;
+  }
 
   void _loadDocument(Delta doc) {
     if (doc.isEmpty) {
@@ -284,7 +290,7 @@ class Document {
             'Document can only contain insert operations but ${op.key} found.');
       }
       final style =
-      op.attributes != null ? Style.fromJson(op.attributes) : null;
+          op.attributes != null ? Style.fromJson(op.attributes) : null;
       final data = _normalize(op.data);
       _root.insert(offset, data, style);
       offset += op.length!;
