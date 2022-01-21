@@ -285,7 +285,8 @@ class _TextLineState extends State<TextLine> {
             nodeStyle.attributes[Attribute.page.key]!.value != null);
     final clickable = isLink && canLaunchLinks;
     return TextSpan(
-      text: textNode.value == Document.zeroWidthChar ? '\u200b' : textNode.value,
+      text:
+          textNode.value == Document.zeroWidthChar ? '\u200b' : textNode.value,
       style: _getInlineTextStyle(
           textNode, defaultStyles, nodeStyle, lineStyle, isLink),
       recognizer: clickable ? _getRecognizer(node) : null,

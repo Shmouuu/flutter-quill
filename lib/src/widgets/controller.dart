@@ -346,6 +346,9 @@ class QuillController extends ChangeNotifier {
   }
 
   String? getCommandWord(String command) {
+    if (document.isEmpty()) {
+      return null;
+    }
     final _linkBreak = RegExp('[\\s\n]');
     final input = plainTextEditingValue.text;
     final before = input.substring(0, max(selection.baseOffset, 0));

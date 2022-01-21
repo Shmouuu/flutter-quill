@@ -274,7 +274,7 @@ class Document {
 
   String toPlainText({removeZeroW = false}) {
     final plainText = _root.children.map((e) => e.toPlainText()).join();
-    if (removeZeroW) {
+    if (removeZeroW && plainText.startsWith(' ')) {
       return plainText.substring(1);
     }
     return plainText;

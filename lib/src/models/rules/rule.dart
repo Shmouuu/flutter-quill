@@ -39,7 +39,7 @@ class Rules {
     const ResolveLineFormatRule(),
     const ResolveInlineFormatRule(),
     const InsertEmbedsRule(),
-    // const AutoExitBlockRule(), Cause trouble with zerow char
+    // const AutoExitBlockRule(), // Cause trouble with zerow char
     const PreserveBlockStyleOnInsertRule(),
     const PreserveLineStyleOnSplitRule(),
     const ResetLineFormatOnNewLineRule(),
