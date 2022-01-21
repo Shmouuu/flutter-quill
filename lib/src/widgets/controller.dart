@@ -335,6 +335,9 @@ class QuillController extends ChangeNotifier {
   }
 
   void _updateSelection(TextSelection textSelection, ChangeSource source) {
+    if (textSelection.baseOffset == 0) {
+      textSelection = const TextSelection.collapsed(offset: 1);
+    }
     _selection = textSelection;
     final end = document.length - 1;
     _selection = selection.copyWith(
