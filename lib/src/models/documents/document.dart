@@ -13,8 +13,10 @@ import 'nodes/line.dart';
 import 'nodes/node.dart';
 import 'style.dart';
 
+
 /// The rich text document
 class Document {
+
   Document() : _delta = Delta()..insert('\n') {
     _loadDocument(_delta);
   }
@@ -26,6 +28,8 @@ class Document {
   Document.fromDelta(Delta delta) : _delta = delta {
     _loadDocument(delta);
   }
+
+  static const Pattern zeroWidthChar = ' '; // \u200b
 
   /// The root node of the document tree
   final Root _root = Root();
@@ -45,7 +49,7 @@ class Document {
   }
 
   final StreamController<Tuple3<Delta, Delta, ChangeSource>> _observer =
-      StreamController.broadcast();
+  StreamController.broadcast();
 
   final History _history = History();
 
@@ -87,7 +91,7 @@ class Document {
     final Node? node = root.children.elementAt(index);
     if (node is Block) {
       final attrs = node.style.values.where((element) =>
-          element.key == Attribute.ol.key &&
+      element.key == Attribute.ol.key &&
           element.value == Attribute.ol.value);
       if (attrs.isNotEmpty) {
         return node.childCount;
@@ -176,7 +180,7 @@ class Document {
     final originalDelta = toDelta();
     for (final op in delta.toList()) {
       final style =
-          op.attributes != null ? Style.fromJson(op.attributes) : null;
+      op.attributes != null ? Style.fromJson(op.attributes) : null;
 
       if (op.isInsert) {
         _root.insert(offset, _normalize(op.data), style);
@@ -271,7 +275,7 @@ class Document {
   String toPlainText({removeZeroW = false}) {
     final plainText = _root.children.map((e) => e.toPlainText()).join();
     if (removeZeroW) {
-      return plainText.replaceAll('\u200b', '');
+      return plainText.substring(1);
     }
     return plainText;
   }
@@ -290,7 +294,7 @@ class Document {
             'Document can only contain insert operations but ${op.key} found.');
       }
       final style =
-          op.attributes != null ? Style.fromJson(op.attributes) : null;
+      op.attributes != null ? Style.fromJson(op.attributes) : null;
       final data = _normalize(op.data);
       _root.insert(offset, data, style);
       offset += op.length!;
@@ -315,7 +319,7 @@ class Document {
     }
 
     final delta = node.toDelta();
-    if (toPlainText() == '\u200b\n') {
+    if (toPlainText() == '${Document.zeroWidthChar}\n') {
       return true;
     }
     return delta.length == 1 &&
