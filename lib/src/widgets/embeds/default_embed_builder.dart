@@ -42,7 +42,8 @@ Widget defaultEmbedBuilder(
       if (!readOnly || !isMobile() || isImageBase64(imageUrl)) {
         if (!readOnly && isMobile()) {
           // TODO: slider for width and height
-          // return _menuOptionsForEditableImageInMobile(context, imageUrl, image);
+          // return
+          // _menuOptionsForEditableImageInMobile(context, imageUrl, image);
         }
         return image;
       }
@@ -64,7 +65,7 @@ Widget defaultEmbedBuilder(
       );
   }
 }
-
+/*
 Widget _menuOptionsForEditableImageInMobile(
     BuildContext context, String imageUrl, Image image) {
   return GestureDetector(
@@ -103,7 +104,7 @@ Widget _menuOptionsForEditableImageInMobile(
                 ));
       },
       child: image);
-}
+}*/
 
 Widget _menuOptionsForReadonlyImage(
     BuildContext context, String imageUrl, Image image) {

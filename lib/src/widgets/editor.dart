@@ -10,7 +10,6 @@ import 'package:tuple/tuple.dart';
 
 import '../../flutter_quill.dart';
 import '../models/documents/nodes/container.dart' as container_node;
-import '../models/documents/style.dart';
 import '../utils/platform.dart';
 import 'box.dart';
 import 'cursor.dart';
