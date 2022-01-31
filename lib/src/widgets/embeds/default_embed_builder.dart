@@ -2,16 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 
-import '../../../widgets/image.dart';
 import '../../models/documents/nodes/leaf.dart' as leaf;
-import '../../utils/platform_helper.dart';
-import '../../utils/string_helper.dart';
+import '../../translations/toolbar.i18n.dart';
+import '../../utils/platform.dart';
+import '../../utils/string.dart';
+import 'image.dart';
 import 'video_app.dart';
 import 'youtube_video_app.dart';
 
 Widget defaultEmbedBuilder(
     BuildContext context, leaf.Embed node, bool readOnly) {
   assert(!kIsWeb, 'Please provide EmbedBuilder for Web');
+
   switch (node.value.type) {
     case 'image':
       final imageUrl = standardizeImageUrl(node.value.data);
@@ -38,49 +40,15 @@ Widget defaultEmbedBuilder(
       image ??= imageByUrl(imageUrl);
 
       if (!readOnly || !isMobile() || isImageBase64(imageUrl)) {
+        if (!readOnly && isMobile()) {
+          // TODO: slider for width and height
+          // return _menuOptionsForEditableImageInMobile(context, imageUrl, image);
+        }
         return image;
       }
 
-      // We provide option menu only for mobile platform excluding base64 image
-      return GestureDetector(
-          onTap: () {
-            showDialog(
-                context: context,
-                builder: (context) => Padding(
-                      padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
-                      child: SimpleDialog(
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          children: [
-                            _SimpleDialogItem(
-                              icon: Icons.save,
-                              color: Colors.greenAccent,
-                              text: 'Save',
-                              onPressed: () {
-                                // TODO: improve this
-                                GallerySaver.saveImage(imageUrl).then((_) =>
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text('Saved'))));
-                              },
-                            ),
-                            _SimpleDialogItem(
-                              icon: Icons.zoom_in,
-                              color: Colors.cyanAccent,
-                              text: 'Zoom',
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ImageTapWrapper(
-                                            imageUrl: imageUrl)));
-                              },
-                            )
-                          ]),
-                    ));
-          },
-          child: image);
+      // We provide option menu for mobile platform excluding base64 image
+      return _menuOptionsForReadonlyImage(context, imageUrl, image);
     case 'video':
       final videoUrl = node.value.data;
       if (videoUrl.contains('youtube.com') || videoUrl.contains('youtu.be')) {
@@ -95,6 +63,86 @@ Widget defaultEmbedBuilder(
         'to embedBuilder property of QuillEditor or QuillField widgets.',
       );
   }
+}
+
+Widget _menuOptionsForEditableImageInMobile(
+    BuildContext context, String imageUrl, Image image) {
+  return GestureDetector(
+      onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) => Padding(
+                  padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                  child: SimpleDialog(
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      children: [
+                        _SimpleDialogItem(
+                          icon: Icons.settings_outlined,
+                          color: Colors.greenAccent,
+                          text: 'Resize'.i18n,
+                          onPressed: () {
+                            GallerySaver.saveImage(imageUrl).then((_) =>
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Saved'.i18n))));
+                          },
+                        ),
+                        _SimpleDialogItem(
+                          icon: Icons.delete_forever_outlined,
+                          color: Colors.red.shade200,
+                          text: 'Remove'.i18n,
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ImageTapWrapper(imageUrl: imageUrl)));
+                          },
+                        )
+                      ]),
+                ));
+      },
+      child: image);
+}
+
+Widget _menuOptionsForReadonlyImage(
+    BuildContext context, String imageUrl, Image image) {
+  return GestureDetector(
+      onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) => Padding(
+                  padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                  child: SimpleDialog(
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      children: [
+                        _SimpleDialogItem(
+                          icon: Icons.save,
+                          color: Colors.greenAccent,
+                          text: 'Save'.i18n,
+                          onPressed: () {
+                            GallerySaver.saveImage(imageUrl).then((_) =>
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Saved'.i18n))));
+                          },
+                        ),
+                        _SimpleDialogItem(
+                          icon: Icons.zoom_in,
+                          color: Colors.cyanAccent,
+                          text: 'Zoom'.i18n,
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ImageTapWrapper(imageUrl: imageUrl)));
+                          },
+                        )
+                      ]),
+                ));
+      },
+      child: image);
 }
 
 class _SimpleDialogItem extends StatelessWidget {

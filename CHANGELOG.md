@@ -1,3 +1,81 @@
+# [3.8.7]
+* Fix checkbox not toggled correctly in toolbar button.
+
+# [3.8.6]
+* Fix cursor position changes when checking/unchecking the checkbox.
+
+# [3.8.5]
+* Fix _handleDragUpdate in _TextSelectionHandleOverlayState.
+
+# [3.8.4]
+* Fix link dialog layout.
+
+# [3.8.3]
+* Fix for errors on a non scrollable editor.
+
+# [3.8.2]
+* Fix certain keys not working on web when editor is a child of a scroll view.
+
+# [3.8.1]
+* Refactor _QuillEditorState to QuillEditorState.
+
+# [3.8.0]
+* Support pasting with format.
+
+# [3.7.3]
+* Fix selection overlay for collapsed selection.
+
+# [3.7.2]
+* Reverted Embed toPlainText change.
+
+# [3.7.1]
+* Change Embed toPlainText to be empty string.
+
+# [3.7.0]
+* Replace Toolbar showHistory group with individual showRedo and showUndo.
+
+# [3.6.5]
+* Update Link dialogue for image/video.
+
+# [3.6.4]
+* Link dialogue TextInputType.multiline.
+
+# [3.6.3]
+* Bug fix for link button text selection.
+
+# [3.6.2]
+* Improve link button.
+
+# [3.6.1]
+* Remove SnackBar 'What is entered is not a link'.
+
+# [3.6.0]
+* Allow link button to enter text.
+
+# [3.5.3]
+* Change link button behavior.
+
+# [3.5.2]
+* Bug fix for embed.
+
+# [3.5.1]
+* Bug fix for platform util.
+
+# [3.5.0]
+* Removed redundant classes.
+
+# [3.4.4]
+* Add more translations.
+
+# [3.4.3]
+* Preset link from attributes.
+
+# [3.4.2]
+* Fix launch link edit mode.
+
+# [3.4.1]
+* Placeholder effective in scrollable.
+
 # [3.4.0]
 * Option to save image in read-only mode.
 

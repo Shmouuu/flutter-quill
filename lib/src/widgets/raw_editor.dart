@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
@@ -11,11 +12,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:tuple/tuple.dart';
 
-import '../../models/documents/nodes/node.dart';
 import '../models/documents/attribute.dart';
 import '../models/documents/document.dart';
 import '../models/documents/nodes/block.dart';
 import '../models/documents/nodes/line.dart';
+import '../models/documents/nodes/node.dart';
+import '../models/documents/style.dart';
+import '../utils/platform.dart';
 import 'controller.dart';
 import 'cursor.dart';
 import 'default_styles.dart';
@@ -268,6 +271,14 @@ class RawEditorState extends EditorState
   // Theme
   DefaultStyles? _styles;
 
+  // for pasting style
+  @override
+  List<Tuple2<int, Style>> get pasteStyle => _pasteStyle;
+  List<Tuple2<int, Style>> _pasteStyle = <Tuple2<int, Style>>[];
+  @override
+  String get pastePlainText => _pastePlainText;
+  String _pastePlainText = '';
+
   final ClipboardStatusNotifier _clipboardStatus = ClipboardStatusNotifier();
   final LayerLink _toolbarLayerLink = LayerLink();
   final LayerLink _startHandleLayerLink = LayerLink();
@@ -309,6 +320,7 @@ class RawEditorState extends EditorState
           document: _doc,
           selection: _selection,
           hasFocus: _hasFocus,
+          scrollable: widget.scrollable,
           cursorController: _cursorCont,
           textDirection: _textDirection,
           startHandleLayerLink: _startHandleLayerLink,
@@ -344,9 +356,10 @@ class RawEditorState extends EditorState
             child: _Editor(
               key: _editorKey,
               offset: offset,
-              document: widget.controller.document,
+              document: _doc,
               selection: widget.controller.selection,
               hasFocus: _hasFocus,
+              scrollable: widget.scrollable,
               textDirection: _textDirection,
               startHandleLayerLink: _startHandleLayerLink,
               endHandleLayerLink: _endHandleLayerLink,
@@ -416,8 +429,23 @@ class RawEditorState extends EditorState
   /// by changing its attribute according to [value].
   void _handleCheckboxTap(int offset, bool value) {
     if (!widget.readOnly) {
-      widget.controller.formatText(
-          offset, 0, value ? Attribute.checked : Attribute.unchecked);
+      _disableScrollControllerAnimateOnce = true;
+      final attribute = value ? Attribute.checked : Attribute.unchecked;
+
+      widget.controller.formatText(offset, 0, attribute);
+
+      // Checkbox tapping causes controller.selection to go to offset 0
+      // Stop toggling those two toolbar buttons
+      widget.controller.toolbarButtonToggler = {
+        Attribute.list.key: attribute,
+        Attribute.header.key: Attribute.header
+      };
+
+      // Go back from offset 0 to current selection
+      SchedulerBinding.instance!.addPostFrameCallback((_) {
+        widget.controller.updateSelection(
+            TextSelection.collapsed(offset: offset), ChangeSource.LOCAL);
+      });
     }
   }
 
@@ -561,10 +589,7 @@ class RawEditorState extends EditorState
     _floatingCursorResetController = AnimationController(vsync: this);
     _floatingCursorResetController.addListener(onFloatingCursorResetTick);
 
-    if (defaultTargetPlatform == TargetPlatform.windows ||
-        defaultTargetPlatform == TargetPlatform.macOS ||
-        defaultTargetPlatform == TargetPlatform.linux ||
-        defaultTargetPlatform == TargetPlatform.fuchsia) {
+    if (isKeyboardOS()) {
       _keyboardVisible = true;
     } else {
       _keyboardVisibilityController = KeyboardVisibilityController();
@@ -639,6 +664,11 @@ class RawEditorState extends EditorState
       if (oldWidget.readOnly && _hasFocus) {
         openConnectionIfNeeded();
       }
+    }
+
+    // in case customStyles changed in new widget
+    if (widget.customStyles != null) {
+      _styles = _styles!.merge(widget.customStyles!);
     }
   }
 
@@ -728,15 +758,13 @@ class RawEditorState extends EditorState
 
   void _updateOrDisposeSelectionOverlayIfNeeded() {
     if (_selectionOverlay != null) {
-      if (_hasFocus && !textEditingValue.selection.isCollapsed) {
-        _selectionOverlay!.update(textEditingValue);
-      } else {
+      if (!_hasFocus) {
         _selectionOverlay!.dispose();
         _selectionOverlay = null;
+      } else if (!textEditingValue.selection.isCollapsed) {
+        _selectionOverlay!.update(textEditingValue);
       }
     } else if (_hasFocus) {
-      _selectionOverlay?.hide();
-
       _selectionOverlay = EditorTextSelectionOverlay(
         value: textEditingValue,
         context: context,
@@ -783,6 +811,13 @@ class RawEditorState extends EditorState
 
   bool _showCaretOnScreenScheduled = false;
 
+  // This is a workaround for checkbox tapping issue
+  // https://github.com/singerdmx/flutter-quill/issues/619
+  // We cannot treat {"list": "checked"} and {"list": "unchecked"} as
+  // block of the same style
+  // This causes controller.selection to go to offset 0
+  bool _disableScrollControllerAnimateOnce = false;
+
   void _showCaretOnScreen() {
     if (!widget.showCursor || _showCaretOnScreenScheduled) {
       return;
@@ -809,6 +844,10 @@ class RawEditorState extends EditorState
         );
 
         if (offset != null) {
+          if (_disableScrollControllerAnimateOnce) {
+            _disableScrollControllerAnimateOnce = false;
+            return;
+          }
           _scrollController.animateTo(
             math.min(offset, _scrollController.position.maxScrollExtent),
             duration: const Duration(milliseconds: 100),
@@ -883,36 +922,32 @@ class RawEditorState extends EditorState
 
   @override
   void copySelection(SelectionChangedCause cause) {
+    _pastePlainText = widget.controller.getPlainText();
+    _pasteStyle = widget.controller.getAllIndividualSelectionStyles();
     // Copied straight from EditableTextState
     super.copySelection(cause);
     if (cause == SelectionChangedCause.toolbar) {
       bringIntoView(textEditingValue.selection.extent);
       hideToolbar(false);
 
-      switch (defaultTargetPlatform) {
-        case TargetPlatform.iOS:
-          break;
-        case TargetPlatform.macOS:
-        case TargetPlatform.android:
-        case TargetPlatform.fuchsia:
-        case TargetPlatform.linux:
-        case TargetPlatform.windows:
-          // Collapse the selection and hide the toolbar and handles.
-          userUpdateTextEditingValue(
-            TextEditingValue(
-              text: textEditingValue.text,
-              selection: TextSelection.collapsed(
-                  offset: textEditingValue.selection.end),
-            ),
-            SelectionChangedCause.toolbar,
-          );
-          break;
+      if (!Platform.isIOS) {
+        // Collapse the selection and hide the toolbar and handles.
+        userUpdateTextEditingValue(
+          TextEditingValue(
+            text: textEditingValue.text,
+            selection:
+                TextSelection.collapsed(offset: textEditingValue.selection.end),
+          ),
+          SelectionChangedCause.toolbar,
+        );
       }
     }
   }
 
   @override
   void cutSelection(SelectionChangedCause cause) {
+    _pastePlainText = widget.controller.getPlainText();
+    _pasteStyle = widget.controller.getAllIndividualSelectionStyles();
     // Copied straight from EditableTextState
     super.cutSelection(cause);
     if (cause == SelectionChangedCause.toolbar) {
@@ -976,6 +1011,7 @@ class _Editor extends MultiChildRenderObjectWidget {
     required this.document,
     required this.textDirection,
     required this.hasFocus,
+    required this.scrollable,
     required this.selection,
     required this.startHandleLayerLink,
     required this.endHandleLayerLink,
@@ -993,6 +1029,7 @@ class _Editor extends MultiChildRenderObjectWidget {
   final Document document;
   final TextDirection textDirection;
   final bool hasFocus;
+  final bool scrollable;
   final TextSelection selection;
   final LayerLink startHandleLayerLink;
   final LayerLink endHandleLayerLink;
@@ -1011,6 +1048,7 @@ class _Editor extends MultiChildRenderObjectWidget {
         document: document,
         textDirection: textDirection,
         hasFocus: hasFocus,
+        scrollable: scrollable,
         selection: selection,
         startHandleLayerLink: startHandleLayerLink,
         endHandleLayerLink: endHandleLayerLink,
