@@ -172,6 +172,7 @@ class QuillEditor extends StatefulWidget {
       this.onPaste,
       this.editorGestureListener,
       this.floatingCursorDisabled = false,
+      this.catchWebKeyboardEvents = false,
       Key? key})
       : super(key: key);
 
@@ -242,6 +243,7 @@ class QuillEditor extends StatefulWidget {
   ///
   /// Defaults to `false`. Must not be `null`.
   final bool readOnly;
+  final bool catchWebKeyboardEvents;
   final String? placeholder;
   final String? defaultFontFamily;
 
@@ -473,7 +475,7 @@ class QuillEditorState extends State<QuillEditor>
       child: child,
     );
 
-    if (kIsWeb) {
+    if (widget.catchWebKeyboardEvents && kIsWeb) {
       // Intercept RawKeyEvent on Web to prevent it from propagating to parents
       // that might interfere with the editor key behavior, such as
       // SingleChildScrollView. Thanks to @wliumelb for the workaround.
