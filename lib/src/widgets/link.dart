@@ -162,6 +162,7 @@ class _CupertinoAction extends StatelessWidget {
 Future<LinkMenuAction> _showMaterialMenu(
     BuildContext context, String link, bool showDelete) async {
   final result = await showModalBottomSheet<LinkMenuAction>(
+    constraints: const BoxConstraints(maxWidth: 850),
     context: context,
     builder: (ctx) {
       return Column(

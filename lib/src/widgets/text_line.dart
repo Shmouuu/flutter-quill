@@ -14,7 +14,6 @@ import '../models/documents/nodes/leaf.dart' as leaf;
 import '../models/documents/nodes/line.dart';
 import '../models/documents/nodes/node.dart';
 import '../utils/color.dart';
-import '../utils/platform.dart';
 import 'box.dart';
 import 'cursor.dart';
 import 'delegate.dart';
