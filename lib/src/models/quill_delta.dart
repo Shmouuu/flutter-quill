@@ -619,10 +619,17 @@ class Delta {
   }
 
   /// Concatenates [other] with this delta and returns the result.
-  Delta concat(Delta other, {bool trimNewLine = false}) {
+  Delta concat(
+    Delta other, {
+    bool trimNewLine = false,
+    bool trimOtherNewLine = false,
+  }) {
     final result = Delta.from(this);
     if (trimNewLine) {
       result._trimNewLine();
+    }
+    if (trimOtherNewLine) {
+      other = Delta.from(other).._trimNewLine();
     }
     if (other.isNotEmpty) {
       // In case first operation of other can be merged with last operation in
