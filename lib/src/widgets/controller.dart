@@ -321,6 +321,19 @@ class QuillController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void replaceSelection(String plainText) {
+    final start = selection.start;
+    final end = selection.end;
+    final delta = Delta()
+      ..retain(start)
+      ..delete(end - start)
+      ..insert(plainText);
+    final newSelection =
+        TextSelection.collapsed(offset: start + plainText.length);
+    compose(delta, newSelection, ChangeSource.LOCAL);
+    _updateSelection(newSelection, ChangeSource.LOCAL);
+  }
+
   void compose(Delta delta, TextSelection textSelection, ChangeSource source) {
     if (delta.isNotEmpty) {
       document.compose(delta, source);
