@@ -351,7 +351,7 @@ class Document {
   /// Returns plain text representation of this document.
   String toPlainText({removeZeroW = false}) {
     final plainText = _root.children.map((e) => e.toPlainText()).join();
-    if (removeZeroW && plainText.startsWith(' ')) {
+    if (removeZeroW && plainText.startsWith(zeroWidthChar)) {
       return plainText.substring(1);
     }
     return plainText;
