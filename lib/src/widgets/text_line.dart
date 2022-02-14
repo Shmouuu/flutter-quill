@@ -4,7 +4,9 @@ import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -403,7 +405,14 @@ class _TextLineState extends State<TextLine> {
   }
 
   Future<void> _launchUrl(String url) async {
-    await launch(url);
+    try {
+      await launch(url);
+    } catch (e) {
+      debugPrint('=> ${e.runtimeType} $e');
+      if (e is PlatformException) {
+        showToast('No application found to open: $url');
+      }
+    }
   }
 
   void _tapNodeLink(Node node) {
