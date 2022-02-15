@@ -204,7 +204,7 @@ class DefaultStyles {
 
     final inlineCodeStyle = TextStyle(
       fontSize: 14,
-      color: themeData.colorScheme.primaryVariant.withOpacity(0.8),
+      color: themeData.colorScheme.primary.withOpacity(0.8),
       fontFamily: fontFamily,
     );
 

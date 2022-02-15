@@ -38,6 +38,7 @@ class Rules {
     // const FormatLinkAtCaretPositionRule(),
     const ResolveLineFormatRule(),
     const ResolveInlineFormatRule(),
+    const ResolveImageFormatRule(),
     const InsertEmbedsRule(),
     // const AutoExitBlockRule(), // Cause trouble with zerow char
     const PreserveBlockStyleOnInsertRule(),

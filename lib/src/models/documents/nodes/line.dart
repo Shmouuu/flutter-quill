@@ -129,12 +129,17 @@ class Line extends Container<Leaf?> {
     final isLineFormat = (index + local == thisLength) && local == 1;
 
     if (isLineFormat) {
-      assert(style.values.every((attr) => attr.scope == AttributeScope.BLOCK),
+      assert(
+          style.values.every((attr) =>
+              attr.scope == AttributeScope.BLOCK ||
+              attr.scope == AttributeScope.IGNORE),
           'It is not allowed to apply inline attributes to line itself.');
       _format(style);
     } else {
       // Otherwise forward to children as it's an inline format update.
-      assert(style.values.every((attr) => attr.scope == AttributeScope.INLINE));
+      assert(style.values.every((attr) =>
+          attr.scope == AttributeScope.INLINE ||
+          attr.scope == AttributeScope.IGNORE));
       assert(index + local != thisLength);
       super.retain(index, local, style);
     }

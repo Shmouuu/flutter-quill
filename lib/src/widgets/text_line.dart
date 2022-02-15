@@ -132,7 +132,8 @@ class _TextLineState extends State<TextLine> {
     if (widget.line.hasEmbed && widget.line.childCount == 1) {
       // For video, it is always single child
       final embed = widget.line.children.single as Embed;
-      return EmbedProxy(widget.embedBuilder(context, embed, widget.readOnly));
+      return EmbedProxy(widget.embedBuilder(
+          context, widget.controller, embed, widget.readOnly));
     }
     final textSpan = _getTextSpanForWholeLine(context);
     final strutStyle = StrutStyle.fromTextStyle(textSpan.style!);
@@ -172,8 +173,8 @@ class _TextLineState extends State<TextLine> {
         }
         // Here it should be image
         final embed = WidgetSpan(
-            child: EmbedProxy(
-                widget.embedBuilder(context, child, widget.readOnly)));
+            child: EmbedProxy(widget.embedBuilder(
+                context, widget.controller, child, widget.readOnly)));
         textSpanChildren.add(embed);
         continue;
       }

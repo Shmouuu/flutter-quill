@@ -92,6 +92,14 @@ class Attribute<T> {
 
   static final PageAttribute page = PageAttribute('');
 
+  static const String mobileWidth = 'mobileWidth';
+
+  static const String mobileHeight = 'mobileHeight';
+
+  static const String mobileMargin = 'mobileMargin';
+
+  static const String mobileAlignment = 'mobileAlignment';
+
   static final Set<String> inlineKeys = {
     Attribute.bold.key,
     Attribute.italic.key,

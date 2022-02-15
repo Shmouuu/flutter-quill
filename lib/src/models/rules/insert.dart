@@ -2,6 +2,7 @@ import 'package:tuple/tuple.dart';
 
 import '../../models/documents/document.dart';
 import '../documents/attribute.dart';
+import '../documents/nodes/embeddable.dart';
 import '../documents/style.dart';
 import '../quill_delta.dart';
 import 'rule.dart';
@@ -114,7 +115,11 @@ class PreserveBlockStyleOnInsertRule extends InsertRule {
         delta.insert('\n', lineStyle.toJson());
       } else if (i < lines.length - 1) {
         // we don't want to insert a newline after the last chunk of text, so -1
-        delta.insert('\n', blockStyle);
+        final blockAttributes = blockStyle.isEmpty
+            ? null
+            : blockStyle.map<String, dynamic>((_, attribute) =>
+                MapEntry<String, dynamic>(attribute.key, attribute.value));
+        delta.insert('\n', blockAttributes);
       }
     }
 
@@ -239,6 +244,7 @@ class ResetLineFormatOnNewLineRule extends InsertRule {
 }
 
 /// Handles all format operations which manipulate embeds.
+/// This rule wraps line breaks around video, not image.
 class InsertEmbedsRule extends InsertRule {
   const InsertEmbedsRule();
 
@@ -246,6 +252,12 @@ class InsertEmbedsRule extends InsertRule {
   Delta? applyRule(Delta document, int index,
       {int? len, Object? data, Attribute? attribute}) {
     if (data is String) {
+      return null;
+    }
+
+    assert(data is Map);
+
+    if (!(data as Map).containsKey(BlockEmbed.videoType)) {
       return null;
     }
 

@@ -1,13 +1,13 @@
 name: flutter_quill
 description: A rich text editor supporting mobile and web (Demo App @ bulletjournal.us)
-version: 3.8.7
+version: 4.0.1
 #author: bulletjournal
 homepage: https://bulletjournal.us/home/index.html
 repository: https://github.com/singerdmx/flutter-quill
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.5.3"
+  flutter: ">=2.10.0"
 
 dependencies:
   flutter:
@@ -29,8 +29,9 @@ dependencies:
   i18n_extension: ^4.2.0
   google_fonts: ^2.2.0
   dropdown_search: ^2.0.1
-  gallery_saver: ^2.3.2
   oktoast: ^3.1.5
+  gallery_saver: ^2.3.2
+  device_info_plus: ^3.2.1
 
 dev_dependencies:
   flutter_test:

@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:i18n_extension/i18n_widget.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../flutter_quill.dart';
@@ -170,6 +171,7 @@ class QuillEditor extends StatefulWidget {
       this.numberedPointStart,
       this.onPaste,
       this.editorGestureListener,
+      this.locale,
       this.floatingCursorDisabled = false,
       this.catchWebKeyboardEvents = false,
       Key? key})
@@ -350,6 +352,10 @@ class QuillEditor extends StatefulWidget {
   final CustomStyleBuilder? customStyleBuilder;
   final ValueChanged<TextInputAction>? onPerformAction;
 
+  /// The locale to use for the editor toolbar, defaults to system locale
+  /// More https://github.com/singerdmx/flutter-quill#translation
+  final Locale? locale;
+
   /// Delegate function responsible for showing menu with link actions on
   /// mobile platforms (iOS, Android).
   ///
@@ -469,10 +475,12 @@ class QuillEditorState extends State<QuillEditor>
       defaultFontFamily: widget.defaultFontFamily,
     );
 
-    final editor = _selectionGestureDetectorBuilder.build(
-      behavior: HitTestBehavior.translucent,
-      child: child,
-    );
+    final editor = I18n(
+        initialLocale: widget.locale,
+        child: _selectionGestureDetectorBuilder.build(
+          behavior: HitTestBehavior.translucent,
+          child: child,
+        ));
 
     if (widget.catchWebKeyboardEvents && kIsWeb) {
       // Intercept RawKeyEvent on Web to prevent it from propagating to parents
@@ -1555,16 +1563,47 @@ class RenderEditor extends RenderEditableContainerBox
 
   // End TextLayoutMetrics implementation
 
+  QuillVerticalCaretMovementRun startVerticalCaretMovement(
+      TextPosition startPosition) {
+    return QuillVerticalCaretMovementRun._(
+      this,
+      startPosition,
+    );
+  }
+
   @override
   void systemFontsDidChange() {
     super.systemFontsDidChange();
     markNeedsLayout();
   }
+}
 
-  void debugAssertLayoutUpToDate() {
-    // no-op?
-    // this assert was added by Flutter TextEditingActionTarge
-    // so we have to comply here.
+class QuillVerticalCaretMovementRun
+    extends BidirectionalIterator<TextPosition> {
+  QuillVerticalCaretMovementRun._(
+    this._editor,
+    this._currentTextPosition,
+  );
+
+  TextPosition _currentTextPosition;
+
+  final RenderEditor _editor;
+
+  @override
+  TextPosition get current {
+    return _currentTextPosition;
+  }
+
+  @override
+  bool moveNext() {
+    _currentTextPosition = _editor.getTextPositionBelow(_currentTextPosition);
+    return true;
+  }
+
+  @override
+  bool movePrevious() {
+    _currentTextPosition = _editor.getTextPositionAbove(_currentTextPosition);
+    return true;
   }
 }
 
