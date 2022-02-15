@@ -147,11 +147,9 @@ class _ColorButtonState extends State<ColorButton> {
       builder: (context) => AlertDialog(
         title: widget.showTitle ? Text('Select Color'.i18n) : null,
         backgroundColor: Theme.of(context).canvasColor,
-        content: SingleChildScrollView(
-          child: MaterialPicker(
-            pickerColor: const Color(0x00000000),
-            onColorChanged: (color) => _changeColor(context, color),
-          ),
+        content: MaterialPicker(
+          pickerColor: const Color(0x00000000),
+          onColorChanged: (color) => _changeColor(context, color),
         ),
       ),
     );
