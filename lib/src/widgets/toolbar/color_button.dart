@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import '../../../utils/dg_focus_node.dart';
 
 import '../../models/documents/attribute.dart';
 import '../../models/documents/style.dart';
@@ -142,6 +144,10 @@ class _ColorButtonState extends State<ColorButton> {
   }
 
   void _showColorPicker() {
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
+      FocusScope.of(context)
+          .requestFocus(DgBsFocusNode(debugLabel: 'ColorButton'));
+    });
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

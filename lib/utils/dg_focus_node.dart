@@ -7,3 +7,7 @@ class DgFocusNode extends FocusNode {
 
   final bool isShortCuts;
 }
+
+class DgBsFocusNode extends DgFocusNode {
+  DgBsFocusNode({String? debugLabel}) : super(debugLabel: debugLabel);
+}
