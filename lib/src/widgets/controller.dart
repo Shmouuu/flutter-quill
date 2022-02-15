@@ -380,6 +380,10 @@ class QuillController extends ChangeNotifier {
   }
 
   void _updateSelection(TextSelection textSelection, ChangeSource source) {
+    if (document.toPlainText().startsWith(Document.zeroWidthChar) != true) {
+      document.insert(0, '${Document.zeroWidthChar}');
+    }
+
     if (textSelection.baseOffset == 0) {
       if (textSelection.isCollapsed) {
         textSelection = const TextSelection.collapsed(offset: 1);
