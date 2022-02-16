@@ -95,6 +95,10 @@ class QuillController extends ChangeNotifier {
         .mergeAll(toggledStyle);
   }
 
+  Style collectStyle(int start, int end) {
+    return document.collectStyle(start, end - start);
+  }
+
   /// Returns all styles for each node within selection
   List<Tuple2<int, Style>> getAllIndividualSelectionStyles() {
     final styles = document.collectAllIndividualStyles(
@@ -292,6 +296,7 @@ class QuillController extends ChangeNotifier {
     for (final attr in attrs) {
       formatSelection(Attribute.clone(attr, null));
     }
+    toggledStyle = Style();
   }
 
   void formatSelection(Attribute? attribute) {
@@ -396,6 +401,17 @@ class QuillController extends ChangeNotifier {
     _selection = selection.copyWith(
         baseOffset: math.min(selection.baseOffset, end),
         extentOffset: math.min(selection.extentOffset, end));
+
+    // Update toggled style
+    if (_selection.isCollapsed) {
+      final itr = DeltaIterator(document.toDelta());
+      final delta = itr.skip(textSelection.baseOffset);
+      toggledStyle = Style();
+      delta?.attributes?.forEach((key, value) {
+        final attr = Attribute(key, AttributeScope.INLINE, value);
+        toggledStyle = toggledStyle.merge(attr);
+      });
+    }
   }
 
   String? getCommandWord(String command) {
