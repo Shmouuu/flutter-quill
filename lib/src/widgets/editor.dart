@@ -1197,8 +1197,9 @@ class RenderEditor extends RenderEditableContainerBox
     }
     defaultPaint(context, offset);
     _updateSelectionExtentsVisibility(offset + _paintOffset);
-    _paintHandleLayers(context, getEndpointsForSelection(selection));
-
+    if (!selection.isCollapsed) {
+      _paintHandleLayers(context, getEndpointsForSelection(selection));
+    }
     if (_hasFocus &&
         _cursorController.show.value &&
         _cursorController.style.paintAboveText) {
