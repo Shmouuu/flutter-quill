@@ -121,6 +121,11 @@ abstract class RenderAbstractEditor implements TextLayoutMetrics {
   /// {@macro flutter.rendering.editable.select}
   void selectWord(SelectionChangedCause cause);
 
+  /// Select all around the location of the last tap down.
+  ///
+  /// {@macro flutter.rendering.editable.select}
+  void selectAll(SelectionChangedCause cause);
+
   /// Move selection to the location of the last tap down.
   ///
   /// {@template flutter.rendering.editable.select}
@@ -887,6 +892,7 @@ class RenderEditor extends RenderEditableContainerBox
   }
 
   double? _maxContentWidth;
+
   set maxContentWidth(double? value) {
     if (_maxContentWidth == value) return;
     _maxContentWidth = value;
@@ -1105,6 +1111,17 @@ class RenderEditor extends RenderEditableContainerBox
   @override
   void selectWord(SelectionChangedCause cause) {
     selectWordsInRange(_lastTapDownPosition!, null, cause);
+  }
+
+  @override
+  void selectAll(SelectionChangedCause cause) {
+    _handleSelectionChange(
+      TextSelection(
+        baseOffset: 1,
+        extentOffset: document.length - 1,
+      ),
+      cause,
+    );
   }
 
   @override

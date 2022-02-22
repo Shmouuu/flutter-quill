@@ -262,6 +262,16 @@ class EditorTextSelectionGestureDetectorBuilder {
     }
   }
 
+  @protected
+  void onTripleTapDown(TapDownDetails details) {
+    if (delegate.selectionEnabled) {
+      renderEditor!.selectAll(SelectionChangedCause.tap);
+      if (shouldShowSelectionToolbar) {
+        editor!.showToolbar();
+      }
+    }
+  }
+
   /// Handler for [EditorTextSelectionGestureDetector.onDragSelectionStart].
   ///
   /// By default, it selects a text position specified in [details].
@@ -324,6 +334,7 @@ class EditorTextSelectionGestureDetectorBuilder {
       onSingleLongTapMoveUpdate: onSingleLongTapMoveUpdate,
       onSingleLongTapEnd: onSingleLongTapEnd,
       onDoubleTapDown: onDoubleTapDown,
+      onTripleTapDown: onTripleTapDown,
       onDragSelectionStart: onDragSelectionStart,
       onDragSelectionUpdate: onDragSelectionUpdate,
       onDragSelectionEnd: onDragSelectionEnd,
