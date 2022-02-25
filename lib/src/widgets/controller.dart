@@ -404,12 +404,12 @@ class QuillController extends ChangeNotifier {
 
     // Update toggled style
     if (_selection.isCollapsed) {
-      final itr = DeltaIterator(document.toDelta());
-      final delta = itr.skip(textSelection.baseOffset);
+      final style = document.collectStyle(textSelection.baseOffset, 0);
       toggledStyle = Style();
-      delta?.attributes?.forEach((key, value) {
-        final attr = Attribute(key, AttributeScope.INLINE, value);
-        toggledStyle = toggledStyle.merge(attr);
+      style.attributes.forEach((key, value) {
+        if (value.isInline) {
+          toggledStyle = toggledStyle.merge(value);
+        }
       });
     }
   }
