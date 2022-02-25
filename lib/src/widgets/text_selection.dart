@@ -359,6 +359,7 @@ class EditorTextSelectionOverlay {
       _handles![0].markNeedsBuild();
       _handles![1].markNeedsBuild();
     }
+    print('toolbar $toolbar');
     toolbar?.markNeedsBuild();
   }
 

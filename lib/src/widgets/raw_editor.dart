@@ -768,11 +768,14 @@ class RawEditorState extends EditorState
 
   void _updateOrDisposeSelectionOverlayIfNeeded() {
     if (_selectionOverlay != null) {
-      if (!_hasFocus) {
+      if (!_hasFocus || textEditingValue.selection.isCollapsed) {
         _selectionOverlay!.dispose();
         _selectionOverlay = null;
       } else if (!textEditingValue.selection.isCollapsed) {
         _selectionOverlay!.update(textEditingValue);
+        if (_selectionOverlay!.toolbar == null) {
+          _selectionOverlay!.showToolbar();
+        }
       }
     } else if (_hasFocus) {
       _selectionOverlay = EditorTextSelectionOverlay(
@@ -906,16 +909,14 @@ class RawEditorState extends EditorState
       return false;
     }
 
-    SchedulerBinding.instance!.addPostFrameCallback((_) {
-      if (_selectionOverlay == null || _selectionOverlay!.toolbar != null) {
-        _updateOrDisposeSelectionOverlayIfNeeded();
-      }
-      if (_selectionOverlay == null || _selectionOverlay!.toolbar != null) {
-        return;
-      }
-      _selectionOverlay!.update(textEditingValue);
+    if (_selectionOverlay == null) {
+      return false;
+    }
+
+    _selectionOverlay!.update(textEditingValue);
+    if (_selectionOverlay!.toolbar == null) {
       _selectionOverlay!.showToolbar();
-    });
+    }
     return true;
   }
 
