@@ -404,7 +404,9 @@ class QuillController extends ChangeNotifier {
 
     // Update toggled style
     if (_selection.isCollapsed) {
-      final style = document.collectStyle(textSelection.baseOffset, 0);
+      final style = document.isEmpty()
+          ? Style()
+          : document.collectStyle(textSelection.baseOffset, 0);
       toggledStyle = Style();
       style.attributes.forEach((key, value) {
         if (value.isInline) {
