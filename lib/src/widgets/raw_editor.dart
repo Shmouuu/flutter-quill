@@ -752,12 +752,7 @@ class RawEditorState extends EditorState
     // a new RenderEditableBox child. If we try to update selection overlay
     // immediately it'll not be able to find the new child since it hasn't been
     // built yet.
-    SchedulerBinding.instance!.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-      _updateOrDisposeSelectionOverlayIfNeeded();
-    });
+    _updateOrDisposeSelectionOverlayIfNeeded();
     if (mounted) {
       setState(() {
         // Use widget.controller.value in build()
@@ -913,10 +908,10 @@ class RawEditorState extends EditorState
       return false;
     }
 
-    _selectionOverlay!.update(textEditingValue);
     if (_selectionOverlay!.toolbar == null) {
       _selectionOverlay!.showToolbar();
     }
+    _selectionOverlay!.update(textEditingValue);
     return true;
   }
 

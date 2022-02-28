@@ -789,10 +789,10 @@ class _EditorTextSelectionGestureDetectorState
         _isWithinDoubleTapTolerance(details.globalPosition)) {
       _consecutiveTaps++;
       if (_consecutiveTaps == 2) {
-          if (widget.onDoubleTapDown != null) {
-            widget.onDoubleTapDown!(details);
-          }
-          _isDoubleOrTripleTap = true;
+        if (widget.onDoubleTapDown != null) {
+          widget.onDoubleTapDown!(details);
+        }
+        _isDoubleOrTripleTap = true;
       } else if (_consecutiveTaps >= 3) {
         if (widget.onTripleTapDown != null) {
           widget.onTripleTapDown!(details);
@@ -811,7 +811,6 @@ class _EditorTextSelectionGestureDetectorState
         widget.onSingleTapUp!(details);
       }
       _lastTapOffset = details.globalPosition;
-      // _doubleTapTimer = Timer(kDoubleTapTimeout, _doubleTapTimeout);
     }
     _isDoubleOrTripleTap = false;
   }
@@ -952,9 +951,7 @@ class _EditorTextSelectionGestureDetectorState
         widget.onDragSelectionEnd != null) {
       gestures[PanGestureRecognizer] =
           GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
-        () => PanGestureRecognizer(
-            debugOwner: this,
-            /*supportedDevices: <PointerDeviceKind>{PointerDeviceKind.mouse}*/),
+        () => PanGestureRecognizer(debugOwner: this),
         (instance) {
           // Text selection should start from the position of the first pointer
           // down event.

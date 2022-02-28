@@ -612,8 +612,6 @@ class _QuillEditorSelectionGestureDetectorBuilder
       return;
     }
 
-    editor!.hideToolbar();
-
     if (delegate.selectionEnabled && !_isPositionSelected(details)) {
       final _platform = Theme.of(_state.context).platform;
       if (isAppleOS(_platform)) {
