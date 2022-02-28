@@ -772,10 +772,10 @@ class RawEditorState extends EditorState
         _selectionOverlay!.dispose();
         _selectionOverlay = null;
       } else if (!textEditingValue.selection.isCollapsed) {
-        _selectionOverlay!.update(textEditingValue);
         if (!kIsWeb && _selectionOverlay!.toolbar == null) {
           _selectionOverlay!.showToolbar();
         }
+        _selectionOverlay!.update(textEditingValue);
       }
     } else if (_hasFocus) {
       _selectionOverlay = EditorTextSelectionOverlay(
