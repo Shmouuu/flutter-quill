@@ -773,21 +773,25 @@ class RawEditorState extends EditorState
         _selectionOverlay!.update(textEditingValue);
       }
     } else if (_hasFocus) {
-      _selectionOverlay = EditorTextSelectionOverlay(
-        value: textEditingValue,
-        context: context,
-        debugRequiredFor: widget,
-        toolbarLayerLink: _toolbarLayerLink,
-        startHandleLayerLink: _startHandleLayerLink,
-        endHandleLayerLink: _endHandleLayerLink,
-        renderObject: renderEditor,
-        selectionCtrls: widget.selectionCtrls,
-        selectionDelegate: this,
-        clipboardStatus: _clipboardStatus,
-      );
-      _selectionOverlay!.handlesVisible = _shouldShowSelectionHandles();
-      _selectionOverlay!.showHandles();
+      _createSelectionOverlay();
     }
+  }
+
+  void _createSelectionOverlay() {
+    _selectionOverlay = EditorTextSelectionOverlay(
+      value: textEditingValue,
+      context: context,
+      debugRequiredFor: widget,
+      toolbarLayerLink: _toolbarLayerLink,
+      startHandleLayerLink: _startHandleLayerLink,
+      endHandleLayerLink: _endHandleLayerLink,
+      renderObject: renderEditor,
+      selectionCtrls: widget.selectionCtrls,
+      selectionDelegate: this,
+      clipboardStatus: _clipboardStatus,
+    );
+    _selectionOverlay!.handlesVisible = _shouldShowSelectionHandles();
+    _selectionOverlay!.showHandles();
   }
 
   void _handleFocusChanged() {
@@ -905,7 +909,7 @@ class RawEditorState extends EditorState
     }
 
     if (_selectionOverlay == null) {
-      return false;
+      _createSelectionOverlay();
     }
 
     if (_selectionOverlay!.toolbar == null) {
