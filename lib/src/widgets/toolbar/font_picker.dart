@@ -29,7 +29,7 @@ class _FontPickerState extends State<FontPicker> {
   Widget build(BuildContext context) {
     return DropdownSearch<String>(
       showSearchBox: true,
-      mode: Mode.MENU,
+      maxHeight: 250,
       dropdownSearchDecoration: const InputDecoration(
         filled: true,
         labelText: 'Pick a family font',
@@ -70,7 +70,6 @@ class _FontPickerState extends State<FontPicker> {
       onChanged: (value) {
         widget.onChanged(value);
       },
-      popupItemDisabled: (s) => s.startsWith('I'),
       selectedItem: widget.fontFamily,
     );
   }
