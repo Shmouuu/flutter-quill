@@ -55,7 +55,7 @@ class PreserveLineStyleOnSplitRule extends InsertRule {
       delta.insert('\n');
       return delta;
     }
-    final nextNewLine = _getNextNewLine(itr);
+    final nextNewLine = getNextNewLine(itr);
     final attributes = nextNewLine.item1?.attributes;
 
     return delta..insert('\n', attributes);
@@ -84,7 +84,7 @@ class PreserveBlockStyleOnInsertRule extends InsertRule {
     final itr = DeltaIterator(document)..skip(index);
 
     // Look for the next newline.
-    final nextNewLine = _getNextNewLine(itr);
+    final nextNewLine = getNextNewLine(itr);
     final lineStyle =
         Style.fromJson(nextNewLine.item1?.attributes ?? <String, dynamic>{});
 
@@ -187,7 +187,7 @@ class AutoExitBlockRule extends InsertRule {
 
     // Keep looking for the next newline character to see if it shares the same
     // block style as `cur`.
-    final nextNewLine = _getNextNewLine(itr);
+    final nextNewLine = getNextNewLine(itr);
     if (nextNewLine.item1 != null &&
         nextNewLine.item1!.attributes != null &&
         Style.fromJson(nextNewLine.item1!.attributes).getBlockExceptHeader() ==
@@ -524,7 +524,7 @@ class CatchAllInsertRule extends InsertRule {
   }
 }
 
-Tuple2<Operation?, int?> _getNextNewLine(DeltaIterator iterator) {
+Tuple2<Operation?, int?> getNextNewLine(DeltaIterator iterator) {
   Operation op;
   for (var skipped = 0; iterator.hasNext; skipped += op.length!) {
     op = iterator.next();
