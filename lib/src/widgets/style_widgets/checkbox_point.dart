@@ -30,16 +30,15 @@ class _CheckboxPointState extends State<CheckboxPoint> {
         onChanged: widget.onChanged,
       );
     }
-    return Center(
-      child: SizedBox(
-        width: widget.size,
-        height: widget.size,
-        child: Checkbox(
-          onChanged: widget.enabled
-              ? (value) => widget.onChanged(!widget.value)
-              : null,
-          value: widget.value,
-        ),
+    return Container(
+      margin: const EdgeInsets.only(top: 4),
+      width: widget.size,
+      height: widget.size,
+      child: Checkbox(
+        onChanged: widget.enabled
+            ? (value) => widget.onChanged(!widget.value)
+            : null,
+        value: widget.value,
       ),
     );
   }
