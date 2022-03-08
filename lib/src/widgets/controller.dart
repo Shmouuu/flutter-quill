@@ -191,27 +191,14 @@ class QuillController extends ChangeNotifier {
     Delta? delta;
     if (len > 0 || data is! String || data.isNotEmpty) {
       delta = document.replace(index, len, data);
-      var shouldRetainDelta = toggledStyle.isNotEmpty &&
-          delta.isNotEmpty &&
-          delta.length <= 2 &&
-          delta.length <= 2 &&
-          delta.last.isInsert;
-      if (shouldRetainDelta &&
-          toggledStyle.isNotEmpty &&
-          delta.length == 2 &&
-          delta.last.data == '\n') {
-        // if all attributes are inline, shouldRetainDelta should be false
-        final anyAttributeNotInline =
-            toggledStyle.values.any((attr) => !attr.isInline);
-        if (!anyAttributeNotInline) {
-          shouldRetainDelta = false;
+      if (data is String && data.isNotEmpty) {
+        final shouldRetainDelta = toggledStyle.isNotEmpty && delta.isNotEmpty;
+        if (shouldRetainDelta) {
+          final retainDelta = Delta()
+            ..retain(index)
+            ..retain(data.length, toggledStyle.toJson());
+          document.compose(retainDelta, ChangeSource.LOCAL);
         }
-      }
-      if (shouldRetainDelta) {
-        final retainDelta = Delta()
-          ..retain(index)
-          ..retain(data is String ? data.length : 1, toggledStyle.toJson());
-        document.compose(retainDelta, ChangeSource.LOCAL);
       }
     }
 
