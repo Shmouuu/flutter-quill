@@ -280,7 +280,7 @@ class _TextLineState extends State<TextLine> {
             nodeStyle.attributes[Attribute.page.key]!.value != null);
     final clickable = isLink && canLaunchLinks;
     String value;
-    if (node.parent?.isFirst == true && textNode.value.startsWith(' ')) {
+    if (textNode.previous == null && textNode.value.startsWith(' ')) {
       value = textNode.value.replaceRange(0, 1, '\u200b');
     } else {
       value = textNode.value;
