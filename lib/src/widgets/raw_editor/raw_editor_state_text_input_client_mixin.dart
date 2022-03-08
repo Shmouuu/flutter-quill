@@ -149,7 +149,20 @@ mixin RawEditorStateTextInputClientMixin on EditorState
     final text = value.text;
     final cursorPosition = value.selection.extentOffset;
     final diff = getDiff(oldText, text, cursorPosition);
-    if (widget.onPaste?.call(text) == true) {
+    // Get the real insert (in the case you paste something that has
+    // the same value than the current selection.
+    var pasted = diff.inserted;
+    if (!effectiveLastKnownValue.selection.isCollapsed) {
+      final selectedText = oldText.substring(
+          effectiveLastKnownValue.selection.baseOffset,
+          effectiveLastKnownValue.selection.extentOffset);
+      final newText =
+          text.substring(effectiveLastKnownValue.selection.baseOffset);
+      if (newText.startsWith(selectedText)) {
+        pasted = selectedText + pasted;
+      }
+    }
+    if (widget.onPaste?.call(pasted) == true) {
       updateRemoteValueIfNeeded();
       return;
     }
