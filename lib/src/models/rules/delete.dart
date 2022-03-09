@@ -1,7 +1,5 @@
-import 'package:flutter_quill/flutter_quill.dart';
+import '../../../flutter_quill.dart';
 
-import '../documents/attribute.dart';
-import '../quill_delta.dart';
 import 'rule.dart';
 
 /// A heuristic rule for delete operations.
