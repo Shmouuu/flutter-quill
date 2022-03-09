@@ -1,3 +1,5 @@
+import 'package:flutter_quill/flutter_quill.dart';
+
 import '../documents/attribute.dart';
 import '../quill_delta.dart';
 import 'rule.dart';
@@ -44,6 +46,35 @@ class CatchAllDeleteRule extends DeleteRule {
     return Delta()
       ..retain(index)
       ..delete(itr.hasNext ? len : len - 1);
+  }
+}
+
+/// Remove the block style (bullet, etc..) before removing any \n
+class DeleteBlockRule extends DeleteRule {
+  const DeleteBlockRule();
+
+  @override
+  Delta? applyRule(Delta document, int index,
+      {int? len, Object? data, Attribute? attribute}) {
+    if (len == null) {
+      return null;
+    }
+    final itr = DeltaIterator(document)..skip(index);
+    final op = itr.next(1);
+    if (op.data != '\n') {
+      return null;
+    }
+    final nextNewLine = getNextNewLine(itr);
+    final blockStyle =
+        Style.fromJson(nextNewLine.item1!.attributes).getBlockExceptHeader();
+    if (blockStyle != null) {
+      final attributes = <String, dynamic>{};
+      attributes[blockStyle.key] = null;
+      return Delta()
+        ..retain(index + nextNewLine.item2! + 1)
+        ..retain(1, attributes);
+    }
+    return null;
   }
 }
 

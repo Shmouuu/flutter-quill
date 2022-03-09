@@ -48,6 +48,7 @@ class Rules {
     // const AutoFormatMultipleLinksRule(),
     const PreserveInlineStylesRule(),
     const CatchAllInsertRule(),
+    const DeleteBlockRule(),
     const EnsureEmbedLineRule(),
     const PreserveLineStyleOnMergeRule(),
     const CatchAllDeleteRule(),
