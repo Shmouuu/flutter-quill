@@ -904,7 +904,7 @@ class RawEditorState extends EditorState
     // toolbar: copy, paste, select, cut. It might also provide additional
     // functionality depending on the browser (such as translate). Due to this
     // we should not show a Flutter toolbar for the editable text elements.
-    if (kIsWeb) {
+    if (kIsWeb || !widget.focusNode.hasFocus) {
       return false;
     }
 
