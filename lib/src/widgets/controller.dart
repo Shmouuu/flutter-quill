@@ -403,6 +403,16 @@ class QuillController extends ChangeNotifier {
     }
   }
 
+  String? getCommandWords(Iterable<String> commands) {
+    for (final command in commands) {
+      final result = getCommandWord(command);
+      if (result != null) {
+        return result;
+      }
+    }
+    return null;
+  }
+
   String? getCommandWord(String command) {
     if (document.isEmpty()) {
       return null;
