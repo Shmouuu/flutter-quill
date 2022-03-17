@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import '../../../utils/dg_focus_node.dart';
 
+import '../../../utils/dg_focus_node.dart';
 import '../../models/documents/attribute.dart';
 import '../../models/documents/style.dart';
 import '../../models/themes/quill_icon_theme.dart';
@@ -103,12 +103,16 @@ class _ColorButtonState extends State<ColorButton> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final iconColor = _isToggledColor && !widget.background && !_isWhite
+    final iconColor = _isToggledColor &&
+            !widget.background &&
+            !_isWhite &&
+            _selectionStyle.attributes.containsKey('color')
         ? stringToColor(_selectionStyle.attributes['color']!.value)
         : (widget.iconTheme?.iconUnselectedColor ?? theme.iconTheme.color);
 
     final iconColorBackground =
-        _isToggledBackground && widget.background && !_isWhiteBackground
+        _isToggledBackground && widget.background && !_isWhiteBackground &&
+            _selectionStyle.attributes.containsKey('background')
             ? stringToColor(_selectionStyle.attributes['background']!.value)
             : (widget.iconTheme?.iconUnselectedColor ?? theme.iconTheme.color);
 
