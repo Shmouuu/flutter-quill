@@ -267,7 +267,6 @@ class DefaultStyles {
         page: InlineCodeStyle(
           radius: const Radius.circular(3),
           style: const TextStyle(
-            fontSize: 15,
             color: Colors.black87,
             fontWeight: FontWeight.w600,
             decoration: TextDecoration.underline,
