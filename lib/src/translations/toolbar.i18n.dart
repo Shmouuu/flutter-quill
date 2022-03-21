@@ -141,8 +141,8 @@ extension Localization on String {
           'Text': '文字',
           'What is entered is not a link': '输入的不是链接',
           'Resize': '调整大小',
-          'Width': 'Width',
-          'Height': 'Height',
+          'Width': '宽度',
+          'Height': '高度',
         },
         'ko': {
           'Paste a link': '링크를 붙여넣어 주세요.',
@@ -347,6 +347,26 @@ extension Localization on String {
           'Resize': 'Ubah Ukuran',
           'Width': 'Lebar',
           'Height': 'Tinggi',
+        },
+        'no': {
+          'Paste a link': 'Lim inn lenke',
+          'Ok': 'Ok',
+          'Select Color': 'Velg farge',
+          'Gallery': 'Galleri',
+          'Link': 'Lenke',
+          'Please first select some text to transform into a link.':
+              'Velg først litt tekst for å forvandle til en lenke.',
+          'Open': 'Åpne',
+          'Copy': 'Kopier',
+          'Remove': 'Fjern',
+          'Save': 'Lagre',
+          'Zoom': 'Zoom',
+          'Saved': 'Lagret',
+          'Text': 'Tekst',
+          'What is entered is not a link': 'Du har oppgitt en ugyldig lenke',
+          'Resize': 'Endre størrelse',
+          'Width': 'Bredde',
+          'Height': 'Høyde',
         },
       };
 

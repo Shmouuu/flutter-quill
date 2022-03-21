@@ -30,6 +30,7 @@ class QuillController extends ChangeNotifier {
     this.onDelete,
     this.onFormat,
     this.onSelectionCompleted,
+    this.onSelectionChanged,
   })  : _selection = selection,
         _keepStyleOnNewLine = keepStyleOnNewLine;
 
@@ -61,6 +62,7 @@ class QuillController extends ChangeNotifier {
   FormatCallback? onFormat;
 
   void Function()? onSelectionCompleted;
+  void Function(TextSelection textSelection)? onSelectionChanged;
 
   /// Store any styles attribute that got toggled by the tap of a button
   /// and that has not been applied yet.
@@ -401,6 +403,8 @@ class QuillController extends ChangeNotifier {
         }
       });
     }
+
+    onSelectionChanged?.call(textSelection);
   }
 
   String? getCommandWords(Iterable<String> commands) {
