@@ -212,7 +212,7 @@ class _TextLineState extends State<TextLine> {
     }
     final children = nodes
         .map((node) =>
-            _getTextSpanFromNode(defaultStyles, node, widget.line.style))
+        _getTextSpanFromNode(defaultStyles, node, widget.line.style))
         .toList(growable: false);
 
     return TextSpan(children: children, style: lineStyle);
@@ -279,7 +279,7 @@ class _TextLineState extends State<TextLine> {
     final textNode = node as leaf.Text;
     final nodeStyle = textNode.style;
     final isLink = (nodeStyle.containsKey(Attribute.link.key) &&
-            nodeStyle.attributes[Attribute.link.key]!.value != null) ||
+        nodeStyle.attributes[Attribute.link.key]!.value != null) ||
         (nodeStyle.containsKey(Attribute.page.key) &&
             nodeStyle.attributes[Attribute.page.key]!.value != null);
     final clickable = isLink && canLaunchLinks;
@@ -382,6 +382,8 @@ class _TextLineState extends State<TextLine> {
       if (textColor != null) {
         res = res.merge(TextStyle(color: textColor));
       }
+    } else if (textNode.style.attributes[Attribute.placeholder.key] == null){
+      res = res.merge(TextStyle(color: defaultStyles.color));
     }
 
     final background = textNode.style.attributes[Attribute.background.key];
@@ -494,19 +496,19 @@ class _TextLineState extends State<TextLine> {
 
 class EditableTextLine extends RenderObjectWidget {
   const EditableTextLine(
-    this.line,
-    this.leading,
-    this.body,
-    this.indentWidth,
-    this.verticalSpacing,
-    this.textDirection,
-    this.textSelection,
-    this.color,
-    this.enableInteractiveSelection,
-    this.hasFocus,
-    this.devicePixelRatio,
-    this.cursorCont,
-  );
+      this.line,
+      this.leading,
+      this.body,
+      this.indentWidth,
+      this.verticalSpacing,
+      this.textDirection,
+      this.textSelection,
+      this.color,
+      this.enableInteractiveSelection,
+      this.hasFocus,
+      this.devicePixelRatio,
+      this.cursorCont,
+      );
 
   final Line line;
   final Widget? leading;
@@ -724,9 +726,9 @@ class RenderEditableTextLine extends RenderEditableBox {
   bool containsCursor() {
     return _containsCursor ??= cursorCont.isFloatingCursorActive
         ? line
-            .containsOffset(cursorCont.floatingCursorTextPosition.value!.offset)
+        .containsOffset(cursorCont.floatingCursorTextPosition.value!.offset)
         : textSelection.isCollapsed &&
-            line.containsOffset(textSelection.baseOffset);
+        line.containsOffset(textSelection.baseOffset);
   }
 
   RenderBox? _updateChild(
@@ -796,12 +798,12 @@ class RenderEditableTextLine extends RenderEditableBox {
         .translate(0, 0.5 * preferredLineHeight(position))
         .dy;
     final lineBoxes =
-        _getBoxes(TextSelection(baseOffset: 0, extentOffset: line.length - 1))
-            .where((element) => element.top < lineDy && element.bottom > lineDy)
-            .toList(growable: false);
+    _getBoxes(TextSelection(baseOffset: 0, extentOffset: line.length - 1))
+        .where((element) => element.top < lineDy && element.bottom > lineDy)
+        .toList(growable: false);
     return TextRange(
         start:
-            getPositionForOffset(Offset(lineBoxes.first.left, lineDy)).offset,
+        getPositionForOffset(Offset(lineBoxes.first.left, lineDy)).offset,
         end: getPositionForOffset(Offset(lineBoxes.last.right, lineDy)).offset);
   }
 
@@ -858,7 +860,7 @@ class RenderEditableTextLine extends RenderEditableBox {
 
   double get cursorHeight =>
       cursorCont.style.height ??
-      preferredLineHeight(const TextPosition(offset: 0));
+          preferredLineHeight(const TextPosition(offset: 0));
 
   // TODO: This is no longer producing the highest-fidelity caret
   // heights for Android, especially when non-alphabetic languages
@@ -959,8 +961,8 @@ class RenderEditableTextLine extends RenderEditableBox {
     final bodyWidth = _body == null
         ? 0
         : _body!
-            .getMinIntrinsicWidth(math.max(0, height - verticalPadding))
-            .ceil();
+        .getMinIntrinsicWidth(math.max(0, height - verticalPadding))
+        .ceil();
     return horizontalPadding + leadingWidth + bodyWidth;
   }
 
@@ -975,8 +977,8 @@ class RenderEditableTextLine extends RenderEditableBox {
     final bodyWidth = _body == null
         ? 0
         : _body!
-            .getMaxIntrinsicWidth(math.max(0, height - verticalPadding))
-            .ceil();
+        .getMaxIntrinsicWidth(math.max(0, height - verticalPadding))
+        .ceil();
     return horizontalPadding + leadingWidth + bodyWidth;
   }
 
@@ -987,7 +989,7 @@ class RenderEditableTextLine extends RenderEditableBox {
     final verticalPadding = _resolvedPadding!.top + _resolvedPadding!.bottom;
     if (_body != null) {
       return _body!
-              .getMinIntrinsicHeight(math.max(0, width - horizontalPadding)) +
+          .getMinIntrinsicHeight(math.max(0, width - horizontalPadding)) +
           verticalPadding;
     }
     return verticalPadding;
@@ -1000,7 +1002,7 @@ class RenderEditableTextLine extends RenderEditableBox {
     final verticalPadding = _resolvedPadding!.top + _resolvedPadding!.bottom;
     if (_body != null) {
       return _body!
-              .getMaxIntrinsicHeight(math.max(0, width - horizontalPadding)) +
+          .getMaxIntrinsicHeight(math.max(0, width - horizontalPadding)) +
           verticalPadding;
     }
     return verticalPadding;
@@ -1057,14 +1059,14 @@ class RenderEditableTextLine extends RenderEditableBox {
   }
 
   CursorPainter get _cursorPainter => CursorPainter(
-        editable: _body,
-        style: cursorCont.style,
-        prototype: _caretPrototype,
-        color: cursorCont.isFloatingCursorActive
-            ? cursorCont.style.backgroundColor
-            : cursorCont.color.value,
-        devicePixelRatio: devicePixelRatio,
-      );
+    editable: _body,
+    style: cursorCont.style,
+    prototype: _caretPrototype,
+    color: cursorCont.isFloatingCursorActive
+        ? cursorCont.style.backgroundColor
+        : cursorCont.color.value,
+    devicePixelRatio: devicePixelRatio,
+  );
 
   @override
   void paint(PaintingContext context, Offset offset) {
@@ -1144,12 +1146,12 @@ class RenderEditableTextLine extends RenderEditableBox {
       PaintingContext context, Offset effectiveOffset, bool lineHasEmbed) {
     final position = cursorCont.isFloatingCursorActive
         ? TextPosition(
-            offset: cursorCont.floatingCursorTextPosition.value!.offset -
-                line.documentOffset,
-            affinity: cursorCont.floatingCursorTextPosition.value!.affinity)
+        offset: cursorCont.floatingCursorTextPosition.value!.offset -
+            line.documentOffset,
+        affinity: cursorCont.floatingCursorTextPosition.value!.affinity)
         : TextPosition(
-            offset: textSelection.extentOffset - line.documentOffset,
-            affinity: textSelection.base.affinity);
+        offset: textSelection.extentOffset - line.documentOffset,
+        affinity: textSelection.base.affinity);
     _cursorPainter.paint(
         context.canvas, effectiveOffset, position, lineHasEmbed);
   }
@@ -1181,7 +1183,7 @@ class RenderEditableTextLine extends RenderEditableBox {
   Rect getLocalRectForCaret(TextPosition position) {
     final caretOffset = getOffsetForCaret(position);
     var rect =
-        Rect.fromLTWH(0, 0, cursorWidth, cursorHeight).shift(caretOffset);
+    Rect.fromLTWH(0, 0, cursorWidth, cursorHeight).shift(caretOffset);
     final cursorOffset = cursorCont.style.offset;
     // Add additional cursor offset (generally only if on iOS).
     if (cursorOffset != null) rect = rect.shift(cursorOffset);
@@ -1191,7 +1193,7 @@ class RenderEditableTextLine extends RenderEditableBox {
   @override
   TextPosition globalToLocalPosition(TextPosition position) {
     assert(container.containsOffset(position.offset),
-        'The provided text position is not in the current node');
+    'The provided text position is not in the current node');
     return TextPosition(
       offset: position.offset - container.documentOffset,
       affinity: position.affinity,

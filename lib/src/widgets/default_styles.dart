@@ -212,7 +212,6 @@ class DefaultStyles {
         h1: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
               fontSize: 34,
-              color: defaultTextStyle.style.color!,
               height: 1.15,
               fontWeight: FontWeight.w600,
             ),
@@ -222,7 +221,6 @@ class DefaultStyles {
         h2: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
               fontSize: 24,
-              color: defaultTextStyle.style.color!,
               height: 1.15,
               fontWeight: FontWeight.normal,
             ),
@@ -232,7 +230,6 @@ class DefaultStyles {
         h3: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
               fontSize: 20,
-              color: defaultTextStyle.style.color!,
               height: 1.25,
               fontWeight: FontWeight.w500,
             ),
@@ -243,7 +240,7 @@ class DefaultStyles {
             baseStyle, const Tuple2(0, 0), const Tuple2(0, 0), null),
         bold: const TextStyle(fontWeight: FontWeight.bold),
         italic: const TextStyle(fontStyle: FontStyle.italic),
-        small: const TextStyle(fontSize: 12, color: Colors.black45),
+        small: const TextStyle(fontSize: 12),
         underline: const TextStyle(decoration: TextDecoration.underline),
         strikeThrough: const TextStyle(decoration: TextDecoration.lineThrough),
         inlineCode: InlineCodeStyle(
@@ -267,7 +264,6 @@ class DefaultStyles {
         page: InlineCodeStyle(
           radius: const Radius.circular(3),
           style: const TextStyle(
-            color: Colors.black87,
             fontWeight: FontWeight.w600,
             decoration: TextDecoration.underline,
           ),
@@ -275,7 +271,6 @@ class DefaultStyles {
         placeHolder: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
               color: const Color(0xFFC4C4C4),
-              height: 1.15,
               fontWeight: FontWeight.w400,
             ),
             const Tuple2(0, 0),
@@ -284,7 +279,7 @@ class DefaultStyles {
         lists: DefaultListBlockStyle(
             baseStyle, baseSpacing, const Tuple2(0, 6), null, null),
         quote: DefaultTextBlockStyle(
-            TextStyle(color: baseStyle.color),
+            const TextStyle(),
             baseSpacing,
             const Tuple2(6, 2),
             BoxDecoration(
@@ -337,6 +332,7 @@ class DefaultStyles {
         indent: other.indent ?? indent,
         align: other.align ?? align,
         leading: other.leading ?? leading,
+        page: other.page ?? page,
         sizeSmall: other.sizeSmall ?? sizeSmall,
         sizeLarge: other.sizeLarge ?? sizeLarge,
         sizeHuge: other.sizeHuge ?? sizeHuge);
