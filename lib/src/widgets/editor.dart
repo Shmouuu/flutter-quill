@@ -98,10 +98,10 @@ abstract class RenderAbstractEditor implements TextLayoutMetrics {
   ///
   /// {@macro flutter.rendering.editable.select}
   void selectWordsInRange(
-      Offset from,
-      Offset to,
-      SelectionChangedCause cause,
-      );
+    Offset from,
+    Offset to,
+    SelectionChangedCause cause,
+  );
 
   /// Move the selection to the beginning or end of a word.
   ///
@@ -142,44 +142,44 @@ abstract class RenderAbstractEditor implements TextLayoutMetrics {
 class QuillEditor extends StatefulWidget {
   const QuillEditor(
       {required this.controller,
-        required this.focusNode,
-        required this.scrollController,
-        required this.scrollable,
-        required this.padding,
-        required this.autoFocus,
-        required this.readOnly,
-        required this.expands,
-        this.showCursor,
-        this.defaultFontFamily,
-        this.paintCursorAboveText,
-        this.placeholder,
-        this.enableInteractiveSelection = true,
-        this.scrollBottomInset = 0,
-        this.minHeight,
-        this.maxHeight,
-        this.maxContentWidth,
-        this.customStyles,
-        this.textCapitalization = TextCapitalization.sentences,
-        this.keyboardAppearance = Brightness.light,
-        this.scrollPhysics,
-        this.onLaunchUrl,
-        this.onDgPageTapped,
-        this.onTapDown,
-        this.onTapUp,
-        this.onSingleLongTapStart,
-        this.onSingleLongTapMoveUpdate,
-        this.onSingleLongTapEnd,
-        this.embedBuilder = defaultEmbedBuilder,
-        this.linkActionPickerDelegate = defaultLinkActionPickerDelegate,
-        this.customStyleBuilder,
-        this.onPerformAction,
-        this.numberedPointStart,
-        this.onPaste,
-        this.editorGestureListener,
-        this.locale,
-        this.floatingCursorDisabled = false,
-        this.catchWebKeyboardEvents = false,
-        Key? key})
+      required this.focusNode,
+      required this.scrollController,
+      required this.scrollable,
+      required this.padding,
+      required this.autoFocus,
+      required this.readOnly,
+      required this.expands,
+      this.showCursor,
+      this.defaultFontFamily,
+      this.paintCursorAboveText,
+      this.placeholder,
+      this.enableInteractiveSelection = true,
+      this.scrollBottomInset = 0,
+      this.minHeight,
+      this.maxHeight,
+      this.maxContentWidth,
+      this.customStyles,
+      this.textCapitalization = TextCapitalization.sentences,
+      this.keyboardAppearance = Brightness.light,
+      this.scrollPhysics,
+      this.onLaunchUrl,
+      this.onDgPageTapped,
+      this.onTapDown,
+      this.onTapUp,
+      this.onSingleLongTapStart,
+      this.onSingleLongTapMoveUpdate,
+      this.onSingleLongTapEnd,
+      this.embedBuilder = defaultEmbedBuilder,
+      this.linkActionPickerDelegate = defaultLinkActionPickerDelegate,
+      this.customStyleBuilder,
+      this.onPerformAction,
+      this.numberedPointStart,
+      this.onPaste,
+      this.editorGestureListener,
+      this.locale,
+      this.floatingCursorDisabled = false,
+      this.catchWebKeyboardEvents = false,
+      Key? key})
       : super(key: key);
 
   factory QuillEditor.basic({
@@ -341,8 +341,8 @@ class QuillEditor extends StatefulWidget {
 
   // Returns whether gesture is handled
   final bool Function(
-      LongPressStartDetails details, TextPosition Function(Offset offset))?
-  onSingleLongTapStart;
+          LongPressStartDetails details, TextPosition Function(Offset offset))?
+      onSingleLongTapStart;
 
   // Returns whether gesture is handled
   final bool Function(LongPressMoveUpdateDetails details,
@@ -350,8 +350,8 @@ class QuillEditor extends StatefulWidget {
 
   // Returns whether gesture is handled
   final bool Function(
-      LongPressEndDetails details, TextPosition Function(Offset offset))?
-  onSingleLongTapEnd;
+          LongPressEndDetails details, TextPosition Function(Offset offset))?
+      onSingleLongTapEnd;
 
   final EmbedBuilder embedBuilder;
   final CustomStyleBuilder? customStyleBuilder;
@@ -386,7 +386,7 @@ class QuillEditorState extends State<QuillEditor>
     implements EditorTextSelectionGestureDetectorBuilderDelegate {
   final GlobalKey<EditorState> _editorKey = GlobalKey<EditorState>();
   late EditorTextSelectionGestureDetectorBuilder
-  _selectionGestureDetectorBuilder;
+      _selectionGestureDetectorBuilder;
 
   @override
   void initState() {
@@ -571,7 +571,7 @@ class _QuillEditorSelectionGestureDetectorBuilder
     }
     final pos = renderEditor!.getPositionForOffset(details.globalPosition);
     final result =
-    editor!.widget.controller.document.querySegmentLeafNode(pos.offset);
+        editor!.widget.controller.document.querySegmentLeafNode(pos.offset);
     final line = result.item1;
     if (line == null) {
       return false;
@@ -620,9 +620,9 @@ class _QuillEditorSelectionGestureDetectorBuilder
             case PointerDeviceKind.mouse:
             case PointerDeviceKind.stylus:
             case PointerDeviceKind.invertedStylus:
-            // Precise devices should place the cursor at a precise position.
-            // If `Shift` key is pressed then
-            // extend current selection instead.
+              // Precise devices should place the cursor at a precise position.
+              // If `Shift` key is pressed then
+              // extend current selection instead.
               if (isShiftClick(details.kind)) {
                 renderEditor!
                   ..extendSelection(details.globalPosition,
@@ -637,8 +637,8 @@ class _QuillEditorSelectionGestureDetectorBuilder
               break;
             case PointerDeviceKind.touch:
             case PointerDeviceKind.unknown:
-            // On macOS/iOS/iPadOS a touch tap places the cursor at the edge
-            // of the word.
+              // On macOS/iOS/iPadOS a touch tap places the cursor at the edge
+              // of the word.
               renderEditor!
                 ..selectWordEdge(SelectionChangedCause.tap)
                 ..onSelectionCompleted();
@@ -722,7 +722,7 @@ const EdgeInsets _kFloatingCursorAddedMargin = EdgeInsets.fromLTRB(4, 4, 4, 5);
 // The additional size on the x and y axis with which to expand the prototype
 // cursor to render the floating cursor in pixels.
 const EdgeInsets _kFloatingCaretSizeIncrease =
-EdgeInsets.symmetric(horizontal: 0.5, vertical: 1);
+    EdgeInsets.symmetric(horizontal: 0.5, vertical: 1);
 
 /// Displays a document as a vertical list of document segments (lines
 /// and blocks).
@@ -748,7 +748,7 @@ class RenderEditor extends RenderEditableContainerBox
     ViewportOffset? offset,
     List<RenderEditableBox>? children,
     EdgeInsets floatingCursorAddedMargin =
-    const EdgeInsets.fromLTRB(4, 4, 4, 5),
+        const EdgeInsets.fromLTRB(4, 4, 4, 5),
     double? maxContentWidth,
   })  : _hasFocus = hasFocus,
         _extendSelectionOrigin = selection,
@@ -757,12 +757,12 @@ class RenderEditor extends RenderEditableContainerBox
         _cursorController = cursorController,
         _maxContentWidth = maxContentWidth,
         super(
-        children: children,
-        container: document.root,
-        textDirection: textDirection,
-        scrollBottomInset: scrollBottomInset,
-        padding: padding,
-      );
+          children: children,
+          container: document.root,
+          textDirection: textDirection,
+          scrollBottomInset: scrollBottomInset,
+          padding: padding,
+        );
 
   final CursorCont _cursorController;
   final bool floatingCursorDisabled;
@@ -778,7 +778,7 @@ class RenderEditor extends RenderEditableContainerBox
   TextSelectionChangedHandler onSelectionChanged;
   TextSelectionCompletedHandler onSelectionCompleted;
   final ValueNotifier<bool> _selectionStartInViewport =
-  ValueNotifier<bool>(true);
+      ValueNotifier<bool>(true);
 
   ValueListenable<bool> get selectionStartInViewport =>
       _selectionStartInViewport;
@@ -789,7 +789,7 @@ class RenderEditor extends RenderEditableContainerBox
   void _updateSelectionExtentsVisibility(Offset effectiveOffset) {
     final visibleRegion = Offset.zero & size;
     final startPosition =
-    TextPosition(offset: selection.start, affinity: selection.affinity);
+        TextPosition(offset: selection.start, affinity: selection.affinity);
     final startOffset = _getOffsetForCaret(startPosition);
     // TODO(justinmc): https://github.com/flutter/flutter/issues/31495
     // Check if the selection is visible with an approximation because a
@@ -804,7 +804,7 @@ class RenderEditor extends RenderEditableContainerBox
         .contains(startOffset + effectiveOffset);
 
     final endPosition =
-    TextPosition(offset: selection.end, affinity: selection.affinity);
+        TextPosition(offset: selection.end, affinity: selection.affinity);
     final endOffset = _getOffsetForCaret(endPosition);
     _selectionEndInViewport.value = visibleRegion
         .inflate(visibleRegionSlop)
@@ -866,7 +866,7 @@ class RenderEditor extends RenderEditableContainerBox
 
   bool get _shiftPressed =>
       RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftLeft) ||
-          RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftRight);
+      RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftRight);
 
   void setStartHandleLayerLink(LayerLink value) {
     if (_startHandleLayerLink == value) {
@@ -931,7 +931,7 @@ class RenderEditor extends RenderEditableContainerBox
 
     final baseParentData = baseChild!.parentData as BoxParentData;
     final baseSelection =
-    localSelection(baseChild.container, textSelection, true);
+        localSelection(baseChild.container, textSelection, true);
     var basePoint = baseChild.getBaseEndpointForSelection(baseSelection);
     basePoint = TextSelectionPoint(
         basePoint.point + baseParentData.offset, basePoint.direction);
@@ -948,9 +948,9 @@ class RenderEditor extends RenderEditableContainerBox
 
     final extentParentData = extentChild!.parentData as BoxParentData;
     final extentSelection =
-    localSelection(extentChild.container, textSelection, true);
+        localSelection(extentChild.container, textSelection, true);
     var extentPoint =
-    extentChild.getExtentEndpointForSelection(extentSelection);
+        extentChild.getExtentEndpointForSelection(extentSelection);
     extentPoint = TextSelectionPoint(
         extentPoint.point + extentParentData.offset, extentPoint.direction);
 
@@ -991,14 +991,14 @@ class RenderEditor extends RenderEditableContainerBox
 
   @override
   void selectWordsInRange(
-      Offset from,
-      Offset? to,
-      SelectionChangedCause cause,
-      ) {
+    Offset from,
+    Offset? to,
+    SelectionChangedCause cause,
+  ) {
     final firstPosition = getPositionForOffset(from);
     final firstWord = selectWordAtPosition(firstPosition);
     final lastWord =
-    to == null ? firstWord : selectWordAtPosition(getPositionForOffset(to));
+        to == null ? firstWord : selectWordAtPosition(getPositionForOffset(to));
 
     _handleSelectionChange(
       TextSelection(
@@ -1011,9 +1011,9 @@ class RenderEditor extends RenderEditableContainerBox
   }
 
   void _handleSelectionChange(
-      TextSelection nextSelection,
-      SelectionChangedCause cause,
-      ) {
+    TextSelection nextSelection,
+    SelectionChangedCause cause,
+  ) {
     final focusingEmpty = nextSelection.baseOffset == 0 &&
         nextSelection.extentOffset == 0 &&
         !_hasFocus;
@@ -1164,8 +1164,8 @@ class RenderEditor extends RenderEditableContainerBox
             'axis.'),
         ErrorHint(
             'You probably want to put the RenderEditableContainerBox inside a '
-                'RenderViewport with a matching main axis or disable the '
-                'scrollable property.')
+            'RenderViewport with a matching main axis or disable the '
+            'scrollable property.')
       ]);
     }());
     assert(() {
@@ -1186,8 +1186,8 @@ class RenderEditor extends RenderEditableContainerBox
     var mainAxisExtent = resolvedPadding!.top;
     var child = firstChild;
     final innerConstraints = BoxConstraints.tightFor(
-        width: math.min(
-            _maxContentWidth ?? double.infinity, constraints.maxWidth))
+            width: math.min(
+                _maxContentWidth ?? double.infinity, constraints.maxWidth))
         .deflate(resolvedPadding!);
     final leftOffset = _maxContentWidth == null
         ? 0.0
@@ -1357,9 +1357,9 @@ class RenderEditor extends RenderEditableContainerBox
   // Start floating cursor
 
   FloatingCursorPainter get _floatingCursorPainter => FloatingCursorPainter(
-    floatingCursorRect: _floatingCursorRect,
-    style: _cursorController.style,
-  );
+        floatingCursorRect: _floatingCursorRect,
+        style: _cursorController.style,
+      );
 
   bool _floatingCursorOn = false;
   Rect? _floatingCursorRect;
@@ -1417,9 +1417,9 @@ class RenderEditor extends RenderEditableContainerBox
     final currentX = rawCursorOffset.dx - _relativeOrigin.dx;
     final currentY = rawCursorOffset.dy - _relativeOrigin.dy;
     final double adjustedX =
-    math.min(math.max(currentX, leftBound), rightBound);
+        math.min(math.max(currentX, leftBound), rightBound);
     final double adjustedY =
-    math.min(math.max(currentY, topBound), bottomBound);
+        math.min(math.max(currentY, topBound), bottomBound);
     final adjustedOffset = Offset(adjustedX, adjustedY);
 
     if (currentX < leftBound && deltaPosition.dx < 0) {
@@ -1457,11 +1457,11 @@ class RenderEditor extends RenderEditableContainerBox
       _floatingCursorTextPosition = textPosition;
       final sizeAdjustment = resetLerpValue != null
           ? EdgeInsets.lerp(
-          _kFloatingCaretSizeIncrease, EdgeInsets.zero, resetLerpValue)!
+              _kFloatingCaretSizeIncrease, EdgeInsets.zero, resetLerpValue)!
           : _kFloatingCaretSizeIncrease;
       final child = childAtPosition(textPosition);
       final caretPrototype =
-      child.getCaretPrototype(child.globalToLocalPosition(textPosition));
+          child.getCaretPrototype(child.globalToLocalPosition(textPosition));
       _floatingCursorRect =
           sizeAdjustment.inflateRect(caretPrototype).shift(boundedOffset);
       _cursorController
@@ -1516,7 +1516,7 @@ class RenderEditor extends RenderEditableContainerBox
   TextPosition getTextPositionAbove(TextPosition position) {
     final child = childAtPosition(position);
     final localPosition =
-    TextPosition(offset: position.offset - child.container.documentOffset);
+        TextPosition(offset: position.offset - child.container.documentOffset);
 
     var newPosition = child.getPositionAbove(localPosition);
 
@@ -1552,7 +1552,7 @@ class RenderEditor extends RenderEditableContainerBox
   TextPosition getTextPositionBelow(TextPosition position) {
     final child = childAtPosition(position);
     final localPosition =
-    TextPosition(offset: position.offset - child.container.documentOffset);
+        TextPosition(offset: position.offset - child.container.documentOffset);
 
     var newPosition = child.getPositionBelow(localPosition);
 
@@ -1600,9 +1600,9 @@ class RenderEditor extends RenderEditableContainerBox
 class QuillVerticalCaretMovementRun
     extends BidirectionalIterator<TextPosition> {
   QuillVerticalCaretMovementRun._(
-      this._editor,
-      this._currentTextPosition,
-      );
+    this._editor,
+    this._currentTextPosition,
+  );
 
   TextPosition _currentTextPosition;
 
@@ -1640,10 +1640,10 @@ class RenderEditableContainerBox extends RenderBox
             EditableContainerParentData> {
   RenderEditableContainerBox(
       {required container_node.Container container,
-        required this.textDirection,
-        required this.scrollBottomInset,
-        required EdgeInsetsGeometry padding,
-        List<RenderEditableBox>? children})
+      required this.textDirection,
+      required this.scrollBottomInset,
+      required EdgeInsetsGeometry padding,
+      List<RenderEditableBox>? children})
       : assert(padding.isNonNegative),
         _container = container,
         _padding = padding {
@@ -1763,8 +1763,8 @@ class RenderEditableContainerBox extends RenderBox
     var mainAxisExtent = _resolvedPadding!.top;
     var child = firstChild;
     final innerConstraints =
-    BoxConstraints.tightFor(width: constraints.maxWidth)
-        .deflate(_resolvedPadding!);
+        BoxConstraints.tightFor(width: constraints.maxWidth)
+            .deflate(_resolvedPadding!);
     while (child != null) {
       child.layout(innerConstraints, parentUsesSize: true);
       final childParentData = (child.parentData as EditableContainerParentData)
