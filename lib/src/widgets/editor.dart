@@ -516,6 +516,17 @@ class QuillEditorState extends State<QuillEditor>
   void _requestKeyboard() {
     _editorKey.currentState!.requestKeyboard();
   }
+
+  double? getMidYForSelection(TextSelection? selection) {
+    if (selection == null) {
+      return null;
+    }
+    final renderEditor = editableTextKey.currentState!.renderEditor;
+    final endpoints = renderEditor.getEndpointsForSelection(selection);
+    final baseLineHeight = renderEditor.preferredLineHeight(selection.base);
+    final midY = endpoints[0].point.dy - baseLineHeight;
+    return midY;
+  }
 }
 
 class _QuillEditorSelectionGestureDetectorBuilder
