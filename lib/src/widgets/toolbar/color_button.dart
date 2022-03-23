@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import '../../../utils/dg_focus_node.dart';
 import '../../models/documents/attribute.dart';
@@ -8,6 +7,7 @@ import '../../models/documents/style.dart';
 import '../../models/themes/quill_icon_theme.dart';
 import '../../translations/toolbar.i18n.dart';
 import '../../utils/color.dart';
+import '../color_picker_dialog.dart';
 import '../controller.dart';
 import '../toolbar.dart';
 
@@ -110,11 +110,12 @@ class _ColorButtonState extends State<ColorButton> {
         ? stringToColor(_selectionStyle.attributes['color']!.value)
         : (widget.iconTheme?.iconUnselectedColor ?? theme.iconTheme.color);
 
-    final iconColorBackground =
-        _isToggledBackground && widget.background && !_isWhiteBackground &&
+    final iconColorBackground = _isToggledBackground &&
+            widget.background &&
+            !_isWhiteBackground &&
             _selectionStyle.attributes.containsKey('background')
-            ? stringToColor(_selectionStyle.attributes['background']!.value)
-            : (widget.iconTheme?.iconUnselectedColor ?? theme.iconTheme.color);
+        ? stringToColor(_selectionStyle.attributes['background']!.value)
+        : (widget.iconTheme?.iconUnselectedColor ?? theme.iconTheme.color);
 
     final fillColor = _isToggledColor && !widget.background && _isWhite
         ? stringToColor('#ffffff')
@@ -136,7 +137,7 @@ class _ColorButtonState extends State<ColorButton> {
     );
   }
 
-  void _changeColor(BuildContext context, Color color) {
+  void _changeColor(Color color) {
     var hex = color.value.toRadixString(16);
     if (hex.startsWith('ff')) {
       hex = hex.substring(2);
@@ -144,24 +145,22 @@ class _ColorButtonState extends State<ColorButton> {
     hex = '#$hex';
     widget.controller.formatSelection(
         widget.background ? BackgroundAttribute(hex) : ColorAttribute(hex));
-    Navigator.of(context).pop();
   }
 
-  void _showColorPicker() {
+  Future<void> _showColorPicker() async {
     SchedulerBinding.instance!.addPostFrameCallback((_) {
       FocusScope.of(context)
           .requestFocus(DgBsFocusNode(debugLabel: 'ColorButton'));
     });
-    showDialog(
+    var color = const Color(0x00000000);
+    await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => ColorPickerDialog(
         title: widget.showTitle ? Text('Select Color'.i18n) : null,
-        backgroundColor: Theme.of(context).canvasColor,
-        content: MaterialPicker(
-          pickerColor: const Color(0x00000000),
-          onColorChanged: (color) => _changeColor(context, color),
-        ),
+        color: color,
+        onChanged: (c, fromMaterial) => color = c,
       ),
     );
+    _changeColor(color);
   }
 }

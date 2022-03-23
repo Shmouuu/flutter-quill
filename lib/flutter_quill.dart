@@ -12,6 +12,7 @@ export 'src/models/rules/rule.dart' show Rule;
 export 'src/models/themes/quill_dialog_theme.dart';
 export 'src/models/themes/quill_icon_theme.dart';
 export 'src/utils/platform.dart';
+export 'src/widgets/color_picker_dialog.dart';
 export 'src/widgets/controller.dart';
 export 'src/widgets/default_styles.dart';
 export 'src/widgets/delegate.dart' show EditorGestureListener;
