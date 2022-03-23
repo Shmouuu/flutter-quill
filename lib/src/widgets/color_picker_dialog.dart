@@ -76,6 +76,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
     if (_controller.index == 0) {
       return SingleChildScrollView(
         child: MaterialPicker(
+          portraitOnly: true,
           pickerColor: widget.color,
           onColorChanged: (color) {
             widget.onChanged?.call(color, true);
@@ -86,6 +87,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
     }
 
     return ColorPicker(
+      portraitOnly: true,
       pickerColor: _color,
       colorPickerWidth: 340,
       onColorChanged: (color) {
