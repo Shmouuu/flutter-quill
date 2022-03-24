@@ -1,7 +1,10 @@
 // ignore_for_file: unused_import
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:oktoast/oktoast.dart';
 
 typedef OnColorChanged = void Function(Color color, bool fromMaterial);
 
@@ -23,6 +26,7 @@ class ColorPickerDialog extends StatefulWidget {
 
 class _ColorPickerDialogState extends State<ColorPickerDialog>
     with SingleTickerProviderStateMixin {
+  late final TextEditingController _textController = TextEditingController();
   late final TabController _controller = TabController(length: 2, vsync: this);
   late Color _color = widget.color;
 
@@ -38,24 +42,28 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
       title: widget.title,
       backgroundColor: Theme.of(context).canvasColor,
       contentPadding: EdgeInsets.zero,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TabBar(
-            controller: _controller,
-            labelColor: Colors.black,
-            unselectedLabelColor: const Color(0xFF5A5A5A),
-            indicatorColor: Colors.black,
-            indicatorWeight: 1,
-            labelPadding: const EdgeInsets.only(top: 8),
-            padding: EdgeInsets.zero,
-            tabs: [
-              const Tab(text: 'Swatches', height: 36),
-              const Tab(text: 'Custom', height: 36),
-            ],
-          ),
-          SizedBox(width: 340, height: 502, child: _buildMainContent()),
-        ],
+      content: SizedBox(
+        width: 340,
+        height: 460,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TabBar(
+              controller: _controller,
+              labelColor: Colors.black,
+              unselectedLabelColor: const Color(0xFF5A5A5A),
+              indicatorColor: Colors.black,
+              indicatorWeight: 1,
+              labelPadding: const EdgeInsets.only(top: 8),
+              padding: EdgeInsets.zero,
+              tabs: [
+                const Tab(text: 'Swatches', height: 36),
+                const Tab(text: 'Custom', height: 36),
+              ],
+            ),
+            Expanded(child: SingleChildScrollView(child: _buildMainContent())),
+          ],
+        ),
       ),
     );
   }
@@ -65,6 +73,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
     _controller.removeListener(_onRefresh);
     // ignore: cascade_invocations
     _controller.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
@@ -74,26 +83,57 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
 
   Widget _buildMainContent() {
     if (_controller.index == 0) {
-      return SingleChildScrollView(
-        child: MaterialPicker(
-          portraitOnly: true,
-          pickerColor: widget.color,
-          onColorChanged: (color) {
-            widget.onChanged?.call(color, true);
-            Navigator.pop(context);
-          },
-        ),
+      return MaterialPicker(
+        portraitOnly: true,
+        pickerColor: widget.color,
+        onColorChanged: (color) {
+          widget.onChanged?.call(color, true);
+          Navigator.pop(context);
+        },
       );
     }
 
-    return ColorPicker(
-      portraitOnly: true,
-      pickerColor: _color,
-      colorPickerWidth: 340,
-      onColorChanged: (color) {
-        _color = color;
-        widget.onChanged?.call(color, false);
-      },
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ColorPicker(
+          portraitOnly: true,
+          displayThumbColor: true,
+          pickerAreaHeightPercent: 0.7,
+          pickerColor: _color,
+          colorPickerWidth: 340,
+          hexInputController: _textController,
+          labelTypes: [],
+          onColorChanged: (color) {
+            _color = color;
+            widget.onChanged?.call(color, false);
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          child: CupertinoTextField(
+            controller: _textController,
+            prefix: const Padding(
+              padding: EdgeInsets.only(left: 8),
+              child: Icon(Icons.tag),
+            ),
+            suffix: IconButton(
+              icon: const Icon(Icons.content_paste_rounded),
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: _textController.text))
+                    .then((value) => showToast('Copied!'));
+              },
+            ),
+            maxLength: 9,
+            inputFormatters: [
+              // Any custom input formatter can be passed
+              // here or use any Form validator you want.
+              UpperCaseTextFormatter(),
+              FilteringTextInputFormatter.allow(RegExp(kValidHexPattern)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
