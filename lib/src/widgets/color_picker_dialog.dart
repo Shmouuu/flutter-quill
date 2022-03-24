@@ -56,6 +56,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
               indicatorWeight: 1,
               labelPadding: const EdgeInsets.only(top: 8),
               padding: EdgeInsets.zero,
+              labelStyle: const TextStyle(fontFamily: 'Poppins'),
               tabs: [
                 const Tab(text: 'Swatches', height: 36),
                 const Tab(text: 'Custom', height: 36),
@@ -117,6 +118,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
               padding: EdgeInsets.only(left: 8),
               child: Icon(Icons.tag),
             ),
+            style: const TextStyle(fontFamily: 'Poppins'),
             suffix: IconButton(
               icon: const Icon(Icons.content_paste_rounded),
               onPressed: () {
