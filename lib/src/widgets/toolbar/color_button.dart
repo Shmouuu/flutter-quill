@@ -103,20 +103,6 @@ class _ColorButtonState extends State<ColorButton> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final iconColor = _isToggledColor &&
-            !widget.background &&
-            !_isWhite &&
-            _selectionStyle.attributes.containsKey('color')
-        ? stringToColor(_selectionStyle.attributes['color']!.value)
-        : (widget.iconTheme?.iconUnselectedColor ?? theme.iconTheme.color);
-
-    final iconColorBackground = _isToggledBackground &&
-            widget.background &&
-            !_isWhiteBackground &&
-            _selectionStyle.attributes.containsKey('background')
-        ? stringToColor(_selectionStyle.attributes['background']!.value)
-        : (widget.iconTheme?.iconUnselectedColor ?? theme.iconTheme.color);
-
     final fillColor = _isToggledColor && !widget.background && _isWhite
         ? stringToColor('#ffffff')
         : (widget.iconTheme?.iconUnselectedFillColor ?? theme.canvasColor);
@@ -129,12 +115,32 @@ class _ColorButtonState extends State<ColorButton> {
       highlightElevation: 0,
       hoverElevation: 0,
       size: widget.iconSize * kIconButtonFactor,
-      icon: Icon(widget.icon,
-          size: widget.iconSize,
-          color: widget.background ? iconColorBackground : iconColor),
+      icon:
+          Icon(widget.icon, size: widget.iconSize, color: _getIconColor(theme)),
       fillColor: widget.background ? fillColorBackground : fillColor,
       onPressed: _showColorPicker,
     );
+  }
+
+  Color _getIconColor(ThemeData theme) {
+    if (widget.background) {
+      return (_isToggledBackground &&
+                  widget.background &&
+                  !_isWhiteBackground &&
+                  _selectionStyle.attributes.containsKey('background')
+              ? stringToColor(_selectionStyle.attributes['background']!.value)
+              : (widget.iconTheme?.iconUnselectedColor ??
+                  theme.iconTheme.color)) ??
+          Colors.black;
+    }
+    return (_isToggledColor &&
+                !widget.background &&
+                !_isWhite &&
+                _selectionStyle.attributes.containsKey('color')
+            ? stringToColor(_selectionStyle.attributes['color']!.value)
+            : (widget.iconTheme?.iconUnselectedColor ??
+                theme.iconTheme.color)) ??
+        Colors.black;
   }
 
   void _changeColor(Color color) {
@@ -152,7 +158,7 @@ class _ColorButtonState extends State<ColorButton> {
       FocusScope.of(context)
           .requestFocus(DgBsFocusNode(debugLabel: 'ColorButton'));
     });
-    var color = const Color(0x00000000);
+    var color = _getIconColor(Theme.of(context));
     await showDialog(
       context: context,
       builder: (context) => ColorPickerDialog(
