@@ -62,7 +62,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
                 const Tab(text: 'Custom', height: 36),
               ],
             ),
-            Expanded(child: SingleChildScrollView(child: _buildMainContent())),
+            Expanded(child: _buildMainContent()),
           ],
         ),
       ),
@@ -94,48 +94,50 @@ class _ColorPickerDialogState extends State<ColorPickerDialog>
       );
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ColorPicker(
-          portraitOnly: true,
-          displayThumbColor: true,
-          pickerAreaHeightPercent: 0.7,
-          pickerColor: _color,
-          colorPickerWidth: 340,
-          hexInputController: _textController,
-          labelTypes: [],
-          onColorChanged: (color) {
-            _color = color;
-            widget.onChanged?.call(color, false);
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-          child: CupertinoTextField(
-            controller: _textController,
-            prefix: const Padding(
-              padding: EdgeInsets.only(left: 8),
-              child: Icon(Icons.tag),
-            ),
-            style: const TextStyle(fontFamily: 'Poppins'),
-            suffix: IconButton(
-              icon: const Icon(Icons.content_paste_rounded),
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: _textController.text))
-                    .then((value) => showToast('Copied!'));
-              },
-            ),
-            maxLength: 9,
-            inputFormatters: [
-              // Any custom input formatter can be passed
-              // here or use any Form validator you want.
-              UpperCaseTextFormatter(),
-              FilteringTextInputFormatter.allow(RegExp(kValidHexPattern)),
-            ],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ColorPicker(
+            portraitOnly: true,
+            displayThumbColor: true,
+            pickerAreaHeightPercent: 0.7,
+            pickerColor: _color,
+            colorPickerWidth: 340,
+            hexInputController: _textController,
+            labelTypes: [],
+            onColorChanged: (color) {
+              _color = color;
+              widget.onChanged?.call(color, false);
+            },
           ),
-        ),
-      ],
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+            child: CupertinoTextField(
+              controller: _textController,
+              prefix: const Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Icon(Icons.tag),
+              ),
+              style: const TextStyle(fontFamily: 'Poppins'),
+              suffix: IconButton(
+                icon: const Icon(Icons.content_paste_rounded),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: _textController.text))
+                      .then((value) => showToast('Copied!'));
+                },
+              ),
+              maxLength: 9,
+              inputFormatters: [
+                // Any custom input formatter can be passed
+                // here or use any Form validator you want.
+                UpperCaseTextFormatter(),
+                FilteringTextInputFormatter.allow(RegExp(kValidHexPattern)),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
