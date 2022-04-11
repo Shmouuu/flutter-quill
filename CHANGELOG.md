@@ -1,3 +1,15 @@
+# [4.1.1]
+* Added textSelectionControls field in QuillEditor.
+
+# [4.1.0]
+* Added Node to linkActionPickerDelegate.
+
+# [4.0.12]
+* Add Persian(fa) language.
+
+# [4.0.11]
+* Fix cut selection error in multi-node line.
+
 # [4.0.10]
 * Fix vertical caret position bug.
 

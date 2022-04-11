@@ -179,6 +179,7 @@ class QuillEditor extends StatefulWidget {
       this.locale,
       this.floatingCursorDisabled = false,
       this.catchWebKeyboardEvents = false,
+      this.textSelectionControls,
       Key? key})
       : super(key: key);
 
@@ -378,6 +379,11 @@ class QuillEditor extends StatefulWidget {
 
   final bool floatingCursorDisabled;
 
+  /// allows to create a custom textSelectionControls,
+  /// if this is null a default textSelectionControls based on the app's theme
+  /// will be used
+  final TextSelectionControls? textSelectionControls;
+
   @override
   QuillEditorState createState() => QuillEditorState();
 }
@@ -467,7 +473,7 @@ class QuillEditorState extends State<QuillEditor>
       expands: widget.expands,
       autoFocus: widget.autoFocus,
       selectionColor: selectionColor,
-      selectionCtrls: textSelectionControls,
+      selectionCtrls: widget.textSelectionControls ?? textSelectionControls,
       keyboardAppearance: widget.keyboardAppearance,
       enableInteractiveSelection: widget.enableInteractiveSelection,
       scrollPhysics: widget.scrollPhysics,

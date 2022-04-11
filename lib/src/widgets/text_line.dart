@@ -15,7 +15,6 @@ import '../../flutter_quill.dart';
 import '../models/documents/nodes/container.dart' as container_node;
 import '../models/documents/nodes/leaf.dart' as leaf;
 import '../models/documents/nodes/line.dart';
-import '../models/documents/nodes/node.dart';
 import '../utils/color.dart';
 import 'box.dart';
 import 'cursor.dart';
