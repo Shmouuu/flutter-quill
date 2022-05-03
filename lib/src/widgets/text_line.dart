@@ -5,7 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill/utils/dg_focus_node.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:tuple/tuple.dart';
@@ -37,6 +39,7 @@ class TextLine extends StatefulWidget {
     this.textDirection,
     this.defaultFontFamily,
     this.customStyleBuilder,
+    this.focusNode,
     Key? key,
   }) : super(key: key);
 
@@ -48,14 +51,18 @@ class TextLine extends StatefulWidget {
   final bool hasFocus;
   final String? defaultFontFamily;
   final QuillController controller;
+  final FocusNode? focusNode;
   final CustomStyleBuilder? customStyleBuilder;
-  final ValueChanged<String>? onLaunchUrl;
-  final ValueChanged<String>? onDgPageTapped;
+  final LinkLauncher? onLaunchUrl;
+  final PageLauncher? onDgPageTapped;
   final LinkActionPicker linkActionPicker;
 
   @override
   State<TextLine> createState() => _TextLineState();
 }
+
+typedef LinkLauncher = Future<void> Function(String);
+typedef PageLauncher = Future<void> Function(String);
 
 class _TextLineState extends State<TextLine> {
   bool _metaOrControlPressed = false;
@@ -429,15 +436,17 @@ class _TextLineState extends State<TextLine> {
     }
   }
 
-  void _tapDgPage(String? pageId) {
-    if (pageId == null) {
+  void _tapDgPage(String? pageId) async {
+    if (pageId == null || widget.onDgPageTapped == null) {
       return;
     }
 
-    widget.onDgPageTapped?.call(pageId);
+    widget.focusNode?.canRequestFocus = false;
+    await widget.onDgPageTapped!(pageId);
+    widget.focusNode?.canRequestFocus = true;
   }
 
-  void _tapLink(String? link) {
+  Future<void> _tapLink(String? link) async {
     if (link == null) {
       return;
     }
@@ -450,7 +459,9 @@ class _TextLineState extends State<TextLine> {
         .any((linkPrefix) => link!.toLowerCase().startsWith(linkPrefix))) {
       link = 'https://$link';
     }
-    launchUrl(link);
+    widget.focusNode?.canRequestFocus = false;
+    await launchUrl(link);
+    widget.focusNode?.canRequestFocus = true;
   }
 
 /*

@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill/src/widgets/text_line.dart';
 import 'package:i18n_extension/i18n_widget.dart';
 import 'package:tuple/tuple.dart';
 
@@ -326,8 +327,8 @@ class QuillEditor extends StatefulWidget {
   final ScrollPhysics? scrollPhysics;
 
   /// Callback to invoke when user wants to launch a URL.
-  final ValueChanged<String>? onLaunchUrl;
-  final ValueChanged<String>? onDgPageTapped;
+  final LinkLauncher? onLaunchUrl;
+  final PageLauncher? onDgPageTapped;
   final EditorGestureListener? editorGestureListener;
   final int? numberedPointStart;
   final OnPaste? onPaste;

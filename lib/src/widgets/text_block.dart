@@ -65,6 +65,7 @@ class EditableTextBlock extends StatelessWidget {
       required this.readOnly,
       required this.numberedPointStart,
       this.onLaunchUrl,
+      this.focusNode,
       this.onDgPageTapped,
       this.customStyleBuilder,
       this.defaultFontFamily,
@@ -77,14 +78,15 @@ class EditableTextBlock extends StatelessWidget {
   final Tuple2 verticalSpacing;
   final TextSelection textSelection;
   final Color color;
+  final FocusNode? focusNode;
   final DefaultStyles? styles;
   final bool enableInteractiveSelection;
   final bool hasFocus;
   final EdgeInsets? contentPadding;
   final EmbedBuilder embedBuilder;
   final LinkActionPicker linkActionPicker;
-  final ValueChanged<String>? onLaunchUrl;
-  final ValueChanged<String>? onDgPageTapped;
+  final LinkLauncher? onLaunchUrl;
+  final PageLauncher? onDgPageTapped;
   final CustomStyleBuilder? customStyleBuilder;
   final CursorCont cursorCont;
   final Map<int, int> indentLevelCounts;
@@ -140,6 +142,7 @@ class EditableTextBlock extends StatelessWidget {
             styles: styles!,
             readOnly: readOnly,
             hasFocus: hasFocus,
+            focusNode: focusNode,
             controller: controller,
             linkActionPicker: linkActionPicker,
             onLaunchUrl: onLaunchUrl,

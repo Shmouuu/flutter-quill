@@ -111,8 +111,8 @@ class RawEditor extends StatefulWidget {
 
   /// Callback which is triggered when the user wants to open a URL from
   /// a link in the document.
-  final ValueChanged<String>? onLaunchUrl;
-  final ValueChanged<String>? onDgPageTapped;
+  final LinkLauncher? onLaunchUrl;
+  final PageLauncher? onDgPageTapped;
 
   /// Configuration of toolbar options.
   ///
@@ -473,6 +473,7 @@ class RawEditorState extends EditorState
             verticalSpacing: _getVerticalSpacingForBlock(node, _styles),
             textSelection: widget.controller.selection,
             color: widget.selectionColor,
+            focusNode: widget.focusNode,
             styles: _styles,
             enableInteractiveSelection: widget.enableInteractiveSelection,
             hasFocus: _hasFocus,
@@ -510,6 +511,7 @@ class RawEditorState extends EditorState
       readOnly: widget.readOnly,
       hasFocus: _hasFocus,
       controller: widget.controller,
+      focusNode: widget.focusNode,
       linkActionPicker: _linkActionPicker,
       onLaunchUrl: widget.onLaunchUrl,
       onDgPageTapped: widget.onDgPageTapped,
