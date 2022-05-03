@@ -5,9 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_quill/utils/dg_focus_node.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:tuple/tuple.dart';
@@ -436,7 +434,7 @@ class _TextLineState extends State<TextLine> {
     }
   }
 
-  void _tapDgPage(String? pageId) async {
+  Future<void> _tapDgPage(String? pageId) async {
     if (pageId == null || widget.onDgPageTapped == null) {
       return;
     }

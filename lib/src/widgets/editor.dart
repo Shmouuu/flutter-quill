@@ -6,7 +6,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_quill/src/widgets/text_line.dart';
 import 'package:i18n_extension/i18n_widget.dart';
 import 'package:tuple/tuple.dart';
 
@@ -18,6 +17,7 @@ import 'delegate.dart';
 import 'embeds/default_embed_builder.dart';
 import 'float_cursor.dart';
 import 'raw_editor.dart';
+import 'text_line.dart';
 import 'text_selection.dart';
 
 /// Base interface for the editor state which defines contract used by
