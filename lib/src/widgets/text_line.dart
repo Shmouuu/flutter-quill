@@ -417,7 +417,10 @@ class _TextLineState extends State<TextLine> {
 
   Future<void> _launchUrl(String url) async {
     try {
-      await launch(url);
+      final uri = Uri.tryParse(url);
+      if (uri != null) {
+        await launchUrl(uri);
+      }
     } catch (e) {
       debugPrint('=> ${e.runtimeType} $e');
       if (e is PlatformException) {
