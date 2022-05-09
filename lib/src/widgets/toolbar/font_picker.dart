@@ -38,7 +38,6 @@ class _FontPickerState extends State<FontPicker> {
           borderSide: BorderSide(color: Color(0xFF01689A)),
         ),
       ),
-      showAsSuffixIcons: true,
       dropdownBuilder: (context, selectedItem) {
         return Text(selectedItem ?? 'Default',
             style: GoogleFonts.asMap()[selectedItem]?.call());
@@ -49,22 +48,10 @@ class _FontPickerState extends State<FontPicker> {
           child: Text(item, style: GoogleFonts.asMap()[item]?.call()),
         );
       },
-      clearButtonBuilder: (_) => const Padding(
-        padding: EdgeInsets.all(8),
-        child: Icon(
-          Icons.clear,
-          size: 24,
-          color: Colors.black,
-        ),
-      ),
-      dropdownButtonBuilder: (_) => const Padding(
-        padding: EdgeInsets.all(8),
-        child: Icon(
-          Icons.arrow_drop_down,
-          size: 24,
-          color: Colors.black,
-        ),
-      ),
+      clearButtonProps:
+          const IconButtonProps(icon: Icon(Icons.clear, color: Colors.black)),
+      dropdownButtonProps: const IconButtonProps(
+          icon: Icon(Icons.arrow_drop_down, color: Colors.black)),
       items: items,
       showClearButton: true,
       onChanged: (value) {
