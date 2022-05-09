@@ -148,5 +148,6 @@ Widget defaultToggleStyleButtonBuilder(
     icon: Icon(icon, size: iconSize, color: iconColor),
     fillColor: fill,
     onPressed: onPressed,
+    borderRadius: iconTheme?.borderRadius ?? 2,
   );
 }

@@ -17,6 +17,7 @@ import 'toolbar/image_button.dart';
 import 'toolbar/image_video_utils.dart';
 import 'toolbar/indent_button.dart';
 import 'toolbar/link_style_button.dart';
+import 'toolbar/quill_dropdown_button.dart';
 import 'toolbar/select_alignment_button.dart';
 import 'toolbar/select_header_style_button.dart';
 import 'toolbar/toggle_check_list_button.dart';
@@ -74,6 +75,7 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
     WrapAlignment toolbarIconAlignment = WrapAlignment.center,
     bool showDividers = true,
     bool showFonts = true,
+    bool showFontSize = true,
     bool showBoldButton = true,
     bool showItalicButton = true,
     bool showSmallButton = false,
@@ -112,6 +114,10 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
     WebVideoPickImpl? webVideoPickImpl,
     VoidCallback? numberedToggleCallback,
 
+    ///Map of font sizes in [int]
+    Map<String, int>? fontSizeValues,
+    int? initialFontSizeValue,
+
     ///The theme to use for the icons in the toolbar, uses type [QuillIconTheme]
     QuillIconTheme? iconTheme,
 
@@ -125,7 +131,8 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
     Key? key,
   }) {
     final isButtonGroupShown = [
-      showBoldButton ||
+      showFontSize ||
+          showBoldButton ||
           showItalicButton ||
           showSmallButton ||
           showUnderLineButton ||
@@ -146,6 +153,22 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
       showQuote || showIndent,
       showLink
     ];
+
+    //default font size values
+    final fontSizes = fontSizeValues ??
+        {
+          'Default': 0,
+          '10': 10,
+          '12': 12,
+          '14': 14,
+          '16': 16,
+          '18': 18,
+          '20': 20,
+          '24': 24,
+          '28': 28,
+          '32': 32,
+          '48': 48
+        };
 
     return QuillToolbar(
       key: key,
@@ -177,6 +200,36 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
             iconSize: toolbarIconSize,
             controller: controller,
             iconTheme: iconTheme,
+          ),
+        if (showFontSize)
+          QuillDropdownButton(
+            iconTheme: iconTheme,
+            iconSize: toolbarIconSize,
+            attribute: Attribute.size,
+            controller: controller,
+            items: [
+              for (MapEntry<String, int> fontSize in fontSizes.entries)
+                PopupMenuItem<int>(
+                  key: ValueKey(fontSize.key),
+                  value: fontSize.value,
+                  child: Text(fontSize.key.toString()),
+                ),
+            ],
+            onSelected: (newSize) {
+              if ((newSize != null) && (newSize as int > 0)) {
+                controller
+                    .formatSelection(Attribute.fromKeyValue('size', newSize));
+              }
+              if (newSize as int == 0) {
+                controller
+                    .formatSelection(Attribute.fromKeyValue('size', null));
+              }
+            },
+            rawitemsmap: fontSizes,
+            initialValue: (initialFontSizeValue != null) &&
+                    (initialFontSizeValue <= fontSizes.length - 1)
+                ? initialFontSizeValue
+                : 0,
           ),
         if (showBoldButton)
           ToggleStyleButton(

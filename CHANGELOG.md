@@ -1,3 +1,27 @@
+# [4.1.9]
+* Using properly iconTheme colors.
+
+# [4.1.8]
+* Update font size dropdown.
+
+# [4.1.7]
+* Convert FontSize to a Map to allow for named Font Size.
+
+# [4.1.6]
+* Update quill_dropdown_button.dart.
+
+# [4.1.5]
+* Add Font Size dropdown to the toolbar.
+
+# [4.1.4]
+* New borderRadius for iconTheme.
+
+# [4.1.3]
+* Fix selection handles show/hide after paste, backspace, copy.
+
+# [4.1.2]
+* Add full support for hardware keyboards (Chromebook, Android tablets, etc) that don't alter screen UI.
+
 # [4.1.1]
 * Added textSelectionControls field in QuillEditor.
 
