@@ -128,7 +128,7 @@ class EditableTextBlock extends StatelessWidget {
     final defaultStyles = QuillStyles.getStyles(context, false);
     final count = block.children.length;
     final children = <Widget>[];
-    var index = numberedPointStart ?? 0;
+    var index = 0;
     for (final line in Iterable.castFrom<dynamic, Line>(block.children)) {
       index++;
       final editableTextLine = EditableTextLine(
@@ -174,6 +174,7 @@ class EditableTextBlock extends StatelessWidget {
     if (attrs[Attribute.list.key] == Attribute.ol) {
       return QuillNumberPoint(
         index: index,
+        numberedPointStart: numberedPointStart,
         indentLevelCounts: indentLevelCounts,
         count: count,
         style: defaultStyles!.leading!.style,
@@ -215,6 +216,7 @@ class EditableTextBlock extends StatelessWidget {
       return QuillNumberPoint(
         index: index,
         indentLevelCounts: indentLevelCounts,
+        numberedPointStart: numberedPointStart,
         count: count,
         style: defaultStyles!.code!.style
             .copyWith(color: defaultStyles.code!.style.color!.withOpacity(0.4)),

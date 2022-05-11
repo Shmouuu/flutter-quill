@@ -100,18 +100,25 @@ class Document {
     return newDocument;
   }
 
-  int countNumberedListItem() {
+  CountNumberedResult countNumberedListItem(int? previousIndent) {
     final index = root.children.length - 1;
     final Node? node = root.children.elementAt(index);
     if (node is Block) {
-      final attrs = node.style.values.where((element) =>
+      final attrs = node.style.values;
+      final indentAttrs =
+          attrs.where((element) => element.key == Attribute.indent.key);
+      int? indent;
+      if (indentAttrs.isNotEmpty) {
+        indent = indentAttrs.first.value as int;
+      }
+      final olAttrs = attrs.where((element) =>
           element.key == Attribute.ol.key &&
           element.value == Attribute.ol.value);
-      if (attrs.isNotEmpty) {
-        return node.childCount;
+      if (olAttrs.isNotEmpty) {
+        return CountNumberedResult(node.childCount, indent: indent);
       }
     }
-    return 0;
+    return const CountNumberedResult(0);
   }
 
   /// Deletes [length] of characters from this document starting at [index].
@@ -412,4 +419,11 @@ enum ChangeSource {
 
   /// Change originated from a remote action.
   REMOTE,
+}
+
+class CountNumberedResult {
+  const CountNumberedResult(this.counter, {this.indent});
+
+  final int? indent;
+  final int counter;
 }

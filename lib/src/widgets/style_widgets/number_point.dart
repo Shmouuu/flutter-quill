@@ -11,6 +11,7 @@ class QuillNumberPoint extends StatelessWidget {
     required this.style,
     required this.width,
     required this.attrs,
+    required this.numberedPointStart,
     this.withDot = true,
     this.padding = 0.0,
     Key? key,
@@ -24,10 +25,11 @@ class QuillNumberPoint extends StatelessWidget {
   final Map<String, Attribute> attrs;
   final bool withDot;
   final double padding;
+  final int? numberedPointStart;
 
   @override
   Widget build(BuildContext context) {
-    var s = index.toString();
+    var s = (index + (numberedPointStart ?? 0)).toString();
     int? level = 0;
     if (!attrs.containsKey(Attribute.indent.key) &&
         !indentLevelCounts.containsKey(1)) {
@@ -50,7 +52,8 @@ class QuillNumberPoint extends StatelessWidget {
       // last visited level is done, going up
       indentLevelCounts.remove(level + 1);
     }
-    final count = (indentLevelCounts[level] ?? 0) + 1;
+    final count =
+        (numberedPointStart ?? 0) + (indentLevelCounts[level] ?? 0) + 1;
     indentLevelCounts[level] = count;
 
     s = count.toString();
