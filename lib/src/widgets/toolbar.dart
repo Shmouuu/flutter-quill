@@ -157,17 +157,22 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
     //default font size values
     final fontSizes = fontSizeValues ??
         {
-          'Default': 0,
+          '8': 8,
           '10': 10,
           '12': 12,
           '14': 14,
-          '16': 16,
+          '16': 0,
           '18': 18,
           '20': 20,
           '24': 24,
           '28': 28,
           '32': 32,
-          '48': 48
+          '36': 36,
+          '40': 40,
+          '48': 48,
+          '64': 64,
+          '96': 96,
+          '128': 128,
         };
 
     return QuillToolbar(
@@ -229,7 +234,7 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
             initialValue: (initialFontSizeValue != null) &&
                     (initialFontSizeValue <= fontSizes.length - 1)
                 ? initialFontSizeValue
-                : 0,
+                : fontSizes.values.toList().indexOf(0),
           ),
         if (showBoldButton)
           ToggleStyleButton(
