@@ -134,18 +134,19 @@ class _QuillDropdownButtonState<T> extends State<QuillDropdownButton<T>> {
       color: popupMenuTheme.color, // widget.color ?? popupMenuTheme.color,
       // captureInheritedThemes: widget.captureInheritedThemes,
     ).then((newValue) {
-      if (!mounted) return null;
       if (newValue == null) {
         // if (widget.onCanceled != null) widget.onCanceled();
         return null;
       }
-      setState(() {
-        _currentValue = widget.rawitemsmap.entries
-            .firstWhere((element) => element.value == newValue,
-                orElse: () => widget.rawitemsmap.entries.first)
-            .key;
-        widget.onSelected(newValue);
-      });
+      if (mounted) {
+        setState(() {
+          _currentValue = widget.rawitemsmap.entries
+              .firstWhere((element) => element.value == newValue,
+              orElse: () => widget.rawitemsmap.entries.first)
+              .key;
+        });
+      }
+      widget.onSelected(newValue);
     });
   }
 
