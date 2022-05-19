@@ -155,7 +155,7 @@ class _ColorButtonState extends State<ColorButton> {
   }
 
   Future<void> _showColorPicker() async {
-    SchedulerBinding.instance!.addPostFrameCallback((_) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context)
           .requestFocus(DgBsFocusNode(debugLabel: 'ColorButton'));
     });

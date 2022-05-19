@@ -655,6 +655,7 @@ class _QuillEditorSelectionGestureDetectorBuilder
               break;
             case PointerDeviceKind.touch:
             case PointerDeviceKind.unknown:
+            case PointerDeviceKind.trackpad:
               // On macOS/iOS/iPadOS a touch tap places the cursor at the edge
               // of the word.
               renderEditor!

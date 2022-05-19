@@ -16,7 +16,8 @@ mixin RawEditorStateSelectionDelegateMixin on EditorState
   }
 
   @override
-  set textEditingValue(TextEditingValue value) {
+  void userUpdateTextEditingValue(
+      TextEditingValue value, SelectionChangedCause cause) {
     final cursorPosition = value.selection.extentOffset;
     final oldText = widget.controller.document.toPlainText();
     final newText = value.text;
@@ -139,12 +140,12 @@ mixin RawEditorStateSelectionDelegateMixin on EditorState
       hideHandles ? selectionOverlay?.hide() : selectionOverlay?.hideToolbar();
     }
   }
-
+/*
   @override
   void userUpdateTextEditingValue(
       TextEditingValue value, SelectionChangedCause cause) {
     textEditingValue = value;
-  }
+  }*/
 
   @override
   bool get cutEnabled => widget.toolbarOptions.cut && !widget.readOnly;
