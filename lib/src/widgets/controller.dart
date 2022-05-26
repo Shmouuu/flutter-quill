@@ -252,7 +252,8 @@ class QuillController extends ChangeNotifier {
     });
   }
 
-  void formatText(int index, int len, Attribute? attribute) {
+  void formatText(int index, int len, Attribute? attribute,
+      {bool notify = true}) {
     if (len == 0 &&
         attribute!.isInline &&
         attribute.key != Attribute.link.key) {
@@ -272,7 +273,13 @@ class QuillController extends ChangeNotifier {
       _updateSelection(adjustedSelection, ChangeSource.LOCAL);
     }
     onFormat?.call(adjustedSelection, attribute);
-    notifyListeners();
+    if (notify) {
+      // ignoreFocusOnTextChange to prevent the keyboard from opening while
+      // formatting (ex: white editing the text size from the bottom sheet)
+      ignoreFocusOnTextChange = true;
+      notifyListeners();
+      ignoreFocusOnTextChange = false;
+    }
   }
 
   void clearSelectionFormat() {
@@ -292,8 +299,8 @@ class QuillController extends ChangeNotifier {
     formatText(selection.start, selection.end - selection.start, attribute);
   }
 
-  void formatAll(Attribute? attribute) {
-    formatText(0, document.length, attribute);
+  void formatAll(Attribute? attribute, {bool notify = true}) {
+    formatText(0, document.length, attribute, notify: notify);
   }
 
   void moveCursorToStart() {

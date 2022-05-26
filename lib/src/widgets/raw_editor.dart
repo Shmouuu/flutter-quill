@@ -763,6 +763,10 @@ class RawEditorState extends EditorState
   void _onChangeTextEditingValue([bool ignoreCaret = false]) {
     updateRemoteValueIfNeeded();
     if (ignoreCaret) {
+      if (mounted) {
+        setState(() {
+        });
+      }
       return;
     }
     _showCaretOnScreen();

@@ -7,6 +7,8 @@ import '../../models/themes/quill_icon_theme.dart';
 import '../controller.dart';
 import '../toolbar.dart';
 
+final headerToString = <String>['N', 'H1', 'H2', 'H3'];
+
 class SelectHeaderStyleButton extends StatefulWidget {
   const SelectHeaderStyleButton({
     required this.controller,
@@ -54,7 +56,6 @@ class _SelectHeaderStyleButtonState extends State<SelectHeaderStyleButton> {
       Attribute.h2,
       Attribute.h3
     ];
-    final _valueString = <String>['N', 'H1', 'H2', 'H3'];
 
     final theme = Theme.of(context);
     final style = TextStyle(
@@ -81,7 +82,7 @@ class _SelectHeaderStyleButtonState extends State<SelectHeaderStyleButton> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(
                       widget.iconTheme?.borderRadius ?? 2)),
-              fillColor: _valueToText[_value] == _valueString[index]
+              fillColor: _valueToText[_value] == headerToString[index]
                   ? (widget.iconTheme?.iconSelectedFillColor ??
                       theme.toggleableActiveColor)
                   : (widget.iconTheme?.iconUnselectedFillColor ??
@@ -89,9 +90,9 @@ class _SelectHeaderStyleButtonState extends State<SelectHeaderStyleButton> {
               onPressed: () =>
                   widget.controller.formatSelection(_valueAttribute[index]),
               child: Text(
-                _valueString[index],
+                headerToString[index],
                 style: style.copyWith(
-                  color: _valueToText[_value] == _valueString[index]
+                  color: _valueToText[_value] == headerToString[index]
                       ? (widget.iconTheme?.iconSelectedColor ??
                           theme.primaryIconTheme.color)
                       : (widget.iconTheme?.iconUnselectedColor ??

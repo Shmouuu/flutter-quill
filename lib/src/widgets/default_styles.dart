@@ -211,26 +211,26 @@ class DefaultStyles {
     return DefaultStyles(
         h1: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
-              fontSize: 34,
+              fontSize: 40,
               height: 1.15,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
             ),
-            const Tuple2(16, 0),
+            const Tuple2(8, 0),
             const Tuple2(0, 0),
             null),
         h2: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
-              fontSize: 24,
+              fontSize: 30,
               height: 1.15,
-              fontWeight: FontWeight.normal,
+              fontWeight: FontWeight.w600,
             ),
             const Tuple2(8, 0),
             const Tuple2(0, 0),
             null),
         h3: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
-              fontSize: 20,
-              height: 1.25,
+              fontSize: 24,
+              height: 1.15,
               fontWeight: FontWeight.w500,
             ),
             const Tuple2(8, 0),
