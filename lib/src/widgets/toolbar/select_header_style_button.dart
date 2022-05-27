@@ -87,8 +87,10 @@ class _SelectHeaderStyleButtonState extends State<SelectHeaderStyleButton> {
                       theme.toggleableActiveColor)
                   : (widget.iconTheme?.iconUnselectedFillColor ??
                       theme.canvasColor),
-              onPressed: () =>
-                  widget.controller.formatSelection(_valueAttribute[index]),
+              onPressed: () {
+                widget.controller.formatSelection(SizeAttribute(null));
+                widget.controller.formatSelection(_valueAttribute[index]);
+              },
               child: Text(
                 headerToString[index],
                 style: style.copyWith(

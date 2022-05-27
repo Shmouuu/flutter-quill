@@ -12,12 +12,12 @@ import 'toolbar/camera_button.dart';
 import 'toolbar/clear_format_button.dart';
 import 'toolbar/color_button.dart';
 import 'toolbar/font_button.dart';
+import 'toolbar/font_size_drop_down.dart';
 import 'toolbar/history_button.dart';
 import 'toolbar/image_button.dart';
 import 'toolbar/image_video_utils.dart';
 import 'toolbar/indent_button.dart';
 import 'toolbar/link_style_button.dart';
-import 'toolbar/quill_dropdown_button.dart';
 import 'toolbar/select_alignment_button.dart';
 import 'toolbar/select_header_style_button.dart';
 import 'toolbar/toggle_check_list_button.dart';
@@ -116,7 +116,6 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
 
     ///Map of font sizes in [int]
     Map<String, int>? fontSizeValues,
-    int? initialFontSizeValue,
 
     ///The theme to use for the icons in the toolbar, uses type [QuillIconTheme]
     QuillIconTheme? iconTheme,
@@ -154,27 +153,6 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
       showLink
     ];
 
-    //default font size values
-    final fontSizes = fontSizeValues ??
-        {
-          '8': 8,
-          '10': 10,
-          '12': 12,
-          '14': 14,
-          '16': 0,
-          '18': 18,
-          '20': 20,
-          '24': 24,
-          '28': 28,
-          '32': 32,
-          '36': 36,
-          '40': 40,
-          '48': 48,
-          '64': 64,
-          '96': 96,
-          '128': 128,
-        };
-
     return QuillToolbar(
       key: key,
       toolbarHeight: toolbarIconSize * 2,
@@ -207,34 +185,11 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
             iconTheme: iconTheme,
           ),
         if (showFontSize)
-          QuillDropdownButton(
-            iconTheme: iconTheme,
-            iconSize: toolbarIconSize,
-            attribute: Attribute.size,
+          FontSizeDropDown(
             controller: controller,
-            items: [
-              for (MapEntry<String, int> fontSize in fontSizes.entries)
-                PopupMenuItem<int>(
-                  key: ValueKey(fontSize.key),
-                  value: fontSize.value,
-                  child: Text(fontSize.key.toString()),
-                ),
-            ],
-            onSelected: (newSize) {
-              if ((newSize != null) && (newSize as int > 0)) {
-                controller
-                    .formatSelection(Attribute.fromKeyValue('size', newSize));
-              }
-              if (newSize as int == 0) {
-                controller
-                    .formatSelection(Attribute.fromKeyValue('size', null));
-              }
-            },
-            rawitemsmap: fontSizes,
-            initialValue: (initialFontSizeValue != null) &&
-                    (initialFontSizeValue <= fontSizes.length - 1)
-                ? initialFontSizeValue
-                : fontSizes.values.toList().indexOf(0),
+            iconSize: toolbarIconSize,
+            iconTheme: iconTheme,
+            fontSizeValues: fontSizeValues,
           ),
         if (showBoldButton)
           ToggleStyleButton(

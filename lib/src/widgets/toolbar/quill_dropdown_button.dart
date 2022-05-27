@@ -40,6 +40,7 @@ class QuillDropdownButton<T> extends StatefulWidget {
 // ignore: deprecated_member_use_from_same_package
 class _QuillDropdownButtonState<T> extends State<QuillDropdownButton<T>> {
   String _currentValue = '';
+
   Style get _selectionStyle => widget.controller.getSelectionStyle();
 
   @override
@@ -62,7 +63,10 @@ class _QuillDropdownButtonState<T> extends State<QuillDropdownButton<T>> {
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_didChangeEditingValue);
       widget.controller.addListener(_didChangeEditingValue);
-      //_isToggled = _getIsToggled(_selectionStyle.attributes);
+    }
+    if (widget.initialValue != oldWidget.initialValue) {
+      _currentValue =
+          widget.rawitemsmap.keys.elementAt(widget.initialValue as int);
     }
   }
 
@@ -142,7 +146,7 @@ class _QuillDropdownButtonState<T> extends State<QuillDropdownButton<T>> {
         setState(() {
           _currentValue = widget.rawitemsmap.entries
               .firstWhere((element) => element.value == newValue,
-              orElse: () => widget.rawitemsmap.entries.first)
+                  orElse: () => widget.rawitemsmap.entries.first)
               .key;
         });
       }
