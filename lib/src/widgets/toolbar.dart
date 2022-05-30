@@ -51,6 +51,7 @@ typedef MediaPickSettingSelector = Future<MediaPickSetting?> Function(
 
 // The default size of the icon of a button.
 const double kDefaultIconSize = 18;
+const kToolbarHeight = kDefaultIconSize * 2;
 
 // The factor of how much larger the button is in relation to the icon.
 const double kIconButtonFactor = 1.77;
@@ -58,7 +59,7 @@ const double kIconButtonFactor = 1.77;
 class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
   const QuillToolbar({
     required this.children,
-    this.toolbarHeight = 36,
+    this.toolbarHeight = kToolbarHeight,
     this.toolbarIconAlignment = WrapAlignment.center,
     this.toolbarSectionSpacing = 4,
     this.multiRowsDisplay = true,
@@ -155,7 +156,6 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
 
     return QuillToolbar(
       key: key,
-      toolbarHeight: toolbarIconSize * 2,
       toolbarSectionSpacing: toolbarSectionSpacing,
       toolbarIconAlignment: toolbarIconAlignment,
       multiRowsDisplay: multiRowsDisplay,
