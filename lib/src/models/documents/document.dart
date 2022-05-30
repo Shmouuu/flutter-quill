@@ -91,10 +91,10 @@ class Document {
     assert(index >= 0 && len >= 0);
     final newDocument = Document.fromDelta(_delta);
     if (len > 0) {
-      delete(index, len);
+      compose(Delta()..retain(index)..delete(len), ChangeSource.LOCAL);
     }
     if (index > 0) {
-      newDocument.delete(0, index);
+      newDocument.compose(Delta()..delete(index + 1), ChangeSource.LOCAL);
     }
     newDocument._history.clear();
     return newDocument;
