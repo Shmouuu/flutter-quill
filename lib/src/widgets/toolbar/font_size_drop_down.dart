@@ -96,7 +96,9 @@ class _FontSizeDropDownState extends State<FontSizeDropDown> {
   }
 
   void _didChangeEditingValue() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

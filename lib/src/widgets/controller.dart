@@ -410,7 +410,6 @@ class QuillController extends ChangeNotifier {
         }
       });
     }
-
     onSelectionChanged?.call(textSelection);
   }
 
