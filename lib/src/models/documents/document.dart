@@ -94,7 +94,7 @@ class Document {
       compose(Delta()..retain(index)..delete(len), ChangeSource.LOCAL);
     }
     if (index > 0) {
-      newDocument.compose(Delta()..delete(index + 1), ChangeSource.LOCAL);
+      newDocument.compose(Delta()..delete(index), ChangeSource.LOCAL);
     }
     newDocument._history.clear();
     return newDocument;
