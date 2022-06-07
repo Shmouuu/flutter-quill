@@ -67,6 +67,7 @@ class EditableTextBlock extends StatelessWidget {
       this.onLaunchUrl,
       this.focusNode,
       this.onDgPageTapped,
+      this.onDgUserTapped,
       this.customStyleBuilder,
       this.defaultFontFamily,
       Key? key});
@@ -87,6 +88,7 @@ class EditableTextBlock extends StatelessWidget {
   final LinkActionPicker linkActionPicker;
   final LinkLauncher? onLaunchUrl;
   final PageLauncher? onDgPageTapped;
+  final UserLauncher? onDgUserTapped;
   final CustomStyleBuilder? customStyleBuilder;
   final CursorCont cursorCont;
   final Map<int, int> indentLevelCounts;
@@ -147,6 +149,7 @@ class EditableTextBlock extends StatelessWidget {
             linkActionPicker: linkActionPicker,
             onLaunchUrl: onLaunchUrl,
             onDgPageTapped: onDgPageTapped,
+            onDgUserTapped: onDgUserTapped,
             defaultFontFamily: defaultFontFamily,
           ),
           _getIndentWidth(),

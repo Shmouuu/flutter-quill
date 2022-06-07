@@ -148,6 +148,7 @@ class DefaultStyles {
     this.inlineCode,
     this.link,
     this.page,
+    this.user,
     this.color,
     this.placeHolder,
     this.lists,
@@ -178,6 +179,7 @@ class DefaultStyles {
   final TextStyle? sizeHuge; // 'huge'
   final TextStyle? link;
   final InlineCodeStyle? page;
+  final InlineCodeStyle? user;
   final Color? color;
   final DefaultTextBlockStyle? placeHolder;
   final DefaultListBlockStyle? lists;
@@ -268,6 +270,13 @@ class DefaultStyles {
             decoration: TextDecoration.underline,
           ),
         ),
+        user: InlineCodeStyle(
+          radius: const Radius.circular(3),
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF38A168),
+          ),
+        ),
         placeHolder: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
               color: const Color(0xFFC4C4C4),
@@ -333,6 +342,7 @@ class DefaultStyles {
         align: other.align ?? align,
         leading: other.leading ?? leading,
         page: other.page ?? page,
+        user: other.user ?? user,
         sizeSmall: other.sizeSmall ?? sizeSmall,
         sizeLarge: other.sizeLarge ?? sizeLarge,
         sizeHuge: other.sizeHuge ?? sizeHuge);

@@ -43,6 +43,7 @@ class Attribute<T> {
     Attribute.token.key: Attribute.token,
     Attribute.script.key: Attribute.script,
     Attribute.page.key: Attribute.page,
+    Attribute.user.key: Attribute.user,
   });
 
   static final BoldAttribute bold = BoldAttribute();
@@ -94,6 +95,8 @@ class Attribute<T> {
   static final ScriptAttribute script = ScriptAttribute('');
 
   static final PageAttribute page = PageAttribute('');
+
+  static final UserAttribute user = UserAttribute('');
 
   static const String mobileWidth = 'mobileWidth';
 
@@ -351,4 +354,9 @@ class ScriptAttribute extends Attribute<String> {
 class PageAttribute extends Attribute<String> {
   PageAttribute(String pageId)
       : super('dg_page', AttributeScope.INLINE, pageId);
+}
+
+class UserAttribute extends Attribute<String> {
+  UserAttribute(String userId)
+      : super('dg_user', AttributeScope.INLINE, userId);
 }

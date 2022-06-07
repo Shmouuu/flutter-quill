@@ -53,6 +53,7 @@ class RawEditor extends StatefulWidget {
       this.placeholder,
       this.onLaunchUrl,
       this.onDgPageTapped,
+      this.onDgUserTapped,
       this.toolbarOptions = const ToolbarOptions(
         copy: true,
         cut: true,
@@ -113,6 +114,7 @@ class RawEditor extends StatefulWidget {
   /// a link in the document.
   final LinkLauncher? onLaunchUrl;
   final PageLauncher? onDgPageTapped;
+  final UserLauncher? onDgUserTapped;
 
   /// Configuration of toolbar options.
   ///
@@ -515,6 +517,7 @@ class RawEditorState extends EditorState
       linkActionPicker: _linkActionPicker,
       onLaunchUrl: widget.onLaunchUrl,
       onDgPageTapped: widget.onDgPageTapped,
+      onDgUserTapped: widget.onDgUserTapped,
       defaultFontFamily: widget.defaultFontFamily,
     );
     final editableTextLine = EditableTextLine(

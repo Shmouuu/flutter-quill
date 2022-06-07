@@ -165,6 +165,7 @@ class QuillEditor extends StatefulWidget {
       this.scrollPhysics,
       this.onLaunchUrl,
       this.onDgPageTapped,
+      this.onDgUserTapped,
       this.onTapDown,
       this.onTapUp,
       this.onSingleLongTapStart,
@@ -329,6 +330,7 @@ class QuillEditor extends StatefulWidget {
   /// Callback to invoke when user wants to launch a URL.
   final LinkLauncher? onLaunchUrl;
   final PageLauncher? onDgPageTapped;
+  final UserLauncher? onDgUserTapped;
   final EditorGestureListener? editorGestureListener;
   final int? numberedPointStart;
   final OnPaste? onPaste;
@@ -449,6 +451,7 @@ class QuillEditorState extends State<QuillEditor>
       onLaunchUrl: widget.onLaunchUrl,
       onPaste: widget.onPaste,
       onDgPageTapped: widget.onDgPageTapped,
+      onDgUserTapped: widget.onDgUserTapped,
       toolbarOptions: ToolbarOptions(
         copy: widget.enableInteractiveSelection,
         cut: widget.enableInteractiveSelection,
