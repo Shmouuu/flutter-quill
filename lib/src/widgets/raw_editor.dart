@@ -748,7 +748,7 @@ class RawEditorState extends EditorState
       return;
     }
 
-    if (ignoreFocus || _keyboardVisible) {
+    if (ignoreFocus || _keyboardVisible || widget.readOnly) {
       _onChangeTextEditingValue(ignoreFocus);
     } else {
       requestKeyboard();
