@@ -108,13 +108,15 @@ class _FontSizeDropDownState extends State<FontSizeDropDown> {
   }
 
   int _getFontSizeIndex(Map<String, int> fontSizes) {
-    final customFontSize = int.tryParse(widget.controller
+    final value = widget.controller
             .getAllStyles()
             .attributes
             .values
             .firstWhereOrNull((e) => e.key == Attribute.size.key)
             ?.value ??
-        '');
+        '';
+    final customFontSize =
+        int.tryParse(value is String ? value : value.toString());
     if (customFontSize != null) {
       final key = customFontSize.toString();
       if (!fontSizes.containsKey(key)) {
