@@ -213,7 +213,7 @@ class DefaultStyles {
     return DefaultStyles(
         h1: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
-              fontSize: 40,
+              fontSize: 32,
               height: 1.15,
               fontWeight: FontWeight.w700,
             ),
@@ -222,7 +222,7 @@ class DefaultStyles {
             null),
         h2: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
-              fontSize: 30,
+              fontSize: 28,
               height: 1.15,
               fontWeight: FontWeight.w600,
             ),
@@ -231,7 +231,7 @@ class DefaultStyles {
             null),
         h3: DefaultTextBlockStyle(
             defaultTextStyle.style.copyWith(
-              fontSize: 24,
+              fontSize: 20,
               height: 1.15,
               fontWeight: FontWeight.w500,
             ),
