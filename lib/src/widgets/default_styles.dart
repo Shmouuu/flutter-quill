@@ -278,7 +278,7 @@ class DefaultStyles {
           ),
         ),
         placeHolder: DefaultTextBlockStyle(
-            defaultTextStyle.style.copyWith(
+            baseStyle.copyWith(
               color: const Color(0xFFC4C4C4),
               fontWeight: FontWeight.w400,
             ),
