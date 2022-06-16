@@ -53,7 +53,7 @@ class _MaterialPickerState extends State<MaterialPicker> {
     [Colors.blueGrey],
   ];
 
-  List<Color> _currentColorType = [Colors.red, Colors.redAccent];
+  List<Color> _currentColorType = [Colors.black];
   Color _currentShading = Colors.transparent;
 
   List<Map<Color, String>> _shadingTypes(List<Color> colors) {
