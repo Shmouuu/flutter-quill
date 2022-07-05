@@ -28,32 +28,39 @@ class _FontPickerState extends State<FontPicker> {
   @override
   Widget build(BuildContext context) {
     return DropdownSearch<String>(
-      showSearchBox: true,
-      maxHeight: 250,
-      dropdownSearchDecoration: const InputDecoration(
-        filled: true,
-        labelText: 'Pick a family font',
-        hintText: 'Font family',
-        border: UnderlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF01689A)),
-        ),
-      ),
       dropdownBuilder: (context, selectedItem) {
         return Text(selectedItem ?? 'Default',
             style: GoogleFonts.asMap()[selectedItem]?.call());
       },
-      popupItemBuilder: (context, item, isSelected) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-          child: Text(item, style: GoogleFonts.asMap()[item]?.call()),
-        );
-      },
-      clearButtonProps:
-          const IconButtonProps(icon: Icon(Icons.clear, color: Colors.black)),
-      dropdownButtonProps: const IconButtonProps(
-          icon: Icon(Icons.arrow_drop_down, color: Colors.black)),
+      popupProps: PopupProps.menu(
+        constraints: const BoxConstraints(maxHeight: 250),
+        searchFieldProps: const TextFieldProps(
+
+          decoration: InputDecoration(
+            filled: true,
+            labelText: 'Pick a family font',
+            hintText: 'Font family',
+            border: UnderlineInputBorder(
+              borderSide: BorderSide(color: Color(0xFF01689A)),
+            ),
+          ),
+        ),
+        showSearchBox: true,
+        itemBuilder: (context, item, isSelected) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            child: Text(item, style: GoogleFonts.asMap()[item]?.call()),
+          );
+        },
+      ),
+      dropdownButtonProps: const DropdownButtonProps(
+        icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+      ),
+      clearButtonProps: const ClearButtonProps(
+        isVisible: true,
+        icon: Icon(Icons.clear, color: Colors.black),
+      ),
       items: items,
-      showClearButton: true,
       onChanged: (value) {
         widget.onChanged(value);
       },
