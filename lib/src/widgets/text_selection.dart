@@ -933,9 +933,10 @@ class _EditorTextSelectionGestureDetectorState
     // Use _TransparentTapGestureRecognizer so that TextSelectionGestureDetector
     // can receive the same tap events that a selection handle placed visually
     // on top of it also receives.
-    gestures[_TransparentTapGestureRecognizer] =
-        GestureRecognizerFactoryWithHandlers<_TransparentTapGestureRecognizer>(
-      () => _TransparentTapGestureRecognizer(debugOwner: this),
+    // jerome: _TransparentTapGestureRecognizer has been removed to fix task 1662
+    gestures[TapGestureRecognizer] =
+        GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
+      () => TapGestureRecognizer(debugOwner: this),
       (instance) {
         instance
           ..onTapDown = _handleTapDown
