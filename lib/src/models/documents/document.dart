@@ -403,11 +403,9 @@ class Document {
     }
 
     final delta = node.toDelta();
-    if (toPlainText() == '${Document.zeroWidthChar}\n') {
-      return true;
-    }
     return delta.length == 1 &&
-        delta.first.data == '\n' &&
+        delta.first.attributes?.isNotEmpty != true &&
+        delta.first.data == '${Document.zeroWidthChar}\n' &&
         delta.first.key == 'insert';
   }
 }
