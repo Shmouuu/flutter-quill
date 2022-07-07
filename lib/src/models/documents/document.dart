@@ -91,7 +91,11 @@ class Document {
     assert(index >= 0 && len >= 0);
     final newDocument = Document.fromDelta(_delta);
     if (len > 0) {
-      compose(Delta()..retain(index)..delete(len), ChangeSource.LOCAL);
+      compose(
+          Delta()
+            ..retain(index)
+            ..delete(len),
+          ChangeSource.LOCAL);
     }
     if (index > 0) {
       newDocument.compose(Delta()..delete(index), ChangeSource.LOCAL);
@@ -403,9 +407,16 @@ class Document {
     }
 
     final delta = node.toDelta();
+    if (delta.length == 2 &&
+        delta.last.attributes?.keys.first != Attribute.header.key) {
+      // empty only if the line format is a header
+      return false;
+    }
+    if (toPlainText() == '${Document.zeroWidthChar}\n') {
+      return true;
+    }
     return delta.length == 1 &&
-        delta.first.attributes?.isNotEmpty != true &&
-        delta.first.data == '${Document.zeroWidthChar}\n' &&
+        delta.first.data == '\n' &&
         delta.first.key == 'insert';
   }
 }
