@@ -134,6 +134,8 @@ class DefaultListBlockStyle extends DefaultTextBlockStyle {
   final QuillCheckboxBuilder? checkboxUIBuilder;
 }
 
+const double defaultFontSize = 16;
+
 class DefaultStyles {
   DefaultStyles({
     this.h1,
@@ -193,7 +195,7 @@ class DefaultStyles {
     final themeData = Theme.of(context);
     final defaultTextStyle = DefaultTextStyle.of(context);
     final baseStyle = defaultTextStyle.style.copyWith(
-      fontSize: 16,
+      fontSize: defaultFontSize,
       height: 1.3,
     );
     const baseSpacing = Tuple2<double, double>(6, 0);

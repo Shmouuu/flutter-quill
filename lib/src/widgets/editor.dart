@@ -152,6 +152,7 @@ class QuillEditor extends StatefulWidget {
       required this.expands,
       this.showCursor,
       this.defaultFontFamily,
+      this.fontSizeBehavior = FontSizeBehavior.fixed,
       this.paintCursorAboveText,
       this.placeholder,
       this.enableInteractiveSelection = true,
@@ -212,6 +213,9 @@ class QuillEditor extends StatefulWidget {
 
   /// Controls whether this editor has keyboard focus.
   final FocusNode focusNode;
+
+  /// Controls the responsiveness of the font size
+  final FontSizeBehavior fontSizeBehavior;
 
   /// The [ScrollController] to use when vertically scrolling the contents.
   final ScrollController scrollController;
@@ -441,6 +445,7 @@ class QuillEditorState extends State<QuillEditor>
     final child = RawEditor(
       key: _editorKey,
       controller: widget.controller,
+      fontSizeBehavior: widget.fontSizeBehavior,
       focusNode: widget.focusNode,
       scrollController: widget.scrollController,
       scrollable: widget.scrollable,

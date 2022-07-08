@@ -35,6 +35,8 @@ class TextLine extends StatefulWidget {
     required this.onDgPageTapped,
     required this.onDgUserTapped,
     required this.linkActionPicker,
+    required this.maxWidthForPercent,
+    required this.fontSizeBehavior,
     this.textDirection,
     this.defaultFontFamily,
     this.customStyleBuilder,
@@ -47,6 +49,7 @@ class TextLine extends StatefulWidget {
   final EmbedBuilder embedBuilder;
   final DefaultStyles styles;
   final bool readOnly;
+  final double maxWidthForPercent;
   final bool hasFocus;
   final String? defaultFontFamily;
   final QuillController controller;
@@ -56,6 +59,7 @@ class TextLine extends StatefulWidget {
   final PageLauncher? onDgPageTapped;
   final UserLauncher? onDgUserTapped;
   final LinkActionPicker linkActionPicker;
+  final FontSizeBehavior fontSizeBehavior;
 
   @override
   State<TextLine> createState() => _TextLineState();
@@ -409,6 +413,13 @@ class _TextLineState extends State<TextLine> {
     }
 
     res = _applyCustomAttributes(res, textNode.style.attributes);
+
+    if (widget.fontSizeBehavior == FontSizeBehavior.proportional) {
+      final fontSize = res.fontSize ?? defaultFontSize;
+      final ratio = widget.maxWidthForPercent / 375;
+      final percentFontSize = fontSize * ratio;
+      res = res.merge(TextStyle(fontSize: percentFontSize));
+    }
     return res;
   }
 
@@ -417,13 +428,8 @@ class _TextLineState extends State<TextLine> {
       return _linkRecognizers[segment]!;
     }
 
-    // if (/*isDesktop() ||*/ widget.hasFocus) {
     _linkRecognizers[segment] = TapGestureRecognizer()
       ..onTap = () => _tapNodeLink(segment);
-    // } // else {
-    //   _linkRecognizers[segment] = LongPressGestureRecognizer()
-    //     ..onLongPress = () => _longPressLink(segment);
-    // }
     return _linkRecognizers[segment]!;
   }
 
@@ -488,32 +494,6 @@ class _TextLineState extends State<TextLine> {
     await launchUrl(link);
     widget.focusNode?.canRequestFocus = true;
   }
-
-/*
-  Future<void> _longPressLink(Node node) async {
-    if (!node.style.attributes.containsKey(Attribute.link.key)) {
-      return;
-    }
-    final link = node.style.attributes[Attribute.link.key]!.value!;
-    final action = await widget.linkActionPicker(node);
-    switch (action) {
-      case LinkMenuAction.launch:
-        _tapLink(link);
-        break;
-      case LinkMenuAction.copy:
-        // ignore: unawaited_futures
-        Clipboard.setData(ClipboardData(text: link));
-        break;
-      case LinkMenuAction.remove:
-        final range = getLinkRange(node);
-        widget.controller
-            .formatText(range.start, range.end - range.start, Attribute.link);
-        break;
-      case LinkMenuAction.none:
-        break;
-    }
-  }
-*/
 
   TextStyle _merge(TextStyle a, TextStyle b) {
     final decorations = <TextDecoration?>[];

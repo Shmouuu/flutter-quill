@@ -64,6 +64,8 @@ class EditableTextBlock extends StatelessWidget {
       required this.onCheckboxTap,
       required this.readOnly,
       required this.numberedPointStart,
+      required this.maxWidthForPercent,
+      required this.fontSizeBehavior,
       this.onLaunchUrl,
       this.focusNode,
       this.onDgPageTapped,
@@ -73,6 +75,8 @@ class EditableTextBlock extends StatelessWidget {
       Key? key});
 
   final Block block;
+  final double maxWidthForPercent;
+  final FontSizeBehavior fontSizeBehavior;
   final QuillController controller;
   final TextDirection textDirection;
   final double scrollBottomInset;
@@ -151,6 +155,8 @@ class EditableTextBlock extends StatelessWidget {
             onDgPageTapped: onDgPageTapped,
             onDgUserTapped: onDgUserTapped,
             defaultFontFamily: defaultFontFamily,
+            maxWidthForPercent: maxWidthForPercent,
+            fontSizeBehavior: fontSizeBehavior,
           ),
           _getIndentWidth(),
           _getSpacingForLine(line, index, count, defaultStyles),

@@ -6,6 +6,7 @@ export 'src/models/documents/nodes/embeddable.dart';
 export 'src/models/documents/nodes/leaf.dart';
 export 'src/models/documents/nodes/node.dart';
 export 'src/models/documents/style.dart';
+export 'src/models/font_size_behavior.dart';
 export 'src/models/quill_delta.dart';
 export 'src/models/rules/delete.dart' show DeleteRule;
 export 'src/models/rules/insert.dart' show InsertRule, getNextNewLine;

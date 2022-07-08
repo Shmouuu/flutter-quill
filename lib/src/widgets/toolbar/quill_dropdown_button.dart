@@ -15,6 +15,7 @@ class QuillDropdownButton<T> extends StatefulWidget {
     required this.onSelected,
     this.iconSize = 40,
     this.fillColor,
+    this.suffix,
     this.hoverElevation = 1,
     this.highlightElevation = 1,
     this.iconTheme,
@@ -23,6 +24,7 @@ class QuillDropdownButton<T> extends StatefulWidget {
 
   final double iconSize;
   final Color? fillColor;
+  final String? suffix;
   final double hoverElevation;
   final double highlightElevation;
   final T initialValue;
@@ -161,7 +163,9 @@ class _QuillDropdownButtonState<T> extends State<QuillDropdownButton<T>> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(_currentValue.toString(),
+          Text(
+              _currentValue.toString() +
+                  (widget.suffix == null ? '' : widget.suffix!),
               style: TextStyle(
                   fontSize: widget.iconSize / 1.15,
                   color: widget.iconTheme?.iconUnselectedColor ??

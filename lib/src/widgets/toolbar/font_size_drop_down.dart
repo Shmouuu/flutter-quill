@@ -1,15 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/documents/attribute.dart';
-import '../../models/themes/quill_icon_theme.dart';
-import '../controller.dart';
-import '../default_styles.dart';
-import '../toolbar.dart';
+import '../../../flutter_quill.dart' hide Text;
 
 class FontSizeDropDown extends StatefulWidget {
   const FontSizeDropDown({
     required this.controller,
+    required this.fontSizeBehavior,
     this.iconSize = kDefaultIconSize,
     this.iconTheme,
     this.fontSizeValues,
@@ -18,6 +15,7 @@ class FontSizeDropDown extends StatefulWidget {
 
   final QuillController controller;
   final double iconSize;
+  final FontSizeBehavior fontSizeBehavior;
 
   final QuillIconTheme? iconTheme;
   final Map<String, int>? fontSizeValues;
@@ -26,10 +24,13 @@ class FontSizeDropDown extends StatefulWidget {
   _FontSizeDropDownState createState() => _FontSizeDropDownState();
 }
 
+const int minFontSize = 8;
+const int maxFontSize = 128;
+
 class _FontSizeDropDownState extends State<FontSizeDropDown> {
   late final fontSizes = widget.fontSizeValues ??
       {
-        '8': 8,
+        '8': minFontSize,
         '10': 10,
         '12': 12,
         '14': 14,
@@ -44,7 +45,7 @@ class _FontSizeDropDownState extends State<FontSizeDropDown> {
         '48': 48,
         '64': 64,
         '96': 96,
-        '128': 128,
+        '128': maxFontSize,
       };
 
   @override
@@ -56,18 +57,21 @@ class _FontSizeDropDownState extends State<FontSizeDropDown> {
   @override
   Widget build(BuildContext context) {
     //default font size values
+    final suffix =
+        widget.fontSizeBehavior == FontSizeBehavior.proportional ? '*' : '';
     final initialFontSizeValue = _getFontSizeIndex(fontSizes);
     return QuillDropdownButton(
       iconTheme: widget.iconTheme,
       iconSize: widget.iconSize,
       attribute: Attribute.size,
       controller: widget.controller,
+      suffix: suffix,
       items: [
         for (MapEntry<String, int> fontSize in fontSizes.entries)
           PopupMenuItem<int>(
             key: ValueKey(fontSize.key),
             value: fontSize.value,
-            child: Text(fontSize.key.toString()),
+            child: Text(fontSize.key.toString() + suffix),
           ),
       ],
       onSelected: (newSize) {

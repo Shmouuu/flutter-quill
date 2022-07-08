@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -18,6 +17,7 @@ import '../models/documents/nodes/embeddable.dart';
 import '../models/documents/nodes/line.dart';
 import '../models/documents/nodes/node.dart';
 import '../models/documents/style.dart';
+import '../models/font_size_behavior.dart';
 import '../utils/delta.dart';
 import '../utils/platform.dart';
 import 'controller.dart';
@@ -46,6 +46,7 @@ class RawEditor extends StatefulWidget {
       required this.cursorStyle,
       required this.selectionColor,
       required this.selectionCtrls,
+      required this.fontSizeBehavior,
       Key? key,
       this.scrollable = true,
       this.padding = EdgeInsets.zero,
@@ -231,6 +232,7 @@ class RawEditor extends StatefulWidget {
 
   /// Builder function for embeddable objects.
   final EmbedBuilder embedBuilder;
+  final FontSizeBehavior fontSizeBehavior;
   final LinkActionPickerDelegate linkActionPickerDelegate;
   final CustomStyleBuilder? customStyleBuilder;
   final ValueChanged<TextInputAction>? onPerformAction;
@@ -281,6 +283,7 @@ class RawEditorState extends EditorState
   @override
   List<Tuple2<int, Style>> get pasteStyle => _pasteStyle;
   List<Tuple2<int, Style>> _pasteStyle = <Tuple2<int, Style>>[];
+
   @override
   String get pastePlainText => _pastePlainText;
   String _pastePlainText = '';
@@ -320,24 +323,27 @@ class RawEditorState extends EditorState
     Widget child = CompositedTransformTarget(
       link: _toolbarLayerLink,
       child: Semantics(
-        child: _Editor(
-          key: _editorKey,
-          document: _doc,
-          selection: _selection,
-          hasFocus: _hasFocus,
-          scrollable: widget.scrollable,
-          cursorController: _cursorCont,
-          textDirection: _textDirection,
-          startHandleLayerLink: _startHandleLayerLink,
-          endHandleLayerLink: _endHandleLayerLink,
-          onSelectionChanged: _handleSelectionChanged,
-          onSelectionCompleted: _handleSelectionCompleted,
-          scrollBottomInset: widget.scrollBottomInset,
-          padding: widget.padding,
-          maxContentWidth: widget.maxContentWidth,
-          floatingCursorDisabled: widget.floatingCursorDisabled,
-          children: _buildChildren(_doc, context),
-        ),
+        child: LayoutBuilder(builder: (context, constraints) {
+          return _Editor(
+            key: _editorKey,
+            maxWidthForPercent: constraints.maxWidth,
+            document: _doc,
+            selection: _selection,
+            hasFocus: _hasFocus,
+            scrollable: widget.scrollable,
+            cursorController: _cursorCont,
+            textDirection: _textDirection,
+            startHandleLayerLink: _startHandleLayerLink,
+            endHandleLayerLink: _endHandleLayerLink,
+            onSelectionChanged: _handleSelectionChanged,
+            onSelectionCompleted: _handleSelectionCompleted,
+            scrollBottomInset: widget.scrollBottomInset,
+            padding: widget.padding,
+            maxContentWidth: widget.maxContentWidth,
+            floatingCursorDisabled: widget.floatingCursorDisabled,
+            children: _buildChildren(_doc, context, constraints.maxWidth),
+          );
+        }),
       ),
     );
 
@@ -358,25 +364,28 @@ class RawEditorState extends EditorState
           physics: widget.scrollPhysics,
           viewportBuilder: (_, offset) => CompositedTransformTarget(
             link: _toolbarLayerLink,
-            child: _Editor(
-              key: _editorKey,
-              offset: offset,
-              document: _doc,
-              selection: widget.controller.selection,
-              hasFocus: _hasFocus,
-              scrollable: widget.scrollable,
-              textDirection: _textDirection,
-              startHandleLayerLink: _startHandleLayerLink,
-              endHandleLayerLink: _endHandleLayerLink,
-              onSelectionChanged: _handleSelectionChanged,
-              onSelectionCompleted: _handleSelectionCompleted,
-              scrollBottomInset: widget.scrollBottomInset,
-              padding: widget.padding,
-              maxContentWidth: widget.maxContentWidth,
-              cursorController: _cursorCont,
-              floatingCursorDisabled: widget.floatingCursorDisabled,
-              children: _buildChildren(_doc, context),
-            ),
+            child: LayoutBuilder(builder: (context, constraints) {
+              return _Editor(
+                key: _editorKey,
+                maxWidthForPercent: constraints.maxWidth,
+                offset: offset,
+                document: _doc,
+                selection: widget.controller.selection,
+                hasFocus: _hasFocus,
+                scrollable: widget.scrollable,
+                textDirection: _textDirection,
+                startHandleLayerLink: _startHandleLayerLink,
+                endHandleLayerLink: _endHandleLayerLink,
+                onSelectionChanged: _handleSelectionChanged,
+                onSelectionCompleted: _handleSelectionCompleted,
+                scrollBottomInset: widget.scrollBottomInset,
+                padding: widget.padding,
+                maxContentWidth: widget.maxContentWidth,
+                cursorController: _cursorCont,
+                floatingCursorDisabled: widget.floatingCursorDisabled,
+                children: _buildChildren(_doc, context, constraints.maxWidth),
+              );
+            }),
           ),
         ),
       );
@@ -457,18 +466,22 @@ class RawEditorState extends EditorState
     }
   }
 
-  List<Widget> _buildChildren(Document doc, BuildContext context) {
+  List<Widget> _buildChildren(
+      Document doc, BuildContext context, double maxWidthForPercent) {
     final result = <Widget>[];
     final indentLevelCounts = <int, int>{};
     for (final node in doc.root.children) {
       if (node is Line) {
-        final editableTextLine = _getEditableTextLineFromNode(node, context);
+        final editableTextLine =
+            _getEditableTextLineFromNode(node, context, maxWidthForPercent);
         result.add(Directionality(
             textDirection: getDirectionOfNode(node), child: editableTextLine));
       } else if (node is Block) {
         final attrs = node.style.attributes;
         final editableTextBlock = EditableTextBlock(
             block: node,
+            maxWidthForPercent: maxWidthForPercent,
+            fontSizeBehavior: widget.fontSizeBehavior,
             controller: widget.controller,
             textDirection: _textDirection,
             scrollBottomInset: widget.scrollBottomInset,
@@ -503,11 +516,13 @@ class RawEditorState extends EditorState
   }
 
   EditableTextLine _getEditableTextLineFromNode(
-      Line node, BuildContext context) {
+      Line node, BuildContext context, double maxWidthForPercent) {
     final textLine = TextLine(
       line: node,
+      maxWidthForPercent: maxWidthForPercent,
       textDirection: _textDirection,
       embedBuilder: widget.embedBuilder,
+      fontSizeBehavior: widget.fontSizeBehavior,
       customStyleBuilder: widget.customStyleBuilder,
       styles: _styles!,
       readOnly: widget.readOnly,
@@ -767,8 +782,7 @@ class RawEditorState extends EditorState
     updateRemoteValueIfNeeded();
     if (ignoreCaret) {
       if (mounted) {
-        setState(() {
-        });
+        setState(() {});
       }
       return;
     }
@@ -1241,6 +1255,7 @@ class _Editor extends MultiChildRenderObjectWidget {
     required this.scrollBottomInset,
     required this.cursorController,
     required this.floatingCursorDisabled,
+    required this.maxWidthForPercent,
     this.padding = EdgeInsets.zero,
     this.maxContentWidth,
     this.offset,
@@ -1252,6 +1267,7 @@ class _Editor extends MultiChildRenderObjectWidget {
   final bool hasFocus;
   final bool scrollable;
   final TextSelection selection;
+  final double? maxWidthForPercent;
   final LayerLink startHandleLayerLink;
   final LayerLink endHandleLayerLink;
   final TextSelectionChangedHandler onSelectionChanged;
@@ -1487,6 +1503,7 @@ class _DocumentBoundary extends _TextBoundary {
   @override
   TextPosition getLeadingTextBoundaryAt(TextPosition position) =>
       const TextPosition(offset: 0);
+
   @override
   TextPosition getTrailingTextBoundaryAt(TextPosition position) {
     return TextPosition(

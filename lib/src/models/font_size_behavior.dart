@@ -1,0 +1,1 @@
+enum FontSizeBehavior { fixed, proportional }
