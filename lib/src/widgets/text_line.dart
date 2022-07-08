@@ -222,8 +222,8 @@ class _TextLineState extends State<TextLine> {
       nodes = LinkedList<Node>()..add(leaf.Text('\u{200B}'));
     }
     final children = nodes
-        .map((node) =>
-            _getTextSpanFromNode(defaultStyles, node, widget.line.style))
+        .map((node) => _getTextSpanFromNode(
+            defaultStyles, node, widget.line.style, lineStyle))
         .toList(growable: false);
 
     return TextSpan(children: children, style: lineStyle);
@@ -285,8 +285,8 @@ class _TextLineState extends State<TextLine> {
     return textStyle;
   }
 
-  TextSpan _getTextSpanFromNode(
-      DefaultStyles defaultStyles, Node node, Style lineStyle) {
+  TextSpan _getTextSpanFromNode(DefaultStyles defaultStyles, Node node,
+      Style lineStyle, TextStyle lineTextStyle) {
     final textNode = node as leaf.Text;
     final nodeStyle = textNode.style;
     final isLink = (nodeStyle.containsKey(Attribute.link.key) &&
@@ -305,14 +305,14 @@ class _TextLineState extends State<TextLine> {
     return TextSpan(
       text: value,
       style: _getInlineTextStyle(
-          textNode, defaultStyles, nodeStyle, lineStyle, isLink),
+          textNode, defaultStyles, nodeStyle, lineStyle, isLink, lineTextStyle),
       recognizer: clickable ? _getRecognizer(node) : null,
       mouseCursor: clickable ? SystemMouseCursors.click : null,
     );
   }
 
   TextStyle _getInlineTextStyle(leaf.Text textNode, DefaultStyles defaultStyles,
-      Style nodeStyle, Style lineStyle, bool isLink) {
+      Style nodeStyle, Style lineStyle, bool isLink, TextStyle lineTextStyle) {
     var res = const TextStyle(); // This is inline text style
     final color = textNode.style.attributes[Attribute.color.key];
     var hasDefaultColor = false;
@@ -415,7 +415,8 @@ class _TextLineState extends State<TextLine> {
     res = _applyCustomAttributes(res, textNode.style.attributes);
 
     if (widget.fontSizeBehavior == FontSizeBehavior.proportional) {
-      final fontSize = res.fontSize ?? defaultFontSize;
+      final fontSize =
+          res.fontSize ?? lineTextStyle.fontSize ?? defaultFontSize;
       final ratio = widget.maxWidthForPercent / 375;
       final percentFontSize = fontSize * ratio;
       res = res.merge(TextStyle(fontSize: percentFontSize));
