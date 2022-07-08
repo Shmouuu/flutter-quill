@@ -56,7 +56,6 @@ class _FontSizeDropDownState extends State<FontSizeDropDown> {
 
   @override
   Widget build(BuildContext context) {
-    //default font size values
     final suffix =
         widget.fontSizeBehavior == FontSizeBehavior.proportional ? '*' : '';
     final initialFontSizeValue = _getFontSizeIndex(fontSizes);
@@ -68,14 +67,15 @@ class _FontSizeDropDownState extends State<FontSizeDropDown> {
       suffix: suffix,
       items: [
         for (MapEntry<String, int> fontSize in fontSizes.entries)
-          PopupMenuItem<int>(
+          PopupMenuItem<String>(
             key: ValueKey(fontSize.key),
-            value: fontSize.value,
+            value: fontSize.key,
             child: Text(fontSize.key.toString() + suffix),
           ),
       ],
-      onSelected: (newSize) {
-        if ((newSize != null) && (newSize as int > 0)) {
+      onSelected: (newKey) {
+        final newSize = fontSizes[newKey];
+        if ((newSize != null) && (newSize > 0)) {
           widget.controller
               .formatSelection(Attribute.fromKeyValue('size', newSize));
         }
@@ -85,7 +85,7 @@ class _FontSizeDropDownState extends State<FontSizeDropDown> {
         }
       },
       rawitemsmap: fontSizes,
-      initialValue: initialFontSizeValue,
+      initialValue: fontSizes.keys.elementAt(initialFontSizeValue),
     );
   }
 
@@ -113,7 +113,7 @@ class _FontSizeDropDownState extends State<FontSizeDropDown> {
 
   int _getFontSizeIndex(Map<String, int> fontSizes) {
     final value = widget.controller
-            .getAllStyles()
+            .getSelectionStyle()
             .attributes
             .values
             .firstWhereOrNull((e) => e.key == Attribute.size.key)
@@ -129,7 +129,7 @@ class _FontSizeDropDownState extends State<FontSizeDropDown> {
       return fontSizes.values.toList().indexOf(customFontSize);
     } else {
       final int? level = widget.controller
-          .getAllStyles()
+          .getSelectionStyle()
           .attributes
           .values
           .firstWhereOrNull((e) => e.key == Attribute.header.key)

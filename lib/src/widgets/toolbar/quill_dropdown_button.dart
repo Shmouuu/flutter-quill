@@ -5,7 +5,7 @@ import '../../models/documents/style.dart';
 import '../../models/themes/quill_icon_theme.dart';
 import '../controller.dart';
 
-class QuillDropdownButton<T> extends StatefulWidget {
+class QuillDropdownButton extends StatefulWidget {
   const QuillDropdownButton({
     required this.initialValue,
     required this.items,
@@ -27,20 +27,21 @@ class QuillDropdownButton<T> extends StatefulWidget {
   final String? suffix;
   final double hoverElevation;
   final double highlightElevation;
-  final T initialValue;
-  final List<PopupMenuEntry<T>> items;
+  final String initialValue;
+  final List<PopupMenuEntry<String>> items;
   final Map<String, int> rawitemsmap;
-  final ValueChanged<T> onSelected;
+  final ValueChanged<String> onSelected;
   final QuillIconTheme? iconTheme;
   final Attribute attribute;
   final QuillController controller;
 
   @override
-  _QuillDropdownButtonState<T> createState() => _QuillDropdownButtonState<T>();
+  _QuillDropdownButtonState<String> createState() =>
+      _QuillDropdownButtonState();
 }
 
 // ignore: deprecated_member_use_from_same_package
-class _QuillDropdownButtonState<T> extends State<QuillDropdownButton<T>> {
+class _QuillDropdownButtonState<T> extends State<QuillDropdownButton> {
   String _currentValue = '';
 
   Style get _selectionStyle => widget.controller.getSelectionStyle();
@@ -49,8 +50,7 @@ class _QuillDropdownButtonState<T> extends State<QuillDropdownButton<T>> {
   void initState() {
     super.initState();
     widget.controller.addListener(_didChangeEditingValue);
-    _currentValue =
-        widget.rawitemsmap.keys.elementAt(widget.initialValue as int);
+    _currentValue = widget.initialValue;
   }
 
   @override
@@ -60,15 +60,14 @@ class _QuillDropdownButtonState<T> extends State<QuillDropdownButton<T>> {
   }
 
   @override
-  void didUpdateWidget(covariant QuillDropdownButton<T> oldWidget) {
+  void didUpdateWidget(covariant QuillDropdownButton oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_didChangeEditingValue);
       widget.controller.addListener(_didChangeEditingValue);
     }
     if (widget.initialValue != oldWidget.initialValue) {
-      _currentValue =
-          widget.rawitemsmap.keys.elementAt(widget.initialValue as int);
+      _currentValue = widget.initialValue;
     }
   }
 
@@ -81,19 +80,15 @@ class _QuillDropdownButtonState<T> extends State<QuillDropdownButton<T>> {
       final attribute = attrs[widget.attribute.key];
 
       if (attribute == null) {
-        return widget.rawitemsmap.keys
-            .elementAt(widget.initialValue as int)
-            .toString();
+        return widget.initialValue;
       } else {
         return widget.rawitemsmap.entries
-            .firstWhere((element) => element.value == attribute.value,
+            .firstWhere((element) => element.key == attribute.value.toString(),
                 orElse: () => widget.rawitemsmap.entries.first)
             .key;
       }
     }
-    return widget.rawitemsmap.keys
-        .elementAt(widget.initialValue as int)
-        .toString();
+    return widget.initialValue;
   }
 
   @override
@@ -128,26 +123,22 @@ class _QuillDropdownButtonState<T> extends State<QuillDropdownButton<T>> {
       ),
       Offset.zero & overlay.size,
     );
-    showMenu<T>(
+    showMenu<String>(
       context: context,
       elevation: 4,
-      // widget.elevation ?? popupMenuTheme.elevation,
       initialValue: widget.initialValue,
       items: widget.items,
       position: position,
       shape: popupMenuTheme.shape,
-      // widget.shape ?? popupMenuTheme.shape,
-      color: popupMenuTheme.color, // widget.color ?? popupMenuTheme.color,
-      // captureInheritedThemes: widget.captureInheritedThemes,
+      color: popupMenuTheme.color,
     ).then((newValue) {
       if (newValue == null) {
-        // if (widget.onCanceled != null) widget.onCanceled();
         return null;
       }
       if (mounted) {
         setState(() {
           _currentValue = widget.rawitemsmap.entries
-              .firstWhere((element) => element.value == newValue,
+              .firstWhere((element) => element.key == newValue,
                   orElse: () => widget.rawitemsmap.entries.first)
               .key;
         });
