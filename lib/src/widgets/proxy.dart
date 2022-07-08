@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
@@ -65,6 +63,7 @@ class RenderBaselineProxy extends RenderProxyBox {
   @override
   double computeDistanceToActualBaseline(TextBaseline baseline) =>
       _prototypePainter.computeDistanceToActualBaseline(baseline);
+
   // SEE What happens + _padding?.top;
 
   @override
@@ -273,24 +272,38 @@ class RenderParagraphProxy extends RenderProxyBox
   double get preferredLineHeight => _prototypePainter.preferredLineHeight;
 
   @override
-  Offset getOffsetForCaret(TextPosition position, Rect caretPrototype) =>
-      child!.getOffsetForCaret(position, caretPrototype);
+  Offset getOffsetForCaret(TextPosition position, Rect caretPrototype) {
+    final offset = child!.getOffsetForCaret(position, caretPrototype);
+    final boxes = child!.getBoxesForSelection(
+        TextSelection(baseOffset: position.offset + 1, extentOffset: 0));
+    if (boxes.isEmpty) {
+      return child!.getOffsetForCaret(position, caretPrototype);
+    }
+    final box = boxes.last;
+    return Offset(offset.dx, box.top);
+  }
 
   @override
   TextPosition getPositionForOffset(Offset offset) =>
       child!.getPositionForOffset(offset);
 
   @override
-  double? getFullHeightForCaret(TextPosition position) =>
-      child!.getFullHeightForCaret(position);
+  double? getFullHeightForCaret(TextPosition position) {
+    final boxes = child!.getBoxesForSelection(
+        TextSelection(baseOffset: position.offset + 1, extentOffset: 0));
+    if (boxes.isEmpty) {
+      return child!.getFullHeightForCaret(position);
+    }
+    return boxes.last.toRect().height;
+  }
 
   @override
   TextRange getWordBoundary(TextPosition position) =>
       child!.getWordBoundary(position);
 
   @override
-  List<TextBox> getBoxesForSelection(TextSelection selection) => child!
-      .getBoxesForSelection(selection, boxHeightStyle: BoxHeightStyle.strut);
+  List<TextBox> getBoxesForSelection(TextSelection selection) =>
+      child!.getBoxesForSelection(selection);
 
   @override
   void performLayout() {
