@@ -44,6 +44,7 @@ class Attribute<T> {
     Attribute.script.key: Attribute.script,
     Attribute.page.key: Attribute.page,
     Attribute.user.key: Attribute.user,
+    Attribute.collection.key: Attribute.collection,
   });
 
   static final BoldAttribute bold = BoldAttribute();
@@ -97,6 +98,8 @@ class Attribute<T> {
   static final PageAttribute page = PageAttribute('');
 
   static final UserAttribute user = UserAttribute('');
+
+  static final CollectionAttribute collection = CollectionAttribute('');
 
   static const String mobileWidth = 'mobileWidth';
 
@@ -359,4 +362,9 @@ class PageAttribute extends Attribute<String> {
 class UserAttribute extends Attribute<String> {
   UserAttribute(String userId)
       : super('dg_user', AttributeScope.INLINE, userId);
+}
+
+class CollectionAttribute extends Attribute<String> {
+  CollectionAttribute(String path)
+      : super('dg_collection', AttributeScope.INLINE, path);
 }

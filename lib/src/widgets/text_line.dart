@@ -34,6 +34,7 @@ class TextLine extends StatefulWidget {
     required this.onLaunchUrl,
     required this.onDgPageTapped,
     required this.onDgUserTapped,
+    required this.onDgCollectionTapped,
     required this.linkActionPicker,
     required this.maxWidthForPercent,
     required this.fontSizeBehavior,
@@ -58,6 +59,7 @@ class TextLine extends StatefulWidget {
   final LinkLauncher? onLaunchUrl;
   final PageLauncher? onDgPageTapped;
   final UserLauncher? onDgUserTapped;
+  final UserLauncher? onDgCollectionTapped;
   final LinkActionPicker linkActionPicker;
   final FontSizeBehavior fontSizeBehavior;
 
@@ -294,7 +296,9 @@ class _TextLineState extends State<TextLine> {
         (nodeStyle.containsKey(Attribute.page.key) &&
             nodeStyle.attributes[Attribute.page.key]!.value != null) ||
         (nodeStyle.containsKey(Attribute.user.key) &&
-            nodeStyle.attributes[Attribute.user.key]!.value != null);
+            nodeStyle.attributes[Attribute.user.key]!.value != null) ||
+        (nodeStyle.containsKey(Attribute.collection.key) &&
+            nodeStyle.attributes[Attribute.collection.key]!.value != null);
     final clickable = isLink && canLaunchLinks;
     String value;
     if (textNode.previous == null && textNode.value.startsWith(' ')) {
@@ -352,6 +356,11 @@ class _TextLineState extends State<TextLine> {
 
     if (nodeStyle.containsKey(Attribute.user.key)) {
       res = _merge(res, defaultStyles.user!.styleFor(lineStyle));
+      hasDefaultColor = true;
+    }
+
+    if (nodeStyle.containsKey(Attribute.collection.key)) {
+      res = _merge(res, defaultStyles.collection!.styleFor(lineStyle));
       hasDefaultColor = true;
     }
 
@@ -455,6 +464,8 @@ class _TextLineState extends State<TextLine> {
       _tapDgPage(node.style.attributes[Attribute.page.key]!.value);
     } else if (node.style.attributes.containsKey(Attribute.user.key)) {
       _tapDgUser(node.style.attributes[Attribute.user.key]!.value);
+    } else if (node.style.attributes.containsKey(Attribute.collection.key)) {
+      _tapDgCollection(node.style.attributes[Attribute.collection.key]!.value);
     }
   }
 
@@ -475,6 +486,16 @@ class _TextLineState extends State<TextLine> {
 
     widget.focusNode?.canRequestFocus = false;
     await widget.onDgUserTapped!(userId);
+    widget.focusNode?.canRequestFocus = true;
+  }
+
+  Future<void> _tapDgCollection(String? path) async {
+    if (path == null || widget.onDgCollectionTapped == null) {
+      return;
+    }
+
+    widget.focusNode?.canRequestFocus = false;
+    await widget.onDgCollectionTapped!(path);
     widget.focusNode?.canRequestFocus = true;
   }
 
