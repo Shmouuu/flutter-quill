@@ -284,8 +284,8 @@ class DefaultStyles {
         collection: InlineCodeStyle(
           radius: const Radius.circular(3),
           style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF3862A1),
+            fontWeight: FontWeight.w600,
+            decoration: TextDecoration.underline,
           ),
         ),
         placeHolder: DefaultTextBlockStyle(
