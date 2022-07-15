@@ -150,6 +150,7 @@ class QuillEditor extends StatefulWidget {
       required this.autoFocus,
       required this.readOnly,
       required this.expands,
+      this.pageConstraints,
       this.showCursor,
       this.defaultFontFamily,
       this.fontSizeBehavior = FontSizeBehavior.fixed,
@@ -217,6 +218,7 @@ class QuillEditor extends StatefulWidget {
 
   /// Controls the responsiveness of the font size
   final FontSizeBehavior fontSizeBehavior;
+  final BoxConstraints? pageConstraints;
 
   /// The [ScrollController] to use when vertically scrolling the contents.
   final ScrollController scrollController;
@@ -444,10 +446,12 @@ class QuillEditorState extends State<QuillEditor>
           theme.colorScheme.primary.withOpacity(0.40);
     }
 
+
     final child = RawEditor(
       key: _editorKey,
       controller: widget.controller,
       fontSizeBehavior: widget.fontSizeBehavior,
+      pageConstraints: widget.pageConstraints,
       focusNode: widget.focusNode,
       scrollController: widget.scrollController,
       scrollable: widget.scrollable,

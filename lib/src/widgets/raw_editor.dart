@@ -47,6 +47,7 @@ class RawEditor extends StatefulWidget {
       required this.selectionColor,
       required this.selectionCtrls,
       required this.fontSizeBehavior,
+      this.pageConstraints,
       Key? key,
       this.scrollable = true,
       this.padding = EdgeInsets.zero,
@@ -235,6 +236,7 @@ class RawEditor extends StatefulWidget {
   /// Builder function for embeddable objects.
   final EmbedBuilder embedBuilder;
   final FontSizeBehavior fontSizeBehavior;
+  final BoxConstraints? pageConstraints;
   final LinkActionPickerDelegate linkActionPickerDelegate;
   final CustomStyleBuilder? customStyleBuilder;
   final ValueChanged<TextInputAction>? onPerformAction;
@@ -325,27 +327,7 @@ class RawEditorState extends EditorState
     Widget child = CompositedTransformTarget(
       link: _toolbarLayerLink,
       child: Semantics(
-        child: LayoutBuilder(builder: (context, constraints) {
-          return _Editor(
-            key: _editorKey,
-            maxWidthForPercent: constraints.maxWidth,
-            document: _doc,
-            selection: _selection,
-            hasFocus: _hasFocus,
-            scrollable: widget.scrollable,
-            cursorController: _cursorCont,
-            textDirection: _textDirection,
-            startHandleLayerLink: _startHandleLayerLink,
-            endHandleLayerLink: _endHandleLayerLink,
-            onSelectionChanged: _handleSelectionChanged,
-            onSelectionCompleted: _handleSelectionCompleted,
-            scrollBottomInset: widget.scrollBottomInset,
-            padding: widget.padding,
-            maxContentWidth: widget.maxContentWidth,
-            floatingCursorDisabled: widget.floatingCursorDisabled,
-            children: _buildChildren(_doc, context, constraints.maxWidth),
-          );
-        }),
+        child: _buildEditor(_doc, _selection, context),
       ),
     );
 
@@ -366,28 +348,7 @@ class RawEditorState extends EditorState
           physics: widget.scrollPhysics,
           viewportBuilder: (_, offset) => CompositedTransformTarget(
             link: _toolbarLayerLink,
-            child: LayoutBuilder(builder: (context, constraints) {
-              return _Editor(
-                key: _editorKey,
-                maxWidthForPercent: constraints.maxWidth,
-                offset: offset,
-                document: _doc,
-                selection: widget.controller.selection,
-                hasFocus: _hasFocus,
-                scrollable: widget.scrollable,
-                textDirection: _textDirection,
-                startHandleLayerLink: _startHandleLayerLink,
-                endHandleLayerLink: _endHandleLayerLink,
-                onSelectionChanged: _handleSelectionChanged,
-                onSelectionCompleted: _handleSelectionCompleted,
-                scrollBottomInset: widget.scrollBottomInset,
-                padding: widget.padding,
-                maxContentWidth: widget.maxContentWidth,
-                cursorController: _cursorCont,
-                floatingCursorDisabled: widget.floatingCursorDisabled,
-                children: _buildChildren(_doc, context, constraints.maxWidth),
-              );
-            }),
+            child: _buildEditor(_doc, _selection, context, offset: offset),
           ),
         ),
       );
@@ -413,6 +374,47 @@ class RawEditorState extends EditorState
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildEditor(
+      Document _doc, TextSelection _selection, BuildContext context,
+      {ViewportOffset? offset}) {
+    if (widget.pageConstraints != null) {
+      return _buildEditorWidthConstraints(
+          widget.pageConstraints!, _doc, _selection, context, offset);
+    }
+    return LayoutBuilder(builder: (context, constraints) {
+      return _buildEditorWidthConstraints(
+          constraints, _doc, _selection, context, offset);
+    });
+  }
+
+  _Editor _buildEditorWidthConstraints(
+      BoxConstraints constraints,
+      Document _doc,
+      TextSelection _selection,
+      BuildContext context,
+      ViewportOffset? offset) {
+    return _Editor(
+      key: _editorKey,
+      maxWidthForPercent: constraints.maxWidth,
+      document: _doc,
+      selection: _selection,
+      hasFocus: _hasFocus,
+      offset: offset,
+      scrollable: widget.scrollable,
+      cursorController: _cursorCont,
+      textDirection: _textDirection,
+      startHandleLayerLink: _startHandleLayerLink,
+      endHandleLayerLink: _endHandleLayerLink,
+      onSelectionChanged: _handleSelectionChanged,
+      onSelectionCompleted: _handleSelectionCompleted,
+      scrollBottomInset: widget.scrollBottomInset,
+      padding: widget.padding,
+      maxContentWidth: widget.maxContentWidth,
+      floatingCursorDisabled: widget.floatingCursorDisabled,
+      children: _buildChildren(_doc, context, constraints.maxWidth),
     );
   }
 
