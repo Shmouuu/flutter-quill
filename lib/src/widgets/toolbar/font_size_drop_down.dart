@@ -121,6 +121,9 @@ class _FontSizeDropDownState extends State<FontSizeDropDown> {
         '';
     final customFontSize =
         int.tryParse(value is String ? value : value.toString());
+    if (customFontSize == 16) {
+      return fontSizes.values.toList().indexOf(0);
+    }
     if (customFontSize != null) {
       final key = customFontSize.toString();
       if (!fontSizes.containsKey(key)) {
