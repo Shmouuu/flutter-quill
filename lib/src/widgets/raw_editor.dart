@@ -57,6 +57,7 @@ class RawEditor extends StatefulWidget {
       this.onDgPageTapped,
       this.onDgUserTapped,
       this.onDgCollectionTapped,
+      this.onDgHashtagTapped,
       this.toolbarOptions = const ToolbarOptions(
         copy: true,
         cut: true,
@@ -118,7 +119,8 @@ class RawEditor extends StatefulWidget {
   final LinkLauncher? onLaunchUrl;
   final PageLauncher? onDgPageTapped;
   final UserLauncher? onDgUserTapped;
-  final UserLauncher? onDgCollectionTapped;
+  final CollectionLauncher? onDgCollectionTapped;
+  final HashtagLauncher? onDgHashtagTapped;
 
   /// Configuration of toolbar options.
   ///
@@ -509,6 +511,7 @@ class RawEditorState extends EditorState
             onDgPageTapped: widget.onDgPageTapped,
             onDgUserTapped: widget.onDgUserTapped,
             onDgCollectionTapped: widget.onDgCollectionTapped,
+            onDgHashtagTapped: widget.onDgHashtagTapped,
             numberedPointStart: widget.numberedPointStart,
             defaultFontFamily: widget.defaultFontFamily,
             customStyleBuilder: widget.customStyleBuilder);
@@ -540,6 +543,7 @@ class RawEditorState extends EditorState
       onDgPageTapped: widget.onDgPageTapped,
       onDgUserTapped: widget.onDgUserTapped,
       onDgCollectionTapped: widget.onDgCollectionTapped,
+      onDgHashtagTapped: widget.onDgHashtagTapped,
       defaultFontFamily: widget.defaultFontFamily,
     );
     final editableTextLine = EditableTextLine(

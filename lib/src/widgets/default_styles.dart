@@ -150,6 +150,7 @@ class DefaultStyles {
     this.inlineCode,
     this.link,
     this.page,
+    this.hashtag,
     this.user,
     this.collection,
     this.color,
@@ -182,6 +183,7 @@ class DefaultStyles {
   final TextStyle? sizeHuge; // 'huge'
   final TextStyle? link;
   final InlineCodeStyle? page;
+  final InlineCodeStyle? hashtag;
   final InlineCodeStyle? user;
   final InlineCodeStyle? collection;
   final Color? color;
@@ -274,6 +276,13 @@ class DefaultStyles {
             decoration: TextDecoration.underline,
           ),
         ),
+        hashtag: InlineCodeStyle(
+          radius: const Radius.circular(3),
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            decoration: TextDecoration.underline,
+          ),
+        ),
         user: InlineCodeStyle(
           radius: const Radius.circular(3),
           style: const TextStyle(
@@ -353,6 +362,7 @@ class DefaultStyles {
         align: other.align ?? align,
         leading: other.leading ?? leading,
         page: other.page ?? page,
+        hashtag: other.hashtag ?? hashtag,
         user: other.user ?? user,
         collection: other.collection ?? collection,
         sizeSmall: other.sizeSmall ?? sizeSmall,

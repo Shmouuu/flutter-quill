@@ -43,6 +43,7 @@ class Attribute<T> {
     Attribute.token.key: Attribute.token,
     Attribute.script.key: Attribute.script,
     Attribute.page.key: Attribute.page,
+    Attribute.hashtag.key: Attribute.hashtag,
     Attribute.user.key: Attribute.user,
     Attribute.collection.key: Attribute.collection,
   });
@@ -96,6 +97,8 @@ class Attribute<T> {
   static final ScriptAttribute script = ScriptAttribute('');
 
   static final PageAttribute page = PageAttribute('');
+
+  static final HashtagAttribute hashtag = HashtagAttribute('');
 
   static final UserAttribute user = UserAttribute('');
 
@@ -367,4 +370,9 @@ class UserAttribute extends Attribute<String> {
 class CollectionAttribute extends Attribute<String> {
   CollectionAttribute(String path)
       : super('dg_collection', AttributeScope.INLINE, path);
+}
+
+class HashtagAttribute extends Attribute<String> {
+  HashtagAttribute(String tag)
+      : super('dg_hashtag', AttributeScope.INLINE, tag);
 }

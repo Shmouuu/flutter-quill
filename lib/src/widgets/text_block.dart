@@ -71,6 +71,7 @@ class EditableTextBlock extends StatelessWidget {
       this.onDgPageTapped,
       this.onDgUserTapped,
       this.onDgCollectionTapped,
+      this.onDgHashtagTapped,
       this.customStyleBuilder,
       this.defaultFontFamily,
       Key? key});
@@ -94,7 +95,8 @@ class EditableTextBlock extends StatelessWidget {
   final LinkLauncher? onLaunchUrl;
   final PageLauncher? onDgPageTapped;
   final UserLauncher? onDgUserTapped;
-  final UserLauncher? onDgCollectionTapped;
+  final CollectionLauncher? onDgCollectionTapped;
+  final HashtagLauncher? onDgHashtagTapped;
   final CustomStyleBuilder? customStyleBuilder;
   final CursorCont cursorCont;
   final Map<int, int> indentLevelCounts;
@@ -157,6 +159,7 @@ class EditableTextBlock extends StatelessWidget {
             onDgPageTapped: onDgPageTapped,
             onDgUserTapped: onDgUserTapped,
             onDgCollectionTapped: onDgCollectionTapped,
+            onDgHashtagTapped: onDgHashtagTapped,
             defaultFontFamily: defaultFontFamily,
             maxWidthForPercent: maxWidthForPercent,
             fontSizeBehavior: fontSizeBehavior,

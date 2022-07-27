@@ -169,6 +169,7 @@ class QuillEditor extends StatefulWidget {
       this.onDgPageTapped,
       this.onDgUserTapped,
       this.onDgCollectionTapped,
+      this.onDgHashtagTapped,
       this.onTapDown,
       this.onTapUp,
       this.onSingleLongTapStart,
@@ -338,7 +339,8 @@ class QuillEditor extends StatefulWidget {
   final LinkLauncher? onLaunchUrl;
   final PageLauncher? onDgPageTapped;
   final UserLauncher? onDgUserTapped;
-  final UserLauncher? onDgCollectionTapped;
+  final CollectionLauncher? onDgCollectionTapped;
+  final HashtagLauncher? onDgHashtagTapped;
   final EditorGestureListener? editorGestureListener;
   final int? numberedPointStart;
   final OnPaste? onPaste;
@@ -464,6 +466,7 @@ class QuillEditorState extends State<QuillEditor>
       onDgPageTapped: widget.onDgPageTapped,
       onDgUserTapped: widget.onDgUserTapped,
       onDgCollectionTapped: widget.onDgCollectionTapped,
+      onDgHashtagTapped: widget.onDgHashtagTapped,
       toolbarOptions: ToolbarOptions(
         copy: widget.enableInteractiveSelection,
         cut: widget.enableInteractiveSelection,

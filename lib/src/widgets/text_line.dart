@@ -35,6 +35,7 @@ class TextLine extends StatefulWidget {
     required this.onDgPageTapped,
     required this.onDgUserTapped,
     required this.onDgCollectionTapped,
+    required this.onDgHashtagTapped,
     required this.linkActionPicker,
     required this.maxWidthForPercent,
     required this.fontSizeBehavior,
@@ -59,7 +60,8 @@ class TextLine extends StatefulWidget {
   final LinkLauncher? onLaunchUrl;
   final PageLauncher? onDgPageTapped;
   final UserLauncher? onDgUserTapped;
-  final UserLauncher? onDgCollectionTapped;
+  final CollectionLauncher? onDgCollectionTapped;
+  final HashtagLauncher? onDgHashtagTapped;
   final LinkActionPicker linkActionPicker;
   final FontSizeBehavior fontSizeBehavior;
 
@@ -70,6 +72,8 @@ class TextLine extends StatefulWidget {
 typedef LinkLauncher = Future<void> Function(String);
 typedef PageLauncher = Future<void> Function(String);
 typedef UserLauncher = Future<void> Function(String);
+typedef CollectionLauncher = Future<void> Function(String);
+typedef HashtagLauncher = Future<void> Function(String);
 
 class _TextLineState extends State<TextLine> {
   bool _metaOrControlPressed = false;
@@ -295,6 +299,8 @@ class _TextLineState extends State<TextLine> {
             nodeStyle.attributes[Attribute.link.key]!.value != null) ||
         (nodeStyle.containsKey(Attribute.page.key) &&
             nodeStyle.attributes[Attribute.page.key]!.value != null) ||
+        (nodeStyle.containsKey(Attribute.hashtag.key) &&
+            nodeStyle.attributes[Attribute.hashtag.key]!.value != null) ||
         (nodeStyle.containsKey(Attribute.user.key) &&
             nodeStyle.attributes[Attribute.user.key]!.value != null) ||
         (nodeStyle.containsKey(Attribute.collection.key) &&
@@ -351,6 +357,11 @@ class _TextLineState extends State<TextLine> {
 
     if (nodeStyle.containsKey(Attribute.page.key)) {
       res = _merge(res, defaultStyles.page!.styleFor(lineStyle));
+      hasDefaultColor = true;
+    }
+
+    if (nodeStyle.containsKey(Attribute.hashtag.key)) {
+      res = _merge(res, defaultStyles.hashtag!.styleFor(lineStyle));
       hasDefaultColor = true;
     }
 
@@ -466,6 +477,8 @@ class _TextLineState extends State<TextLine> {
       _tapDgUser(node.style.attributes[Attribute.user.key]!.value);
     } else if (node.style.attributes.containsKey(Attribute.collection.key)) {
       _tapDgCollection(node.style.attributes[Attribute.collection.key]!.value);
+    } else if (node.style.attributes.containsKey(Attribute.hashtag.key)) {
+      _tapDgHashtag(node.style.attributes[Attribute.hashtag.key]!.value);
     }
   }
 
@@ -496,6 +509,16 @@ class _TextLineState extends State<TextLine> {
 
     widget.focusNode?.canRequestFocus = false;
     await widget.onDgCollectionTapped!(path);
+    widget.focusNode?.canRequestFocus = true;
+  }
+
+  Future<void> _tapDgHashtag(String? path) async {
+    if (path == null || widget.onDgHashtagTapped == null) {
+      return;
+    }
+
+    widget.focusNode?.canRequestFocus = false;
+    await widget.onDgHashtagTapped!(path);
     widget.focusNode?.canRequestFocus = true;
   }
 
