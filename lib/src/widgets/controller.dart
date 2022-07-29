@@ -256,7 +256,8 @@ class QuillController extends ChangeNotifier {
       {bool notify = true}) {
     if (len == 0 &&
         attribute!.isInline &&
-        attribute.key != Attribute.link.key) {
+        attribute.key != Attribute.link.key &&
+        attribute.key != Attribute.user.key) {
       // Add the attribute to our toggledStyle.
       // It will be used later upon insertion.
       toggledStyle = toggledStyle.put(attribute);

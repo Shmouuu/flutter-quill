@@ -302,7 +302,9 @@ class _TextLineState extends State<TextLine> {
         (nodeStyle.containsKey(Attribute.hashtag.key) &&
             nodeStyle.attributes[Attribute.hashtag.key]!.value != null) ||
         (nodeStyle.containsKey(Attribute.user.key) &&
-            nodeStyle.attributes[Attribute.user.key]!.value != null) ||
+            (nodeStyle.attributes[Attribute.user.key]?.value as String?)
+                    ?.isNotEmpty ==
+                true) ||
         (nodeStyle.containsKey(Attribute.collection.key) &&
             nodeStyle.attributes[Attribute.collection.key]!.value != null);
     final clickable = isLink && canLaunchLinks;
@@ -365,7 +367,9 @@ class _TextLineState extends State<TextLine> {
       hasDefaultColor = true;
     }
 
-    if (nodeStyle.containsKey(Attribute.user.key)) {
+    if ((nodeStyle.attributes[Attribute.user.key]?.value as String?)
+            ?.isNotEmpty ==
+        true) {
       res = _merge(res, defaultStyles.user!.styleFor(lineStyle));
       hasDefaultColor = true;
     }
