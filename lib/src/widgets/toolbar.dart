@@ -56,6 +56,7 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
 
   factory QuillToolbar.basic({
     required QuillController controller,
+    FocusNode? focusNode,
     double toolbarIconSize = kDefaultIconSize,
     double toolbarSectionSpacing = 4,
     WrapAlignment toolbarIconAlignment = WrapAlignment.center,
@@ -231,6 +232,7 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
             icon: Icons.color_lens,
             iconSize: toolbarIconSize,
             controller: controller,
+            focusNode: focusNode,
             showTitle: showColorPickerTitle,
             background: false,
             iconTheme: iconTheme,

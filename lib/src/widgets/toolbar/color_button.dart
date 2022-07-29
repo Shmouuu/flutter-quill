@@ -21,6 +21,7 @@ class ColorButton extends StatefulWidget {
     required this.controller,
     required this.background,
     required this.showTitle,
+    this.focusNode,
     this.iconSize = kDefaultIconSize,
     this.iconTheme,
     Key? key,
@@ -31,6 +32,7 @@ class ColorButton extends StatefulWidget {
   final bool background;
   final bool showTitle;
   final QuillController controller;
+  final FocusNode? focusNode;
   final QuillIconTheme? iconTheme;
 
   @override
@@ -152,6 +154,7 @@ class _ColorButtonState extends State<ColorButton> {
     hex = '#$hex';
     widget.controller.formatSelection(
         widget.background ? BackgroundAttribute(hex) : ColorAttribute(hex));
+    widget.focusNode?.requestFocus();
   }
 
   Future<void> _showColorPicker() async {
