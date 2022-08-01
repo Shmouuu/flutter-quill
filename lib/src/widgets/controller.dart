@@ -406,7 +406,7 @@ class QuillController extends ChangeNotifier {
           : document.collectStyle(textSelection.baseOffset, 0);
       toggledStyle = Style();
       style.attributes.forEach((key, value) {
-        if (value.isInline) {
+        if (value.isInline && value.key != Attribute.user.key) {
           toggledStyle = toggledStyle.merge(value);
         }
       });
