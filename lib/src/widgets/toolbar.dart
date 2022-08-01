@@ -241,6 +241,7 @@ class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
           ColorButton(
             icon: Icons.format_color_fill,
             iconSize: toolbarIconSize,
+            focusNode: focusNode,
             controller: controller,
             showTitle: showColorPickerTitle,
             background: true,
