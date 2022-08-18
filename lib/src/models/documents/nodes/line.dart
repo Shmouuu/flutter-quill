@@ -373,7 +373,6 @@ class Line extends Container<Leaf?> {
         pos += node.length;
       }
     }
-
     result = result.mergeAll(style);
     if (parent is Block) {
       final block = parent as Block;
@@ -383,7 +382,12 @@ class Line extends Container<Leaf?> {
     final remaining = len - local;
     if (remaining > 0) {
       final rest = nextLine!.collectStyle(0, remaining);
-      _handle(rest);
+      // If the line is not empty we don't check it. Otherwise it may conflict
+      // with ResolveInlineFormatRule which doesn't apply inline attribute to
+      // empty lines. (task 1869)
+      if (nextLine!.toPlainText().lastIndexOf('\n') > 0) {
+        _handle(rest);
+      }
     }
 
     return result;
