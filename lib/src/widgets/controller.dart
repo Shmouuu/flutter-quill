@@ -470,6 +470,22 @@ class QuillController extends ChangeNotifier {
     return document.querySegmentLeafNode(offset).item2;
   }
 
+  void toggleAttribute(Attribute attribute) {
+    final isToggled = _getIsToggled(attribute, getSelectionStyle().attributes);
+    formatSelection(isToggled ? Attribute.clone(attribute, null) : attribute);
+  }
+
+  bool _getIsToggled(Attribute attr, Map<String, Attribute> attrs) {
+    if (attr.key == attr.key) {
+      final attribute = attrs[attr.key];
+      if (attribute == null) {
+        return false;
+      }
+      return attribute.value == attr.value;
+    }
+    return attrs.containsKey(attr.key);
+  }
+
   /// Clipboard for image url and its corresponding style
   /// item1 is url and item2 is style string
   Tuple2<String, String>? _copiedImageUrl;

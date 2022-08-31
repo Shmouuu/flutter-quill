@@ -408,9 +408,10 @@ class Document {
 
     final delta = node.toDelta();
     if (delta.length == 2 &&
-        delta.last.attributes?.keys.first != Attribute.header.key) {
+        delta.first.data == ' ' &&
+        delta.last.data == '\n') {
       // empty only if the line format is a header
-      return false;
+      return true;
     }
     if (toPlainText() == '${Document.zeroWidthChar}\n') {
       return true;
