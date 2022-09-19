@@ -338,7 +338,8 @@ class QuillController extends ChangeNotifier {
     _updateSelection(newSelection, ChangeSource.LOCAL);
   }
 
-  void compose(Delta delta, TextSelection textSelection, ChangeSource source) {
+  void compose(Delta delta, TextSelection textSelection, ChangeSource source,
+      {bool ignoreFocus = false}) {
     if (delta.isNotEmpty) {
       document.compose(delta, source);
     }
@@ -350,7 +351,11 @@ class QuillController extends ChangeNotifier {
     if (selection != textSelection) {
       _updateSelection(textSelection, source);
     }
+    if (ignoreFocus) {
+      ignoreFocusOnTextChange = true;
+    }
     notifyListeners();
+    ignoreFocusOnTextChange = false;
   }
 
   @override
