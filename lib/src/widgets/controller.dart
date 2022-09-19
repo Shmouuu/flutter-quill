@@ -456,6 +456,38 @@ class QuillController extends ChangeNotifier {
     return query.replaceAll(command, '');
   }
 
+  void removeCommandWord(String command) {
+    if (document.isEmpty()) {
+      return null;
+    }
+    final _linkBreak = RegExp('[\\s\n]');
+    final input = plainTextEditingValue.text;
+    final before = input.substring(0, max(selection.baseOffset, 0));
+    final start = before.lastIndexOf(command);
+    if (start == -1) {
+      return null;
+    }
+    if (start > 1) {
+      // because there is a zero w char at position 0
+      if (input.substring(start - 1, start).trim().isNotEmpty) {
+        return null;
+      }
+    }
+    final after = input.substring(start);
+    var len = after.indexOf(_linkBreak);
+    if (len == -1) {
+      len = after.length;
+    }
+    final query = input.substring(start, start + len);
+    if (!query.startsWith(command)) {
+      return null;
+    }
+    if (start + len < selection.baseOffset) {
+      return null;
+    }
+    replaceText(start, start + len, '', TextSelection.collapsed(offset: start));
+  }
+
   void unCollapse() {
     if (selection.isCollapsed == false) {
       updateSelection(
